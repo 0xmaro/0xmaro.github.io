@@ -7,7 +7,7 @@
 	0xMARO
 		Role: Full-stack developer, moving into application security
 		Location: TODO(copy)
-		GitHub: https://github.com/0xmaroo
+		GitHub: https://github.com/0xmaro
 		LinkedIn: https://www.linkedin.com/in/amar-mohamed-0xmaro
 
 /* SITE */

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://0xmaroo.github.io/sitemap-index.xml
+Sitemap: https://0xmaro.github.io/sitemap-index.xml

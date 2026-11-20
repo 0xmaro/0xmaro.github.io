@@ -8,7 +8,7 @@ import { generateDefaultOgImages } from './src/lib/og';
 export default defineConfig({
   // GitHub Pages (user page → base stays '/'). This `site` line is the ONLY
   // line to change if a custom domain (e.g. 0xmaro.dev) is ever added.
-  site: 'https://0xmaroo.github.io',
+  site: 'https://0xmaro.github.io',
   base: '/',
   i18n: {
     defaultLocale: 'en',

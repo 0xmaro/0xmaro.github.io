@@ -1,6 +1,6 @@
 # Deploy to GitHub Pages
 #
-# Repo must be named `0xmaroo.github.io` (user page) so the site serves from
+# Repo must be named `0xmaro.github.io` (user page) so the site serves from
 # the repo root with `base: '/'`. Otherwise the `base` in astro.config.mjs
 # (and the CNAME) have to change.
 #

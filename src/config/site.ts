@@ -4,11 +4,11 @@ export const site = {
   brand: '0xMARO',
   domain: 'https://0xmaro.dev',
   /** Public source repo — /security links every claim to the file behind it. */
-  repo: 'https://github.com/0xmaroo/0xmaroo.github.io',
+  repo: 'https://github.com/0xmaro/0xmaro.github.io',
   social: {
     // Owner-supplied and verified (plan/05 Phase 5): the sameAs allowlist for
     // JSON-LD and the proof-gated footer/About links. No third profile.
-    github: 'https://github.com/0xmaroo',
+    github: 'https://github.com/0xmaro',
     linkedin: 'https://www.linkedin.com/in/amar-mohamed-0xmaro',
   },
 } as const;
