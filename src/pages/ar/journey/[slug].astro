@@ -1,0 +1,26 @@
+---
+import JourneyStationPage from '../../../components/proof/JourneyStationPage.astro';
+import { journeyTimeline, type Journey } from '../../../lib/proof';
+
+export async function getStaticPaths() {
+  const stations = await journeyTimeline();
+  return stations.map((station, i) => ({
+    params: { slug: station.id },
+    props: {
+      station,
+      prev: stations[i - 1],
+      next: stations[i + 1],
+    },
+  }));
+}
+
+interface Props {
+  station: Journey;
+  prev?: Journey;
+  next?: Journey;
+}
+
+const { station, prev, next } = Astro.props;
+---
+
+<JourneyStationPage lang="ar" station={station} prev={prev} next={next} />

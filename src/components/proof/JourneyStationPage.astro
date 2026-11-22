@@ -1,0 +1,704 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import Base from '../../layouts/Base.astro';
+import Seo from '../Seo.astro';
+import JsonLd from '../seo/JsonLd.astro';
+import Rail from '../Rail.astro';
+import { isRealProof, isTodo, type Journey } from '../../lib/proof';
+import { breadcrumbSchema, journeyMilestoneSchema } from '../../lib/schema';
+import { useTranslations } from '../../i18n/utils';
+import type { Language, UIKey } from '../../i18n/ui';
+
+/**
+ * Dedicated milestone dossier page — shared by /journey/[slug] and
+ * /ar/journey/[slug]. Renders full executive context, verifiable proof facts,
+ * skills, media gallery (with native <dialog> lightbox + <video>), and
+ * chronological previous/next navigation.
+ */
+interface Props {
+  lang: Language;
+  station: Journey;
+  prev?: Journey;
+  next?: Journey;
+}
+
+const { lang, station, prev, next } = Astro.props;
+const t = useTranslations(lang);
+const d = station.data;
+
+type Phase = Journey['data']['phase'];
+const phaseKey: Record<Phase, UIKey> = {
+  certification: 'journey.phase.certification',
+  competition: 'journey.phase.competition',
+  training: 'journey.phase.training',
+  community: 'journey.phase.community',
+  foundation: 'journey.phase.foundation',
+};
+
+const dateFmt = new Intl.DateTimeFormat(lang === 'ar' ? 'ar' : 'en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  numberingSystem: 'latn',
+});
+
+const path = `/journey/${station.id}`;
+const title = `${d.event[lang]} — 0xMARO`;
+const description = d.summary?.[lang] ?? d.learned[lang];
+const images = d.media.filter((m) => m.type === 'image');
+const videos = d.media.filter((m) => m.type === 'video');
+const pdfs = d.media.filter((m) => m.type === 'pdf');
+const externalLinks = d.links.filter((l) => isRealProof(l.url));
+const ogImage = images[0]?.src;
+---
+
+<Base lang={lang} title={title} description={description}>
+  <Seo
+    slot="head"
+    lang={lang}
+    path={path}
+    title={title}
+    description={description}
+    image={ogImage}
+    imageAlt={images[0]?.alt[lang]}
+  />
+  <JsonLd slot="head" data={journeyMilestoneSchema(lang, Astro.site!, station)} />
+  <JsonLd
+    slot="head"
+    data={breadcrumbSchema(lang, Astro.site!, [
+      { name: t('breadcrumb.home'), path: '/' },
+      { name: t('journey.title'), path: '/journey' },
+      { name: d.event[lang] },
+    ])}
+  />
+  <Rail />
+
+  <article class="wrap dossier" data-pagefind-body data-dossier-root>
+    <nav class="dossier__back" aria-label={t('journey.back')}>
+      <a class="dossier__back-link" href={getRelativeLocaleUrl(lang, '/journey')}>
+        {lang === 'ar' ? '→' : '←'}
+        {t('journey.back')}
+      </a>
+    </nav>
+
+    <header class="dossier__head">
+      <div class="dossier__eyebrow">
+        {
+          d.date && (
+            <time class="dossier__date ltr" datetime={d.date.toISOString().slice(0, 10)}>
+              {dateFmt.format(d.date)}
+            </time>
+          )
+        }
+        <span class:list={['dossier__phase', `dossier__phase--${d.phase}`]}>
+          {t(phaseKey[d.phase])}
+        </span>
+      </div>
+
+      <h1 class="dossier__title">{d.event[lang]}</h1>
+      {d.summary && <p class="dossier__summary">{d.summary[lang]}</p>}
+    </header>
+
+    <dl class="facts">
+      {
+        d.org && (
+          <div class="facts__cell">
+            <dt class="facts__k">{t('journey.org')}</dt>
+            <dd class="facts__v">{d.org[lang]}</dd>
+          </div>
+        )
+      }
+      {
+        d.role && (
+          <div class="facts__cell">
+            <dt class="facts__k">{t('journey.role')}</dt>
+            <dd class="facts__v">{d.role[lang]}</dd>
+          </div>
+        )
+      }
+      {
+        d.date && (
+          <div class="facts__cell">
+            <dt class="facts__k">{t('journey.date')}</dt>
+            <dd class="facts__v ltr">{dateFmt.format(d.date)}</dd>
+          </div>
+        )
+      }
+      {
+        d.claim && isRealProof(d.proof) && (
+          <div class="facts__cell facts__cell--wide">
+            <dt class="facts__k">{t('journey.proof')}</dt>
+            <dd class="facts__v">
+              <a class="facts__proof ltr" href={d.proof} target="_blank" rel="nofollow noreferrer">
+                {d.claim}
+                <span class="facts__verify">{t('proof.verify')}</span>
+              </a>
+            </dd>
+          </div>
+        )
+      }
+      {
+        (externalLinks.length > 0 || pdfs.length > 0) && (
+          <div class="facts__cell facts__cell--wide">
+            <dt class="facts__k">{t('journey.links')}</dt>
+            <dd class="facts__links">
+              {externalLinks.map((l) => (
+                <a class="facts__ext" href={l.url} target="_blank" rel="nofollow noreferrer">
+                  {l.label[lang]} ↗
+                </a>
+              ))}
+              {pdfs.map((p) => (
+                <a class="facts__ext" href={p.src} target="_blank" rel="noreferrer">
+                  {p.alt[lang]} · {t('journey.pdf.open')}
+                </a>
+              ))}
+            </dd>
+          </div>
+        )
+      }
+    </dl>
+
+    {
+      !isTodo(d.learned[lang]) && (
+        <section class="insight" aria-labelledby="insight-heading">
+          <h2 id="insight-heading" class="insight__k">
+            {t('journey.learned')}
+          </h2>
+          <p class="insight__body">{d.learned[lang]}</p>
+        </section>
+      )
+    }
+
+    {
+      d.skills.length > 0 && (
+        <section class="dossier__sec" aria-labelledby="skills-heading">
+          <h2 id="skills-heading" class="dossier__sec-title">
+            {t('journey.skills')}
+          </h2>
+          <ul class="skills ltr">
+            {d.skills.map((skill) => (
+              <li class="skills__item">{skill}</li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    {
+      (images.length > 0 || videos.length > 0) && (
+        <section class="dossier__sec" aria-labelledby="evidence-heading">
+          <h2 id="evidence-heading" class="dossier__sec-title">
+            {t('journey.evidence')}
+          </h2>
+          <div class="gallery">
+            {images.map((m) => (
+              <figure class="gfig">
+                <button
+                  type="button"
+                  class="gfig__btn"
+                  data-lightbox-src={m.src}
+                  data-lightbox-alt={m.alt[lang]}
+                  data-lightbox-caption={m.caption?.[lang] ?? m.alt[lang]}
+                  aria-label={t('journey.media.zoom').replace('{0}', m.alt[lang])}
+                >
+                  <img
+                    class="gfig__img"
+                    src={m.src}
+                    alt={m.alt[lang]}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </button>
+                {m.caption && <figcaption class="gfig__cap">{m.caption[lang]}</figcaption>}
+              </figure>
+            ))}
+            {videos.map((v) => (
+              <figure class="gfig gfig--video">
+                <video class="gfig__video" controls preload="metadata" playsinline>
+                  <source src={v.src} type="video/mp4" />
+                </video>
+                {v.caption && <figcaption class="gfig__cap">{v.caption[lang]}</figcaption>}
+              </figure>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    {
+      (prev || next) && (
+        <nav class="pager" aria-label={t('journey.title')}>
+          {prev ? (
+            <a class="pager__link" href={getRelativeLocaleUrl(lang, `/journey/${prev.id}`)}>
+              <span class="pager__k">{t('journey.prev')}</span>
+              <span class="pager__v">{prev.data.event[lang]}</span>
+            </a>
+          ) : (
+            <div />
+          )}
+          {next && (
+            <a
+              class="pager__link pager__link--end"
+              href={getRelativeLocaleUrl(lang, `/journey/${next.id}`)}
+            >
+              <span class="pager__k">{t('journey.next')}</span>
+              <span class="pager__v">{next.data.event[lang]}</span>
+            </a>
+          )}
+        </nav>
+      )
+    }
+
+    <dialog class="jbox" id="dossier-lightbox" aria-label={t('journey.lightbox.label')}>
+      <div class="jbox__bar">
+        <p class="jbox__cap" id="dbox-cap"></p>
+        <button type="button" class="jbox__close" id="dbox-close">
+          {t('journey.lightbox.close')}
+        </button>
+      </div>
+      <img class="jbox__img" id="dbox-img" src="" alt="" />
+    </dialog>
+  </article>
+</Base>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-dossier-root]');
+  const dialog = document.getElementById('dossier-lightbox') as HTMLDialogElement | null;
+  const img = document.getElementById('dbox-img') as HTMLImageElement | null;
+  const cap = document.getElementById('dbox-cap');
+  const closeBtn = document.getElementById('dbox-close');
+
+  if (root && dialog && img && cap) {
+    root.addEventListener('click', (e) => {
+      const trigger = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-lightbox-src]');
+      if (!trigger) return;
+      img.src = trigger.dataset.lightboxSrc ?? '';
+      img.alt = trigger.dataset.lightboxAlt ?? '';
+      cap.textContent = trigger.dataset.lightboxCaption ?? '';
+      dialog.showModal();
+    });
+
+    closeBtn?.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) dialog.close();
+    });
+  }
+</script>
+
+<style>
+  .dossier {
+    padding-block: var(--space-6) var(--space-8);
+  }
+
+  .dossier__back {
+    margin-block-end: var(--space-5);
+  }
+
+  .dossier__back-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-min);
+    font-family: var(--f-code);
+    font-size: var(--text-sm);
+    color: var(--blue-400);
+    text-decoration: none;
+    border-block-end: var(--hairline) solid transparent;
+  }
+
+  html[lang='ar'] .dossier__back-link {
+    font-family: var(--f-body-ar);
+  }
+
+  .dossier__back-link:hover {
+    color: var(--sulfur-300);
+    border-block-end-color: var(--sulfur-400);
+  }
+
+  .dossier__head {
+    border-block-end: var(--hairline) solid var(--line);
+    padding-block-end: var(--space-6);
+  }
+
+  .dossier__eyebrow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .dossier__date {
+    font-family: var(--f-code);
+    font-size: var(--text-sm);
+    color: var(--blue-400);
+  }
+
+  .dossier__phase {
+    font-family: var(--f-cond);
+    font-size: var(--text-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-stamp);
+    padding: var(--space-1) var(--space-2);
+    border: var(--hairline) solid var(--ink-600);
+    color: var(--text-lo);
+  }
+
+  .dossier__phase--certification {
+    border-color: var(--ok);
+    color: var(--ok);
+  }
+
+  .dossier__phase--competition {
+    border-color: var(--sulfur-500);
+    color: var(--sulfur-300);
+  }
+
+  .dossier__phase--community {
+    border-color: var(--blue-500);
+    color: var(--blue-400);
+  }
+
+  html[lang='ar'] .dossier__phase {
+    font-family: var(--f-body-ar);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .dossier__title {
+    margin: var(--space-4) 0 0;
+    font-size: var(--step-3);
+    line-height: var(--lh-display);
+  }
+
+  html[lang='ar'] .dossier__title {
+    line-height: var(--lh-ar-display);
+  }
+
+  .dossier__summary {
+    margin: var(--space-5) 0 0;
+    max-width: var(--measure-read);
+    font-size: var(--step-1);
+    color: var(--text);
+    line-height: var(--lh-body);
+  }
+
+  html[lang='ar'] .dossier__summary {
+    max-width: var(--measure-read-ar);
+    line-height: var(--lh-ar);
+  }
+
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+    gap: var(--hairline);
+    margin: var(--space-6) 0 0;
+    background: var(--line);
+    border: var(--hairline) solid var(--line);
+  }
+
+  .facts__cell {
+    background: var(--ink-800);
+    padding: var(--space-4) var(--space-5);
+  }
+
+  .facts__cell--wide {
+    grid-column: 1 / -1;
+  }
+
+  .facts__k {
+    font-family: var(--f-cond);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-label);
+    color: var(--text-lo);
+    margin-block-end: var(--space-2);
+  }
+
+  html[lang='ar'] .facts__k {
+    font-family: var(--f-body-ar);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .facts__v {
+    margin: 0;
+    color: var(--text-hi);
+    font-size: var(--step-0);
+  }
+
+  .facts__proof {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    font-family: var(--f-code);
+    font-size: var(--step--1);
+    color: var(--sulfur-300);
+    text-decoration: none;
+    border-block-end: var(--hairline) solid var(--sulfur-400);
+  }
+
+  .facts__proof:hover {
+    color: var(--sulfur-400);
+  }
+
+  .facts__verify {
+    font-size: var(--text-xs);
+    color: var(--blue-400);
+  }
+
+  .facts__links {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3) var(--space-5);
+  }
+
+  .facts__ext {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-min);
+    font-family: var(--f-code);
+    font-size: var(--text-sm);
+    color: var(--blue-400);
+    text-decoration: none;
+    border-block-end: var(--hairline) solid transparent;
+  }
+
+  html[lang='ar'] .facts__ext {
+    font-family: var(--f-body-ar);
+  }
+
+  .facts__ext:hover {
+    color: var(--sulfur-300);
+    border-block-end-color: var(--sulfur-400);
+  }
+
+  .insight {
+    margin-block-start: var(--space-6);
+    padding: var(--space-5);
+    background: var(--ink-800);
+    border: var(--hairline) solid var(--line);
+    border-inline-start: var(--rule-thickness) solid var(--sulfur-400);
+  }
+
+  .insight__k {
+    margin: 0 0 var(--space-2);
+    font-family: var(--f-cond);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-label);
+    color: var(--sulfur-400);
+  }
+
+  html[lang='ar'] .insight__k {
+    font-family: var(--f-body-ar);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .insight__body {
+    margin: 0;
+    max-width: var(--measure-read);
+    font-size: var(--step-0);
+    color: var(--text-hi);
+    line-height: var(--lh-body);
+  }
+
+  html[lang='ar'] .insight__body {
+    max-width: var(--measure-read-ar);
+    line-height: var(--lh-ar);
+  }
+
+  .dossier__sec {
+    margin-block-start: var(--space-7);
+    padding-block-start: var(--space-6);
+    border-block-start: var(--hairline) solid var(--line);
+  }
+
+  .dossier__sec-title {
+    margin: 0 0 var(--space-4);
+    font-size: var(--step-1);
+    color: var(--text-hi);
+  }
+
+  .skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .skills__item {
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--text);
+    background: var(--ink-800);
+    border: var(--hairline) solid var(--ink-600);
+    padding: var(--space-1) var(--space-3);
+  }
+
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+    gap: var(--space-4);
+  }
+
+  .gfig {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .gfig__btn {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: var(--hairline) solid var(--ink-600);
+    background: var(--ink-900);
+    cursor: zoom-in;
+    overflow: hidden;
+    transition: border-color var(--t-fast) var(--ease-out);
+  }
+
+  .gfig__btn:hover {
+    border-color: var(--sulfur-400);
+  }
+
+  .gfig__img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+  }
+
+  .gfig__video {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    background: var(--ink-900);
+    border: var(--hairline) solid var(--ink-600);
+  }
+
+  .gfig__cap {
+    font-size: var(--text-xs);
+    color: var(--text-lo);
+    line-height: var(--lh-lead);
+  }
+
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--hairline);
+    margin-block-start: var(--space-7);
+    background: var(--line);
+    border: var(--hairline) solid var(--line);
+  }
+
+  @media (min-width: 640px) {
+    .pager {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .pager__link {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-5);
+    background: var(--ink-900);
+    text-decoration: none;
+    transition: background-color var(--t-fast) var(--ease-out);
+  }
+
+  .pager__link:hover {
+    background: var(--ink-800);
+  }
+
+  .pager__link--end {
+    text-align: end;
+  }
+
+  .pager__k {
+    font-family: var(--f-cond);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-label);
+    color: var(--blue-400);
+  }
+
+  html[lang='ar'] .pager__k {
+    font-family: var(--f-body-ar);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .pager__v {
+    color: var(--text-hi);
+    font-weight: 500;
+    font-size: var(--step-0);
+  }
+
+  .jbox {
+    max-width: min(92vw, var(--wrap));
+    max-height: 90vh;
+    padding: var(--space-4);
+    background: var(--ink-900);
+    color: var(--text-hi);
+    border: var(--hairline) solid var(--ink-600);
+  }
+
+  .jbox::backdrop {
+    background: rgba(8, 10, 15, 0.88);
+  }
+
+  .jbox__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-block-end: var(--space-3);
+  }
+
+  .jbox__cap {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--text);
+  }
+
+  .jbox__close {
+    min-height: var(--touch-min);
+    padding: var(--space-2) var(--space-4);
+    background: var(--ink-800);
+    border: var(--hairline) solid var(--ink-600);
+    color: var(--text-hi);
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    cursor: pointer;
+  }
+
+  html[lang='ar'] .jbox__close {
+    font-family: var(--f-body-ar);
+  }
+
+  .jbox__close:hover {
+    border-color: var(--sulfur-400);
+    color: var(--sulfur-300);
+  }
+
+  .jbox__img {
+    display: block;
+    max-width: 100%;
+    max-height: 75vh;
+    margin-inline: auto;
+    object-fit: contain;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gfig__btn,
+    .pager__link {
+      transition: none;
+    }
+  }
+</style>
