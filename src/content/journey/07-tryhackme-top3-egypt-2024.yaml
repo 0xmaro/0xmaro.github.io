@@ -1,0 +1,61 @@
+date: 2024-10-24
+phase: competition
+org:
+  en: TryHackMe
+  ar: TryHackMe
+event:
+  en: TryHackMe Pre Security & Cyber Security 101 — Rank #3 Egypt · #138 Global
+  ar: إتمام مساري Pre Security وCyber Security 101 على TryHackMe — الترتيب #3 في مصر و#138 عالمياً
+summary:
+  en: Completed Pre Security (17 Oct 2024, 8h 33m, ID THM-BHXWYSAO1Y) and Cyber Security 101 (24 Oct 2024, 45h 13m, ID THM-E3UP97SDBW) across Linux, Windows, Active Directory, Cryptography, OWASP Top 10, Metasploit, Hydra, Gobuster, SQLMap, and SOC/DFIR fundamentals — reaching #3 on the Egypt monthly leaderboard and #138 globally (Top 1%).
+  ar: إتمام مسار Pre Security (17 أكتوبر 2024) ومسار Cyber Security 101 (24 أكتوبر 2024، 45 ساعة) في Linux وWindows وActive Directory والتشفير وOWASP Top 10 وأدوات الهجوم والدفاع — وتحقيق المركز #3 على مصر و#138 عالمياً (ضمن أفضل 1%).
+learned:
+  en: Drilling fundamentals daily at speed exposed how many web and privilege-escalation flaws come down to misconfigured defaults — and sent me straight back to audit my own production code.
+  ar: التمرين اليومي المكثّف كشف قد إيه أغلب ثغرات الويب وتصعيد الصلاحيات سببها إعدادات افتراضية غلط — وخلّاني أرجع أراجع الكود بتاعي في أنظمة الـ production.
+skills:
+  [
+    'Linux',
+    'Windows & AD',
+    'Cryptography',
+    'OWASP Top 10',
+    'Metasploit',
+    'SQLMap',
+    'Gobuster',
+    'Hydra',
+    'SOC Basics',
+  ]
+claim: 'Rank #3 Egypt · #138 Global (Top 1%)'
+proof: 'https://tryhackme.com/p/0xmaro'
+links:
+  - label:
+      en: TryHackMe Public Profile
+      ar: حساب TryHackMe الرسمي
+    url: 'https://tryhackme.com/p/0xmaro'
+media:
+  - type: image
+    src: '/journey/tryhackme-2024/cyber-security-101-cert.webp'
+    alt:
+      en: TryHackMe Cyber Security 101 Learning Path Certificate (ID THM-E3UP97SDBW, 24 Oct 2024)
+      ar: شهادة إتمام مسار Cyber Security 101 على TryHackMe بتاريخ 24 أكتوبر 2024
+    caption:
+      en: Cyber Security 101 Certificate — THM-E3UP97SDBW
+      ar: شهادة مسار Cyber Security 101 — THM-E3UP97SDBW
+  - type: image
+    src: '/journey/tryhackme-2024/pre-security-cert.webp'
+    alt:
+      en: TryHackMe Pre Security Learning Path Certificate (ID THM-BHXWYSAO1Y, 17 Oct 2024)
+      ar: شهادة إتمام مسار Pre Security على TryHackMe بتاريخ 17 أكتوبر 2024
+    caption:
+      en: Pre Security Certificate — THM-BHXWYSAO1Y
+      ar: شهادة مسار Pre Security — THM-BHXWYSAO1Y
+  - type: pdf
+    src: '/journey/tryhackme-2024/cyber-security-101-cert.pdf'
+    alt:
+      en: Cyber Security 101 Certificate PDF
+      ar: شهادة Cyber Security 101 (PDF)
+  - type: pdf
+    src: '/journey/tryhackme-2024/pre-security-cert.pdf'
+    alt:
+      en: Pre Security Certificate PDF
+      ar: شهادة Pre Security (PDF)
+featuredOnHome: true

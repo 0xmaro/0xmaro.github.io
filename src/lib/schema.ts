@@ -13,21 +13,91 @@ import type { Language } from '../i18n/ui';
 
 export type JsonLdNode = Record<string, unknown>;
 
+import type { Journey } from './proof';
+
 /**
  * Person — sameAs carries ONLY verified profile URLs (plan/08 §8.2: no proof,
- * no render). Both entries in site.social are owner-supplied; the proof gate
- * keeps a future blank value from shipping an empty or partial list.
+ * no render). Credentials and awards mirror the verified Journey collection so
+ * search engines and AI systems (SEO + GEO) can resolve Ammar Mohamed / 0xMARO
+ * with concrete, source-backed entities.
  */
 export const personSchema = (knowsAbout: string[] = []): JsonLdNode => ({
   '@context': 'https://schema.org',
   '@type': 'Person',
-  name: site.brand,
-  sameAs: [site.social.github, site.social.linkedin].filter(isRealProof),
-  // Derived from what the site actually documents, never asserted: the CWE ids
-  // of published writeups and the arsenal's capability domains. It grows with
-  // the content instead of being a claim someone has to maintain. `alumniOf`
-  // from §7.2 is deliberately absent — that is owner biography, not derivable.
+  name: 'Ammar Mohamed (0xMARO)',
+  alternateName: ['0xMARO', '0xmaro', 'Amar Mohamed', 'Ammar Mohammed'],
+  url: 'https://0xmaro.github.io/',
+  jobTitle: 'Application Security Engineer & Full-Stack Developer',
+  alumniOf: {
+    '@type': 'CollegeOrUniversity',
+    name: 'Benha University',
+  },
+  sameAs: Object.values(site.social).filter(isRealProof),
+  hasCredential: [
+    {
+      '@type': 'EducationalOccupationalCredential',
+      name: 'Certified Digital Forensics Professional (eCDFP)',
+      credentialCategory: 'certificate',
+      recognizedBy: { '@type': 'Organization', name: 'INE Security' },
+      url: 'https://certs.ine.com/611368b6-296f-4e8c-9a36-131b180b9970#acc.VeHPfYTG',
+    },
+    {
+      '@type': 'EducationalOccupationalCredential',
+      name: 'Certified AppSec Practitioner (CAP) — With Merit',
+      credentialCategory: 'certificate',
+      recognizedBy: { '@type': 'Organization', name: 'The SecOps Group' },
+      url: 'https://0xmaro.github.io/journey/cap-2025/certificate.webp',
+    },
+    {
+      '@type': 'EducationalOccupationalCredential',
+      name: 'Foundation Level Threat Intelligence Analyst (FTIA)',
+      credentialCategory: 'certificate',
+      recognizedBy: { '@type': 'Organization', name: 'arcX' },
+      url: 'https://arcx.io/verify-certificate?id=decd43f6509692e4c565b1f0741c5feb4f4195ae&k=31f0a80d820642609757baf50259d75b',
+    },
+    {
+      '@type': 'EducationalOccupationalCredential',
+      name: 'Cyber Security (120 hrs) & DFIR Bootcamp',
+      credentialCategory: 'certificate',
+      recognizedBy: { '@type': 'Organization', name: 'Information Technology Institute (ITI)' },
+      url: 'https://0xmaro.github.io/journey/iti-cybersecurity-2024/certificate.webp',
+    },
+  ],
+  award: [
+    'TryHackMe Cyber Security 101 — Rank #3 Egypt & #138 Global (Oct 2024)',
+    'CAT Reloaded CTF (CAT Station V.6) — 6th Place / 200+ Teams',
+    'Arab Security Cyber Wargames (ASCWG 2025) — Rank #19 / 400+ Teams',
+    'ICMTC 2025 (Military Technical College) — Top 25 Onsite Finalist',
+    'Official Technical Judge — Codeavour 5.0 International & Mechaverse League',
+  ],
   ...(knowsAbout.length > 0 ? { knowsAbout } : {}),
+});
+
+/**
+ * ProfilePage + ItemList for /journey (SEO + GEO): makes every verified
+ * milestone, certification, CTF rank, and teaching engagement machine-readable.
+ */
+export const journeySchema = (lang: Language, siteUrl: URL, stations: Journey[]): JsonLdNode => ({
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  name:
+    lang === 'ar'
+      ? 'المسار المهني والشهادات — 0xMARO'
+      : 'Journey, Certifications & CTF Track Record — 0xMARO',
+  url: new URL(getRelativeLocaleUrl(lang, '/journey'), siteUrl).href,
+  inLanguage: lang,
+  mainEntity: personSchema(),
+  hasPart: {
+    '@type': 'ItemList',
+    numberOfItems: stations.length,
+    itemListElement: stations.map((s, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: s.data.event[lang],
+      description: s.data.summary?.[lang] ?? s.data.learned[lang],
+      url: isRealProof(s.data.proof) ? s.data.proof : undefined,
+    })),
+  },
 });
 
 /**

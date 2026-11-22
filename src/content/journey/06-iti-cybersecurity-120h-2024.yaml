@@ -1,0 +1,42 @@
+date: 2024-08-15
+phase: training
+org:
+  en: Information Technology Institute (ITI) — Banha
+  ar: معهد تكنولوجيا المعلومات (ITI) — فرع بنها
+role:
+  en: Summer Cybersecurity Intern (120 hrs)
+  ar: متدرّب أمن سيبراني صيفي (120 ساعة)
+event:
+  en: ITI Summer Cybersecurity Internship — 120 Hours
+  ar: التدريب الصيفي المكثّف في الأمن السيبراني — ITI (120 ساعة)
+summary:
+  en: Completed a 120-hour intensive at ITI Banha (21 Jul – 15 Aug 2024) spanning Network Fundamentals (24h), Advanced Networking (24h), Cyber Security Essentials (18h), Ethical Hacking (24h), Palo Alto PCCET (12h), and Fortinet NSE4 (18h), with practical labs in XSS, SQLi, Access Control, Wireshark/Nmap, and VulnHub privilege escalation.
+  ar: إتمام برنامج تدريبي مكثّف لمدة 120 ساعة في معهد تكنولوجيا المعلومات (21 يوليو – 15 أغسطس 2024) شمل أساسيات ومتقدّم الشبكات (48 ساعة)، أساسيات الأمن السيبراني (18 ساعة)، الاختراق الأخلاقي (24 ساعة)، Palo Alto PCCET (12 ساعة)، وFortinet NSE4 (18 ساعة) مع تطبيقات عملية على XSS وSQLi وصلاحيات الوصول وVulnHub.
+learned:
+  en: Pairing enterprise firewall policy (Fortigate / Palo Alto) with hands-on exploitation on VulnHub made me see both sides of the wire — what a perimeter blocks and what slips straight through application logic.
+  ar: الجمع بين سياسات الجدران النارية (Fortigate وPalo Alto) والاستغلال العملي على VulnHub خلّاني أشوف الطرفين — إيه اللي الشبكة بتوقّفه، وإيه اللي بيعدّي من منطق التطبيق نفسه.
+skills:
+  [
+    'Networking',
+    'VLANs & Routing',
+    'Fortigate NSE4',
+    'Palo Alto PCCET',
+    'Ethical Hacking',
+    'Burp Suite',
+    'Metasploit',
+    'Nmap',
+    'Wireshark',
+    'VulnHub',
+  ]
+claim: '120-Hour Certified Completion · ITI Banha'
+proof: 'https://0xmaro.github.io/journey/iti-cybersecurity-2024/certificate.webp'
+media:
+  - type: image
+    src: '/journey/iti-cybersecurity-2024/certificate.webp'
+    alt:
+      en: Official ITI 120-hour Cyber Security certificate held outside Creativa Hub Banha (21 Jul – 15 Aug 2024)
+      ar: شهادة معهد تكنولوجيا المعلومات ITI لإتمام 120 ساعة أمن سيبراني أمام مركز إبداع مصر الرقمية
+    caption:
+      en: Official ITI Cyber Security (120 hrs) certificate — Aug 2024
+      ar: شهادة ITI الرسمية للأمن السيبراني (120 ساعة) — أغسطس 2024
+featuredOnHome: true

@@ -1,0 +1,30 @@
+date: 2022-09-23
+phase: foundation
+org:
+  en: Plug It In Company
+  ar: Plug It In Company
+role:
+  en: Embedded Systems Trainee
+  ar: متدرّب أنظمة مدمجة
+event:
+  en: Completed Arduino & Embedded Foundations Course
+  ar: إتمام كورس Arduino وأساسيات الأنظمة المدمجة
+summary:
+  en: First formal entry into hardware programming and microcontrollers — interfacing sensors, actuators, and serial logic in C/C++, laying the groundwork for later robotics and IoT builds.
+  ar: أول خطوة عملية في برمجة الهاردوير والمتحكمات الدقيقة — التعامل مع الحساسات والموتورات والمنطق البرمجي بلغة C/C++، واللي كانت الأساس لمشاريع الروبوتات والـ IoT بعدها.
+learned:
+  en: Code stops being abstract the moment a wrong pin state stalls a physical motor. Hardware debugging forced me to verify assumptions at the signal level.
+  ar: الكود بيبطّل يبقى نظري أول ما إشارة غلط توقّف موتور فعلي قدامك. تصحيح أخطاء الهاردوير علّمني أتحقّق من كل افتراض على مستوى الإشارة.
+skills: ['Arduino', 'Embedded C', 'C++', 'Sensors', 'Microcontrollers']
+claim: 'Certificate of Appreciation · 23 Sep 2022'
+proof: 'https://0xmaro.github.io/journey/arduino-2022/certificate.webp'
+media:
+  - type: image
+    src: '/journey/arduino-2022/certificate.webp'
+    alt:
+      en: Certificate of Appreciation for completing the Arduino course from Plug It In Company (23 Sep 2022)
+      ar: شهادة تقدير إتمام كورس Arduino من شركة Plug It In بتاريخ 23 سبتمبر 2022
+    caption:
+      en: Arduino course completion certificate — Sep 2022
+      ar: شهادة إتمام كورس Arduino — سبتمبر 2022
+featuredOnHome: false

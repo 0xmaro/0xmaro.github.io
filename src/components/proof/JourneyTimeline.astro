@@ -1,70 +1,401 @@
 ---
-import { isTodo, journeyTimeline, type Journey } from '../../lib/proof';
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import { isRealProof, isTodo, journeyTimeline, type Journey } from '../../lib/proof';
 import { useTranslations } from '../../i18n/utils';
-import type { Language } from '../../i18n/ui';
+import type { Language, UIKey } from '../../i18n/ui';
 
 /**
  * The journey timeline (plan/04 F-07), shared by /journey and the home page
  * §03. Stations come through `surfaceJourney()` — a claim without a real
  * proof URL, or a station still in TODO(copy), never renders.
- * `stations` lets a page that already surfaced the collection (to decide
- * whether to show the section at all) hand the list in instead of refetching.
+ *
+ * `compact` renders the home-page highlight reel (featuredOnHome stations)
+ * with a CTA to the full /journey showcase. Full mode adds summary metrics,
+ * phase filters, skills, media galleries (WebP + native video + PDF), and a
+ * native <dialog> lightbox.
  */
 interface Props {
   lang: Language;
   /** h2 on /journey, h3 under the home page's section heading. */
   level?: 2 | 3;
   stations?: Journey[];
+  compact?: boolean;
 }
 
-const { lang, level = 2, stations } = Astro.props;
+const { lang, level = 2, stations, compact = false } = Astro.props;
 const t = useTranslations(lang);
-const timeline = stations ?? (await journeyTimeline());
+const allStations = stations ?? (await journeyTimeline());
+const timeline = compact
+  ? allStations.filter((s) => s.data.featuredOnHome)
+  : [...allStations].reverse();
 const Heading = `h${level}` as const;
 
 const dateFmt = new Intl.DateTimeFormat(lang === 'ar' ? 'ar' : 'en-US', {
   year: 'numeric',
-  month: 'long',
+  month: 'short',
   numberingSystem: 'latn', // Western digits in technical context (CLAUDE.md rule 5)
 });
+
+type Phase = Journey['data']['phase'];
+const phaseOrder: Phase[] = ['certification', 'competition', 'training', 'community', 'foundation'];
+const phaseKey: Record<Phase, UIKey> = {
+  certification: 'journey.phase.certification',
+  competition: 'journey.phase.competition',
+  training: 'journey.phase.training',
+  community: 'journey.phase.community',
+  foundation: 'journey.phase.foundation',
+};
+
+const certCount = allStations.filter((s) => s.data.phase === 'certification').length;
+const ctfCount = allStations.filter((s) => s.data.phase === 'competition').length;
+const mediaCount = allStations.reduce((sum, s) => sum + s.data.media.length, 0);
+const journeyHref = getRelativeLocaleUrl(lang, '/journey');
 ---
 
 {
   timeline.length > 0 ? (
-    <ol class="journey">
-      {timeline.map((s) => (
-        <li class="journey__stop">
-          <div class="journey__mark" aria-hidden="true" />
-          <div class="journey__body">
-            {s.data.date && <p class="journey__date ltr">{dateFmt.format(s.data.date)}</p>}
-            <Heading class="journey__event">{s.data.event[lang]}</Heading>
-            {s.data.claim && (
-              <a class="journey__claim ltr" href={s.data.proof} rel="nofollow noreferrer">
-                {s.data.claim}
-                <span class="journey__verify">{t('proof.verify')}</span>
-              </a>
-            )}
-            {!isTodo(s.data.learned[lang]) && (
-              <p class="journey__learned">
-                <span class="journey__learned-k">{t('journey.learned')}</span>
-                {s.data.learned[lang]}
-              </p>
-            )}
+    <div class="jwrap" data-journey-root={compact ? undefined : 'full'}>
+      {!compact && (
+        <>
+          <dl class="jstats">
+            <div class="jstats__cell">
+              <dt class="jstats__l">{t('journey.stat.milestones')}</dt>
+              <dd class="jstats__n ltr">{allStations.length}</dd>
+            </div>
+            <div class="jstats__cell">
+              <dt class="jstats__l">{t('journey.stat.certs')}</dt>
+              <dd class="jstats__n ltr">{certCount}</dd>
+            </div>
+            <div class="jstats__cell">
+              <dt class="jstats__l">{t('journey.stat.ctfs')}</dt>
+              <dd class="jstats__n ltr">{ctfCount}</dd>
+            </div>
+            <div class="jstats__cell">
+              <dt class="jstats__l">{t('journey.stat.media')}</dt>
+              <dd class="jstats__n ltr">{mediaCount}</dd>
+            </div>
+          </dl>
+
+          <div class="jfilter" role="group" aria-label={t('journey.filter.label')}>
+            <button type="button" class="jfilter__btn" data-phase-filter="all" aria-pressed="true">
+              {t('journey.phase.all')}
+              <span class="jfilter__count ltr">{allStations.length}</span>
+            </button>
+            {phaseOrder.map((phase) => {
+              const count = allStations.filter((s) => s.data.phase === phase).length;
+              return (
+                count > 0 && (
+                  <button
+                    type="button"
+                    class="jfilter__btn"
+                    data-phase-filter={phase}
+                    aria-pressed="false"
+                  >
+                    {t(phaseKey[phase])}
+                    <span class="jfilter__count ltr">{count}</span>
+                  </button>
+                )
+              );
+            })}
           </div>
-        </li>
-      ))}
-    </ol>
+        </>
+      )}
+
+      <ol class:list={['journey', { 'journey--compact': compact }]}>
+        {timeline.map((s) => {
+          const images = s.data.media.filter((m) => m.type === 'image');
+          const videos = s.data.media.filter((m) => m.type === 'video');
+          const pdfs = s.data.media.filter((m) => m.type === 'pdf');
+          return (
+            <li id={compact ? undefined : s.id} class="journey__stop" data-phase={s.data.phase}>
+              <div
+                class:list={['journey__mark', `journey__mark--${s.data.phase}`]}
+                aria-hidden="true"
+              />
+              <article class="journey__card">
+                <header class="journey__meta">
+                  {s.data.date && (
+                    <time
+                      class="journey__date ltr"
+                      datetime={s.data.date.toISOString().slice(0, 10)}
+                    >
+                      {dateFmt.format(s.data.date)}
+                    </time>
+                  )}
+                  <span class:list={['journey__phase', `journey__phase--${s.data.phase}`]}>
+                    {t(phaseKey[s.data.phase])}
+                  </span>
+                  {s.data.org && <span class="journey__org">{s.data.org[lang]}</span>}
+                  {!compact && s.data.role && (
+                    <span class="journey__role">{s.data.role[lang]}</span>
+                  )}
+                </header>
+
+                <Heading class="journey__event">{s.data.event[lang]}</Heading>
+
+                {!compact && s.data.summary && (
+                  <p class="journey__summary">{s.data.summary[lang]}</p>
+                )}
+
+                {!isTodo(s.data.learned[lang]) && (
+                  <p class="journey__learned">
+                    <span class="journey__learned-k">{t('journey.learned')}</span>
+                    {s.data.learned[lang]}
+                  </p>
+                )}
+
+                {(s.data.claim || (!compact && (s.data.links.length > 0 || pdfs.length > 0))) && (
+                  <div class="journey__actions">
+                    {s.data.claim && isRealProof(s.data.proof) && (
+                      <a
+                        class="journey__claim ltr"
+                        href={s.data.proof}
+                        target="_blank"
+                        rel="nofollow noreferrer"
+                      >
+                        {s.data.claim}
+                        <span class="journey__verify">{t('proof.verify')}</span>
+                      </a>
+                    )}
+                    {!compact &&
+                      s.data.links
+                        .filter((l) => isRealProof(l.url))
+                        .map((l) => (
+                          <a
+                            class="journey__ext"
+                            href={l.url}
+                            target="_blank"
+                            rel="nofollow noreferrer"
+                          >
+                            {l.label[lang]} ↗
+                          </a>
+                        ))}
+                    {!compact &&
+                      pdfs.map((p) => (
+                        <a class="journey__ext" href={p.src} target="_blank" rel="noreferrer">
+                          {p.alt[lang]} · {t('journey.pdf.open')}
+                        </a>
+                      ))}
+                  </div>
+                )}
+
+                {!compact && s.data.skills.length > 0 && (
+                  <ul class="journey__skills ltr">
+                    {s.data.skills.map((skill) => (
+                      <li class="journey__skill">{skill}</li>
+                    ))}
+                  </ul>
+                )}
+
+                {!compact && (images.length > 0 || videos.length > 0) && (
+                  <div class="journey__media">
+                    {images.map((m) => (
+                      <figure class="jfig">
+                        <button
+                          type="button"
+                          class="jfig__btn"
+                          data-lightbox-src={m.src}
+                          data-lightbox-alt={m.alt[lang]}
+                          data-lightbox-caption={m.caption?.[lang] ?? m.alt[lang]}
+                          aria-label={t('journey.media.zoom').replace('{0}', m.alt[lang])}
+                        >
+                          <img
+                            class="jfig__img"
+                            src={m.src}
+                            alt={m.alt[lang]}
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        </button>
+                        {m.caption && <figcaption class="jfig__cap">{m.caption[lang]}</figcaption>}
+                      </figure>
+                    ))}
+                    {videos.map((v) => (
+                      <figure class="jfig jfig--video">
+                        <video class="jfig__video" controls preload="metadata" playsinline>
+                          <source src={v.src} type="video/mp4" />
+                        </video>
+                        {v.caption && <figcaption class="jfig__cap">{v.caption[lang]}</figcaption>}
+                      </figure>
+                    ))}
+                  </div>
+                )}
+              </article>
+            </li>
+          );
+        })}
+      </ol>
+
+      {compact && allStations.length > timeline.length && (
+        <div class="journey__more">
+          <a class="btn btn--primary" href={journeyHref}>
+            {t('journey.viewAll').replace('{0}', String(allStations.length))}
+          </a>
+        </div>
+      )}
+
+      {!compact && (
+        <dialog class="jbox" id="journey-lightbox" aria-label={t('journey.lightbox.label')}>
+          <div class="jbox__bar">
+            <p class="jbox__cap" id="jbox-cap" />
+            <button type="button" class="jbox__close" id="jbox-close">
+              {t('journey.lightbox.close')}
+            </button>
+          </div>
+          <img class="jbox__img" id="jbox-img" src="" alt="" />
+        </dialog>
+      )}
+    </div>
   ) : (
     <p class="journey__empty">{t('journey.empty')}</p>
   )
 }
 
+<script>
+  const root = document.querySelector<HTMLElement>('[data-journey-root="full"]');
+  if (root) {
+    // Phase filtering
+    const buttons = root.querySelectorAll<HTMLButtonElement>('[data-phase-filter]');
+    const stops = root.querySelectorAll<HTMLLIElement>('.journey__stop');
+    for (const btn of buttons) {
+      btn.addEventListener('click', () => {
+        const phase = btn.dataset.phaseFilter ?? 'all';
+        for (const b of buttons) b.setAttribute('aria-pressed', String(b === btn));
+        for (const stop of stops) {
+          const match = phase === 'all' || stop.dataset.phase === phase;
+          stop.hidden = !match;
+        }
+      });
+    }
+
+    // Native <dialog> lightbox
+    const dialog = document.getElementById('journey-lightbox') as HTMLDialogElement | null;
+    const img = document.getElementById('jbox-img') as HTMLImageElement | null;
+    const cap = document.getElementById('jbox-cap');
+    const closeBtn = document.getElementById('jbox-close');
+
+    if (dialog && img && cap) {
+      root.addEventListener('click', (e) => {
+        const trigger = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-lightbox-src]');
+        if (!trigger) return;
+        img.src = trigger.dataset.lightboxSrc ?? '';
+        img.alt = trigger.dataset.lightboxAlt ?? '';
+        cap.textContent = trigger.dataset.lightboxCaption ?? '';
+        dialog.showModal();
+      });
+
+      closeBtn?.addEventListener('click', () => dialog.close());
+      dialog.addEventListener('click', (e) => {
+        if (e.target === dialog) dialog.close();
+      });
+    }
+  }
+</script>
+
 <style>
+  .jstats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--hairline);
+    margin: var(--space-6) 0 0;
+    background: var(--line);
+    border: var(--hairline) solid var(--line);
+  }
+
+  @media (min-width: 640px) {
+    .jstats {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .jstats__cell {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: var(--space-1);
+    background: var(--ink-900);
+    padding: var(--space-4);
+  }
+
+  .jstats__n {
+    margin: 0;
+    font-family: var(--f-code);
+    font-size: var(--step-2);
+    font-weight: 600;
+    color: var(--sulfur-400);
+    line-height: var(--lh-display);
+  }
+
+  .jstats__l {
+    font-family: var(--f-cond);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-label);
+    color: var(--text-lo);
+  }
+
+  html[lang='ar'] .jstats__l {
+    font-family: var(--f-body-ar);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .jfilter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-block-start: var(--space-5);
+  }
+
+  .jfilter__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--touch-min);
+    padding: var(--space-2) var(--space-4);
+    background: var(--ink-800);
+    border: var(--hairline) solid var(--ink-600);
+    border-radius: var(--radius);
+    color: var(--text-lo);
+    font-family: var(--f-cond);
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-label);
+    cursor: pointer;
+    transition:
+      border-color var(--t-fast) var(--ease-out),
+      color var(--t-fast) var(--ease-out),
+      background-color var(--t-fast) var(--ease-out);
+  }
+
+  html[lang='ar'] .jfilter__btn {
+    font-family: var(--f-body-ar);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .jfilter__btn:hover {
+    border-color: var(--sulfur-400);
+    color: var(--text-hi);
+  }
+
+  .jfilter__btn[aria-pressed='true'] {
+    background: var(--sulfur-400);
+    border-color: var(--sulfur-400);
+    color: var(--ink-900);
+    font-weight: 600;
+  }
+
+  .jfilter__count {
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    opacity: 0.8;
+  }
+
   .journey {
-    margin: var(--space-7) 0 0;
+    margin: var(--space-6) 0 0;
     padding: 0;
     list-style: none;
-    border-inline-start: var(--hairline) solid var(--line);
+    border-inline-start: var(--hairline) solid var(--ink-600);
   }
 
   .journey__empty {
@@ -75,75 +406,162 @@ const dateFmt = new Intl.DateTimeFormat(lang === 'ar' ? 'ar' : 'en-US', {
 
   .journey__stop {
     position: relative;
-    padding-inline-start: var(--space-6);
-    padding-block-end: var(--space-7);
+    padding-inline-start: var(--space-5);
+    padding-block-end: var(--space-6);
+  }
+
+  .journey__stop[hidden] {
+    display: none;
   }
 
   .journey__stop:last-child {
-    padding-block-end: var(--space-4);
+    padding-block-end: var(--space-3);
   }
 
   .journey__mark {
     position: absolute;
     inset-inline-start: 0;
     margin-inline-start: calc(-1 * var(--space-1));
-    top: var(--space-2);
+    top: var(--space-4);
     width: var(--space-2);
     height: var(--space-2);
     border-radius: 50%;
     background: var(--ink-900);
-    border: var(--hairline) solid var(--sulfur-400);
+    border: var(--rule-thickness) solid var(--sulfur-400);
+  }
+
+  .journey__mark--certification,
+  .journey__mark--competition {
+    background: var(--sulfur-400);
+  }
+
+  .journey__mark--foundation,
+  .journey__mark--training {
+    border-color: var(--blue-400);
+  }
+
+  .journey__card {
+    background: var(--ink-800);
+    border: var(--hairline) solid var(--line);
+    padding: var(--space-5);
+  }
+
+  .journey--compact .journey__card {
+    background: transparent;
+    border: 0;
+    padding: var(--space-1) 0 0;
+  }
+
+  .journey--compact .journey__mark {
+    top: var(--space-2);
+  }
+
+  .journey__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+    margin-block-end: var(--space-3);
   }
 
   .journey__date {
-    margin: 0 0 var(--space-2);
     font-family: var(--f-code);
     font-size: var(--text-xs);
     color: var(--blue-400);
   }
 
+  .journey__phase {
+    font-family: var(--f-cond);
+    font-size: var(--text-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-stamp);
+    padding: var(--space-1) var(--space-2);
+    border: var(--hairline) solid var(--ink-600);
+    color: var(--text-lo);
+  }
+
+  .journey__phase--certification {
+    border-color: var(--ok);
+    color: var(--ok);
+  }
+
+  .journey__phase--competition {
+    border-color: var(--sulfur-500);
+    color: var(--sulfur-300);
+  }
+
+  .journey__phase--community {
+    border-color: var(--blue-500);
+    color: var(--blue-400);
+  }
+
+  html[lang='ar'] .journey__phase {
+    font-family: var(--f-body-ar);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .journey__org {
+    font-size: var(--text-sm);
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .journey__role {
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--text-dim);
+  }
+
+  html[lang='ar'] .journey__role {
+    font-family: var(--f-body-ar);
+  }
+
   .journey__event {
     margin: 0;
-    font-size: var(--step-0);
+    font-size: var(--step-1);
     font-weight: 600;
     font-family: var(--f-display);
     letter-spacing: var(--ls-display);
     color: var(--text-hi);
-    line-height: var(--lh-body);
+    line-height: var(--lh-lead);
+  }
+
+  .journey--compact .journey__event {
+    font-size: var(--step-0);
   }
 
   html[lang='ar'] .journey__event {
     font-family: var(--f-body-ar);
     letter-spacing: 0;
+    line-height: var(--lh-ar-display);
   }
 
-  .journey__claim {
-    display: inline-flex;
-    align-items: baseline;
-    gap: var(--space-2);
-    margin-block-start: var(--space-3);
-    font-family: var(--f-code);
-    font-size: var(--step--1);
-    color: var(--sulfur-300);
-    text-decoration: none;
-    border-block-end: var(--hairline) solid var(--sulfur-400);
+  .journey__summary {
+    margin: var(--space-3) 0 0;
+    max-width: var(--measure-read);
+    color: var(--text);
+    font-size: var(--step-0);
+    line-height: var(--lh-body);
   }
 
-  .journey__claim:hover {
-    color: var(--sulfur-400);
-  }
-
-  .journey__verify {
-    font-size: var(--text-2xs);
-    color: var(--blue-400);
+  html[lang='ar'] .journey__summary {
+    max-width: var(--measure-read-ar);
+    line-height: var(--lh-ar);
   }
 
   .journey__learned {
-    margin: var(--space-3) 0 0;
-    max-width: var(--measure-lead);
+    margin: var(--space-4) 0 0;
+    padding-inline-start: var(--space-4);
+    border-inline-start: var(--rule-thickness) solid var(--blue-500);
+    max-width: var(--measure-read);
     color: var(--text-lo);
     line-height: var(--lh-body);
     font-size: var(--step--1);
+  }
+
+  html[lang='ar'] .journey__learned {
+    line-height: var(--lh-ar);
   }
 
   .journey__learned-k {
@@ -160,5 +578,195 @@ const dateFmt = new Intl.DateTimeFormat(lang === 'ar' ? 'ar' : 'en-US', {
     font-family: var(--f-body-ar);
     text-transform: none;
     letter-spacing: 0;
+  }
+
+  .journey__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-5);
+    margin-block-start: var(--space-4);
+  }
+
+  .journey__claim {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    min-height: var(--touch-min);
+    padding-block: var(--space-2);
+    font-family: var(--f-code);
+    font-size: var(--step--1);
+    color: var(--sulfur-300);
+    text-decoration: none;
+    border-block-end: var(--hairline) solid var(--sulfur-400);
+  }
+
+  .journey__claim:hover {
+    color: var(--sulfur-400);
+  }
+
+  .journey__verify {
+    font-size: var(--text-2xs);
+    color: var(--blue-400);
+  }
+
+  .journey__ext {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-min);
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--blue-400);
+    text-decoration: none;
+    border-block-end: var(--hairline) solid transparent;
+  }
+
+  html[lang='ar'] .journey__ext {
+    font-family: var(--f-body-ar);
+  }
+
+  .journey__ext:hover {
+    color: var(--sulfur-300);
+    border-block-end-color: var(--sulfur-400);
+  }
+
+  .journey__skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: var(--space-4) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .journey__skill {
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    color: var(--text-lo);
+    background: var(--ink-900);
+    border: var(--hairline) solid var(--line);
+    padding: var(--space-1) var(--space-2);
+  }
+
+  .journey__media {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(210px, 100%), 1fr));
+    gap: var(--space-3);
+    margin-block-start: var(--space-5);
+    padding-block-start: var(--space-4);
+    border-block-start: var(--hairline) solid var(--line);
+  }
+
+  .jfig {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .jfig--video {
+    grid-column: span 1;
+  }
+
+  .jfig__btn {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: var(--hairline) solid var(--ink-600);
+    background: var(--ink-900);
+    cursor: zoom-in;
+    overflow: hidden;
+    transition: border-color var(--t-fast) var(--ease-out);
+  }
+
+  .jfig__btn:hover {
+    border-color: var(--sulfur-400);
+  }
+
+  .jfig__img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+  }
+
+  .jfig__video {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    background: var(--ink-900);
+    border: var(--hairline) solid var(--ink-600);
+  }
+
+  .jfig__cap {
+    font-size: var(--text-xs);
+    color: var(--text-dim);
+    line-height: var(--lh-lead);
+  }
+
+  .journey__more {
+    margin-block-start: var(--space-5);
+  }
+
+  .jbox {
+    max-width: min(92vw, var(--wrap));
+    max-height: 90vh;
+    padding: var(--space-4);
+    background: var(--ink-900);
+    color: var(--text-hi);
+    border: var(--hairline) solid var(--ink-600);
+  }
+
+  .jbox::backdrop {
+    background: rgba(8, 10, 15, 0.88);
+  }
+
+  .jbox__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-block-end: var(--space-3);
+  }
+
+  .jbox__cap {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--text);
+  }
+
+  .jbox__close {
+    min-height: var(--touch-min);
+    padding: var(--space-2) var(--space-4);
+    background: var(--ink-800);
+    border: var(--hairline) solid var(--ink-600);
+    color: var(--text-hi);
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    cursor: pointer;
+  }
+
+  html[lang='ar'] .jbox__close {
+    font-family: var(--f-body-ar);
+  }
+
+  .jbox__close:hover {
+    border-color: var(--sulfur-400);
+    color: var(--sulfur-300);
+  }
+
+  .jbox__img {
+    display: block;
+    max-width: 100%;
+    max-height: 75vh;
+    margin-inline: auto;
+    object-fit: contain;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .jfilter__btn,
+    .jfig__btn {
+      transition: none;
+    }
   }
 </style>

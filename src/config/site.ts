@@ -7,9 +7,14 @@ export const site = {
   repo: 'https://github.com/0xmaro/0xmaro.github.io',
   social: {
     // Owner-supplied and verified (plan/05 Phase 5): the sameAs allowlist for
-    // JSON-LD and the proof-gated footer/About links. No third profile.
+    // JSON-LD and the proof-gated footer/About links.
     github: 'https://github.com/0xmaro',
     linkedin: 'https://www.linkedin.com/in/amar-mohamed-0xmaro',
+    tryhackme: 'https://tryhackme.com/p/0xmaro',
+    x: 'https://x.com/0_xmaro',
+    youtube: 'https://www.youtube.com/@0xmaro',
+    instagram: 'https://www.instagram.com/its_0xmaro',
+    facebook: 'https://www.facebook.com/0xmaro',
   },
 } as const;
 
@@ -33,7 +38,7 @@ export const sections = {
   projects: { enabled: true, inNav: false },
   labs: { enabled: true, inNav: false },
   arsenal: { enabled: true, inNav: true },
-  journey: { enabled: true, inNav: false },
+  journey: { enabled: true, inNav: true },
   uses: { enabled: true, inNav: false },
   hire: { enabled: false, inNav: false },
   about: { enabled: true, inNav: true },

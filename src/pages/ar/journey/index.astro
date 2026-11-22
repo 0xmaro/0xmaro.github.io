@@ -1,11 +1,16 @@
 ---
 import Base from '../../../layouts/Base.astro';
 import Seo from '../../../components/Seo.astro';
+import JsonLd from '../../../components/seo/JsonLd.astro';
+import Rail from '../../../components/Rail.astro';
 import JourneyTimeline from '../../../components/proof/JourneyTimeline.astro';
 import { useTranslations } from '../../../i18n/utils';
+import { journeyTimeline } from '../../../lib/proof';
+import { breadcrumbSchema, journeySchema } from '../../../lib/schema';
 
 const lang = 'ar';
 const t = useTranslations(lang);
+const stations = await journeyTimeline();
 ---
 
 <Base lang={lang} title={`${t('journey.title')} — 0xMARO`} description={t('journey.desc')}>
@@ -13,18 +18,26 @@ const t = useTranslations(lang);
     slot="head"
     lang={lang}
     path="/journey"
-    robots="noindex"
     title={`${t('journey.title')} — 0xMARO`}
     description={t('journey.desc')}
   />
-  <div class="wrap archive">
+  <JsonLd slot="head" data={journeySchema(lang, Astro.site!, stations)} />
+  <JsonLd
+    slot="head"
+    data={breadcrumbSchema(lang, Astro.site!, [
+      { name: t('breadcrumb.home'), path: '/' },
+      { name: t('journey.title') },
+    ])}
+  />
+  <Rail />
+  <div class="wrap archive" data-pagefind-body>
     <header class="archive__head">
       <span class="archive__eyebrow ltr">{t('journey.eyebrow')}</span>
       <h1 class="archive__title">{t('journey.title')}</h1>
       <p class="archive__desc">{t('journey.desc')}</p>
     </header>
 
-    <JourneyTimeline lang={lang} />
+    <JourneyTimeline lang={lang} stations={stations} />
   </div>
 </Base>
 

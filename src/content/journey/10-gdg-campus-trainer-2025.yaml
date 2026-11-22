@@ -1,0 +1,101 @@
+date: 2025-02-01
+phase: community
+org:
+  en: GDG on Campus — Benha University & CIC
+  ar: GDG on Campus — جامعة بنها والجامعة الكندية (CIC)
+role:
+  en: Cybersecurity Technical Trainer & Core Team
+  ar: مدرّب أمن سيبراني وعضو الفريق التقني الأساسي
+event:
+  en: Cybersecurity Instructor & CTF Author — GDG on Campus (Benha & CIC)
+  ar: مدرّب أمن سيبراني ومطوّر تحديات CTF — GDG on Campus (بنها وCIC)
+summary:
+  en: Returned to the community as a volunteer trainer across two campuses. At GDG Benha (24/25 Core Team), delivered a 5-day hands-on bootcamp (Linux, Network Security, SQLi/XSS/Command Injection, Crypto & Forensics), authored vulnerable PHP web challenges, co-organized a CTF on WARZONE with Cyber Cohesion, and hosted an exclusive Blue Team/DFIR session with Islam Mostafa (Senior DFIR Engineer at EG-CERT, GCFA, Black Hat MEA speaker). Simultaneously served as Track Instructor for the 27-week Cybersecurity Track at GDG on Campus CIC.
+  ar: 'التطوّع لتدريب الطلاب وبناء مجتمع أمن سيبراني عملي في جامعتين: في GDG جامعة بنها قدّمت معسكراً عملياً من 5 أيام (Linux، أمن الشبكات، SQLi وXSS وCommand Injection، التشفير والتحليل الجنائي)، وبنيت تحديات ويب حقيقية على GitHub، وشاركت في تنظيم مسابقة CTF على منصة WARZONE مع Cyber Cohesion، واستضفت جلسة Blue Team وDFIR مع م. إسلام مصطفى (EG-CERT وGCFA ومتحدث Black Hat MEA). وبالتوازي شاركت كـ Track Instructor لمسار الأمن السيبراني (27 أسبوعاً) في GDG الجامعة الكندية (CIC).'
+learned:
+  en: Writing vulnerable challenges for students to exploit — and explaining why the fix works — is the fastest stress-test for your own understanding of application security.
+  ar: تصميم تحديات مصابة بالثغرات عشان الطلاب يستغلوها — وشرح ليه الإصلاح بيقفلها فعلاً — هو أقوى اختبار حقيقي لفهمك لأمن التطبيقات.
+skills:
+  [
+    'Technical Training',
+    'CTF Authoring',
+    'Web Exploitation',
+    'SQLi',
+    'XSS',
+    'Command Injection',
+    'PHP',
+    'Community Leadership',
+  ]
+claim: 'GDG Benha BootCamp 24/25 Technical & GDG CIC Track Instructor'
+proof: 'https://github.com/0xmaro/GDG_Benha_Bootcamp_web_challenge'
+links:
+  - label:
+      en: Bootcamp Web Challenges (GitHub)
+      ar: تحديات الويب على GitHub
+    url: 'https://github.com/0xmaro/GDG_Benha_Bootcamp_web_challenge'
+media:
+  - type: image
+    src: '/journey/gdg-campus-2025/benha-certificate.webp'
+    alt:
+      en: Certificate of Completion for remarkable contribution as Cyber Security Technical during GDG on Campus Benha BootCamp 24/25
+      ar: شهادة تقدير للمساهمة كـ Cyber Security Technical خلال معسكر GDG جامعة بنها 24/25
+    caption:
+      en: GDG on Campus Benha — Cyber Security Technical Certificate
+      ar: شهادة الفريق التقني للأمن السيبراني — GDG جامعة بنها
+  - type: image
+    src: '/journey/gdg-campus-2025/cic-instructor-poster.webp'
+    alt:
+      en: GDG on Campus Canadian International College 2025 Cybersecurity Track Instructor announcement poster featuring Ammar Mohamed
+      ar: بوستر الإعلان عن عمّار محمد كـ Track Instructor لمسار الأمن السيبراني في GDG الجامعة الكندية 2025
+    caption:
+      en: GDG on Campus CIC — Cybersecurity Track Instructor (27-week track)
+      ar: GDG الجامعة الكندية — مدرّب مسار الأمن السيبراني (27 أسبوعاً)
+  - type: image
+    src: '/journey/gdg-campus-2025/teaching-members.webp'
+    alt:
+      en: Teaching and mentoring students hands-on during the GDG Benha Cybersecurity Bootcamp
+      ar: أثناء شرح وتوجيه المشاركين عملياً في معسكر GDG بنها للأمن السيبراني
+    caption:
+      en: Delivering hands-on labs to GDG Benha members
+      ar: تقديم التطبيق العملي لأعضاء GDG بنها
+  - type: video
+    src: '/journey/gdg-campus-2025/recognition.mp4'
+    alt:
+      en: Recognition video from GDG on Campus Benha University
+      ar: فيديو التكريم في GDG جامعة بنها
+    caption:
+      en: Community recognition at GDG Benha
+      ar: لحظة التكريم في GDG جامعة بنها
+  - type: image
+    src: '/journey/gdg-campus-2025/ctf-dashboard.webp'
+    alt:
+      en: WARZONE CTF competition dashboard organized with Cyber Cohesion
+      ar: لوحة بداية مسابقة الـ CTF المنظمة بالتعاون مع Cyber Cohesion
+    caption:
+      en: Bootcamp CTF kickoff on WARZONE
+      ar: انطلاق مسابقة الـ CTF على منصة WARZONE
+  - type: image
+    src: '/journey/gdg-campus-2025/ctf-challenges.webp'
+    alt:
+      en: Custom CTF challenges developed for the GDG Benha Bootcamp across Web, Network, Crypto, and Forensics
+      ar: تحديات الـ CTF المصممة لمعسكر GDG بنها في الويب والشبكات والتشفير والتحليل الجنائي
+    caption:
+      en: Authored challenges across Web, Network, Crypto & DFIR
+      ar: التحديات المصممة في الويب والشبكات والتشفير والتحليل الجنائي
+  - type: image
+    src: '/journey/gdg-campus-2025/security-core-team.webp'
+    alt:
+      en: GDG Benha Cybersecurity Core Technical Team group photo
+      ar: صورة جماعية مع الفريق التقني الأساسي للأمن السيبراني في GDG بنها
+    caption:
+      en: GDG Benha Cybersecurity Core Team
+      ar: الفريق التقني الأساسي للأمن السيبراني — GDG بنها
+  - type: image
+    src: '/journey/gdg-campus-2025/community-event.webp'
+    alt:
+      en: Full community gathering at GDG on Campus Benha University
+      ar: صورة جماعية مع مجتمع GDG جامعة بنها
+    caption:
+      en: GDG on Campus Benha community
+      ar: مجتمع GDG جامعة بنها
+featuredOnHome: true

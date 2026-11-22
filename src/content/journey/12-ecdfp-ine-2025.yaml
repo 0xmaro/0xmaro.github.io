@@ -1,0 +1,47 @@
+date: 2025-04-29
+phase: certification
+org:
+  en: INE Security
+  ar: INE Security
+event:
+  en: Certified Digital Forensics Professional (eCDFP) — INE Security
+  ar: شهادة محترف التحليل الجنائي الرقمي المعتمد (eCDFP) من INE Security
+summary:
+  en: Passed INE's hands-on eCDFP certification exam (ID 141476433) covering digital forensics fundamentals, forensic evidence acquisition, disk & file system examination, Windows & network forensics, log analysis, timeline reconstruction, and incident reporting.
+  ar: اجتياز امتحان شهادة eCDFP العملية من INE Security (رقم الاعتماد 141476433)، شاملة جمع الأدلة الجنائية الرقمية، فحص الأقراص وأنظمة الملفات، التحليل الجنائي لـ Windows والشبكات، تحليل السجلات، إعادة بناء الخط الزمني للحوادث، وكتابة التقارير.
+learned:
+  en: Blue-team forensics made me a sharper AppSec engineer — knowing exactly what artifacts survive an attack makes it obvious what telemetry an application must log from day one.
+  ar: التحليل الجنائي خلّاني مهندس AppSec أدق — لما تعرف بالظبط إيه الآثار اللي بتفضل بعد أي اختراق، بتعرف فوراً إيه السجلات اللي لازم التطبيق يوثّقها من أول يوم.
+skills:
+  [
+    'Digital Forensics',
+    'Data Acquisition',
+    'Disk & File Systems',
+    'Windows Forensics',
+    'Network Forensics',
+    'Log Analysis',
+    'Timeline Reconstruction',
+    'Reporting',
+  ]
+claim: 'Verified Credential · INE eCDFP ID 141476433'
+proof: 'https://certs.ine.com/611368b6-296f-4e8c-9a36-131b180b9970#acc.VeHPfYTG'
+links:
+  - label:
+      en: Verify on INE Credentials
+      ar: تحقّق من الشهادة على موقع INE
+    url: 'https://certs.ine.com/611368b6-296f-4e8c-9a36-131b180b9970#acc.VeHPfYTG'
+media:
+  - type: image
+    src: '/journey/ecdfp-2025/certificate.webp'
+    alt:
+      en: INE Security Certified Digital Forensics Professional (eCDFP) certificate awarded to Amar Mohamed on April 29, 2025 (ID 141476433)
+      ar: شهادة eCDFP من INE Security الصادرة بتاريخ 29 أبريل 2025 برقم اعتماد 141476433
+    caption:
+      en: INE Certified Digital Forensics Professional (eCDFP) — Apr 2025
+      ar: شهادة محترف التحليل الجنائي الرقمي eCDFP — أبريل 2025
+  - type: pdf
+    src: '/journey/ecdfp-2025/certificate.pdf'
+    alt:
+      en: Official eCDFP Certificate PDF
+      ar: نسخة PDF من شهادة eCDFP الرسمية
+featuredOnHome: true

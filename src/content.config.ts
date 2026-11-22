@@ -191,15 +191,37 @@ const labs = defineCollection({
  * Narrative-only stations render without one. `date` is optional so structure
  * can exist before real dates are supplied — dated stations sort first.
  */
+const journeyMedia = z.object({
+  type: z.enum(['image', 'video', 'pdf']),
+  src: z.string().min(1),
+  alt: l10nText,
+  caption: l10nText.optional(),
+});
+
+const journeyLink = z.object({
+  label: l10nText,
+  url: z.string().min(1),
+});
+
 const journey = defineCollection({
   loader: glob({ pattern: '**/*.yaml', base: './src/content/journey' }),
   schema: () =>
     z.object({
       date: z.coerce.date().optional(),
+      phase: z
+        .enum(['foundation', 'training', 'community', 'certification', 'competition'])
+        .default('training'),
+      org: l10nText.optional(),
+      role: l10nText.optional(),
       event: l10nText,
+      summary: l10nText.optional(),
       learned: l10nText,
+      skills: z.array(z.string()).default([]),
       claim: z.string().default(''), // rank / cert / score; proof required when set
       proof: z.string().default(''),
+      links: z.array(journeyLink).default([]),
+      media: z.array(journeyMedia).default([]),
+      featuredOnHome: z.boolean().default(false),
     }),
 });
 

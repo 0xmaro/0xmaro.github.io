@@ -1,0 +1,38 @@
+date: 2025-02-25
+phase: certification
+org:
+  en: The SecOps Group
+  ar: The SecOps Group
+event:
+  en: Certified AppSec Practitioner (CAP) — Passed With Merit
+  ar: اجتياز شهادة ممارس أمن التطبيقات المعتمد (CAP) بتقدير امتياز (With Merit)
+summary:
+  en: Earned the Certified AppSec Practitioner (CAP) certification With Merit (Exam v2.01, ID 9706681), validating deep practical command over Web Application Security (CSRF, SOP/CORS, XXE, SSTI, IDOR, Path Traversal, Clickjacking), Authentication & Session Management, Injection (SQLi, OS Command Injection, Log4j), SSRF, File Upload flaws, Race Conditions, and TLS/Cryptographic misconfigurations.
+  ar: الحصول على شهادة Certified AppSec Practitioner (CAP) بتقدير With Merit من The SecOps Group (رقم الشهادة 9706681)، وتغطي عملياً أمن تطبيقات الويب (CSRF وCORS وXXE وSSTI وIDOR وPath Traversal)، أمن المصادقة والجلسات، هجمات الحقن (SQLi وحقن الأوامر وLog4j)، وSSRF ورفع الملفات وRace Conditions وإعدادات التشفير وTLS.
+learned:
+  en: Going through every OWASP and AppSec failure mode systematically made me audit my own auth, session, and file-upload code — and fix six real flaws I had previously missed.
+  ar: المرور المنهجي على أنماط فشل أمن التطبيقات خلّاني أراجع كود المصادقة والجلسات ورفع الملفات في مشاريعي — وأصلّح ثغرات حقيقية ما كنتش شايفها قبل كده.
+skills:
+  [
+    'Application Security',
+    'OWASP Top 10',
+    'IDOR',
+    'SSRF',
+    'SSTI',
+    'XXE',
+    'CSRF & CORS',
+    'Auth & Sessions',
+    'TLS & Crypto',
+  ]
+claim: 'Passed With Merit · Cert ID 9706681 (25 Feb 2025)'
+proof: 'https://0xmaro.github.io/journey/cap-2025/certificate.webp'
+media:
+  - type: image
+    src: '/journey/cap-2025/certificate.webp'
+    alt:
+      en: The SecOps Group Certified AppSec Practitioner (CAP) With Merit certificate awarded to Ammar Mohammed on 25 Feb 2025 (ID 9706681)
+      ar: شهادة Certified AppSec Practitioner (CAP) بتقدير With Merit من The SecOps Group بتاريخ 25 فبراير 2025
+    caption:
+      en: Certified AppSec Practitioner (CAP) With Merit — ID 9706681
+      ar: شهادة CAP بتقدير امتياز — رقم الاعتماد 9706681
+featuredOnHome: true

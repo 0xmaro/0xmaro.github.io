@@ -1,0 +1,40 @@
+date: 2024-11-16
+phase: training
+org:
+  en: ITI × CyberTalents
+  ar: معهد تكنولوجيا المعلومات (ITI) × CyberTalents
+role:
+  en: DFIR Bootcamp Graduate
+  ar: خريج معسكر التحليل الجنائي والاستجابة للحوادث
+event:
+  en: ITI × CyberTalents DFIR Bootcamp (2024)
+  ar: معسكر التحليل الجنائي الرقمي والاستجابة للحوادث (DFIR) — ITI × CyberTalents
+summary:
+  en: Completed the Digital Forensics and Incident Response Bootcamp for Egyptian Undergraduates (25 Oct – 16 Nov 2024, Cert No. 00000002028) covering forensic imaging with FTK Imager, Windows & Linux artifact analysis, memory and network forensics with Wireshark, MITRE ATT&CK mapping, and Splunk SIEM detection use cases.
+  ar: إتمام معسكر التحليل الجنائي الرقمي والاستجابة للحوادث (25 أكتوبر – 16 نوفمبر 2024، رقم الشهادة 00000002028) بالتطبيق العملي على FTK Imager، تحليل آثار Windows وLinux، تحليل الذاكرة والشبكات بـ Wireshark، خريطة MITRE ATT&CK، وبناء حالات كشف على Splunk SIEM.
+learned:
+  en: Learned to read a compromised host as a coherent timeline of artifacts rather than a noisy pile of alerts — which directly shaped how I structure root-cause analysis in every writeup.
+  ar: اتعلمت أقرأ الجهاز المخترق كخط زمني متماسك من الأدلة بدل قائمة تنبيهات عشوائية — وده شكّل مباشرة طريقتي في كتابة تحليل السبب الجذري في كل مقال.
+skills:
+  [
+    'Digital Forensics',
+    'FTK Imager',
+    'Wireshark',
+    'Splunk SIEM',
+    'MITRE ATT&CK',
+    'Memory Forensics',
+    'Windows Artifacts',
+    'Incident Response',
+  ]
+claim: 'Certificate No. 00000002028 · ITI × CyberTalents'
+proof: 'https://0xmaro.github.io/journey/iti-dfir-2024/certificate.webp'
+media:
+  - type: image
+    src: '/journey/iti-dfir-2024/certificate.webp'
+    alt:
+      en: ITI and CyberTalents DFIR Bootcamp Certificate of Completion (No. 00000002028, 25 Oct – 16 Nov 2024)
+      ar: شهادة إتمام معسكر DFIR من معهد تكنولوجيا المعلومات وCyberTalents بتاريخ نوفمبر 2024
+    caption:
+      en: ITI × CyberTalents DFIR Bootcamp Certificate — Nov 2024
+      ar: شهادة معسكر DFIR من ITI × CyberTalents — نوفمبر 2024
+featuredOnHome: false
