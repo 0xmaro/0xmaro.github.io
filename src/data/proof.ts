@@ -22,16 +22,16 @@ export interface ProofItem {
 export const proofItems: ProofItem[] = [
   {
     value: '#3 EG',
-    href: '',
+    href: 'https://tryhackme.com/p/0xmaro',
     label: {
-      en: 'TryHackMe · Cyber Security 101',
-      ar: 'TryHackMe · مسار Cyber Security 101',
+      en: 'TryHackMe · Cyber Security 101 (#138 Global)',
+      ar: 'TryHackMe · مسار Cyber Security 101 (#138 عالمياً)',
     },
     verifyKey: 'proof.verify',
   },
   {
     value: '6th / 200+',
-    href: '',
+    href: 'https://0xmaro.github.io/journey/cat-reloaded-2025/leaderboard.webp',
     label: {
       en: 'CAT Reloaded CTF · team liel0x1',
       ar: 'مسابقة CAT Reloaded · فريق liel0x1',
@@ -39,12 +39,12 @@ export const proofItems: ProofItem[] = [
     verifyKey: 'proof.verify',
   },
   {
-    value: '3 live',
-    href: '',
+    value: '#19 / 400+',
+    href: 'https://0xmaro.github.io/journey/ascwg-2025/scoreboard.webp',
     label: {
-      en: 'Production systems I built & maintain',
-      ar: 'أنظمة production بنيتها وبشتغل عليها',
+      en: 'Arab Security Cyber Wargames (ASCWG 2025)',
+      ar: 'مسابقة Arab Security Cyber Wargames (ASCWG 2025)',
     },
-    verifyKey: 'proof.seeProjects',
+    verifyKey: 'proof.verify',
   },
 ];

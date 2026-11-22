@@ -1,0 +1,54 @@
+date: 2024-03-09
+phase: community
+org:
+  en: Codeavour 5.0 International · Mechaverse League
+  ar: Codeavour 5.0 International · الدوري المصري للروبوت والذكاء الاصطناعي
+role:
+  en: Technical Judge
+  ar: مُحكّم تقني
+event:
+  en: Technical Judge — The Egyptian League for Robotics & AI (Codeavour 5.0)
+  ar: مُحكّم تقني في الدوري المصري للروبوت والذكاء الاصطناعي (Codeavour 5.0)
+summary:
+  en: Invited to evaluate student robotics and AI projects at the Egyptian League for Robotics & AI (backed by STEMpedia, AWS, ARTPARK, Motwani Jadeja Foundation, and Mechaverse League) — assessing architecture, working demos, and problem-solving under pressure.
+  ar: شاركت كمُحكّم تقني لتقييم مشاريع الروبوتات والذكاء الاصطناعي في الدوري المصري (بشراكة STEMpedia وAWS وARTPARK وMechaverse League وCodeavour 5.0) — مع تقييم التصميم والتنفيذ العملي وحل المشكلات.
+learned:
+  en: Reviewing dozens of working and broken prototypes in a single day sharpens your eye for real engineering versus slideware — and pushed me to build Qader A1 right after.
+  ar: تقييم عشرات النماذج الشغّالة والمتعطلة في يوم واحد بيخلّيك تفرّق فوراً بين الهندسة الحقيقية والكلام النظري — وده اللي حمّسني أبني مشروع Qader A1 بعدها مباشرة.
+skills: ['Technical Evaluation', 'Robotics', 'AI Systems', 'Mentorship']
+claim: 'Official Judge · Codeavour 5.0 International (9 Mar 2024)'
+proof: 'https://0xmaro.github.io/journey/codeavour-judge-2024/certificate.webp'
+media:
+  - type: image
+    src: '/journey/codeavour-judge-2024/certificate.webp'
+    alt:
+      en: Certificate of Appreciation as a judge in The Egyptian League for Robotics & AI (Codeavour 5.0, 9 Mar 2024)
+      ar: شهادة تقدير كمحكّم في الدوري المصري للروبوت والذكاء الاصطناعي — 9 مارس 2024
+    caption:
+      en: Official Judge Certificate — Codeavour 5.0 & Mechaverse League
+      ar: شهادة التحكيم الرسمية — Codeavour 5.0 وMechaverse League
+  - type: image
+    src: '/journey/codeavour-judge-2024/judging-1.webp'
+    alt:
+      en: Evaluating student robotics prototypes during Codeavour 5.0
+      ar: أثناء تقييم مشاريع الطلاب في مسابقة Codeavour 5.0
+    caption:
+      en: Evaluating hardware & software builds on the floor
+      ar: تقييم المشاريع على أرض المسابقة
+  - type: image
+    src: '/journey/codeavour-judge-2024/judging-2.webp'
+    alt:
+      en: Reviewing project logic and live demonstrations with teams
+      ar: مراجعة المنطق البرمجي والتجربة الحية مع الفرق
+    caption:
+      en: Reviewing live demos with competing teams
+      ar: مراجعة العروض الحية مع الفرق المشاركة
+  - type: image
+    src: '/journey/codeavour-judge-2024/with-first-place.webp'
+    alt:
+      en: With the 1st place winner at the Egyptian League for Robotics & AI
+      ar: مع الفريق الحاصل على المركز الأول في الدوري المصري للروبوت
+    caption:
+      en: With the 1st place winner
+      ar: مع الحاصل على المركز الأول
+featuredOnHome: false

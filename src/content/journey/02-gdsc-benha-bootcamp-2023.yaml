@@ -1,0 +1,70 @@
+date: 2023-08-01
+phase: training
+org:
+  en: GDSC Benha University × Cyber Cohesion
+  ar: GDSC جامعة بنها × Cyber Cohesion
+role:
+  en: Bootcamp Participant · 1st Place
+  ar: مشارك في المعسكر · المركز الأول
+event:
+  en: GDSC Benha 7-Day Cybersecurity Bootcamp — 1st Place on Leaderboard
+  ar: معسكر الأمن السيبراني (7 أيام) في GDSC بنها — المركز الأول
+summary:
+  en: First hands-on cybersecurity immersion covering Linux fundamentals & privilege concepts, password cracking (John the Ripper), networking with Scapy & Wireshark, web exploitation (XSS & SQLi), and cryptography — finishing #1 on the bootcamp leaderboard.
+  ar: أول تجربة عملية مكثّفة في الأمن السيبراني شملت أساسيات ومتقدّم Linux، كسر كلمات المرور (John the Ripper)، تحليل الشبكات بـ Scapy وWireshark، ثغرات الويب (XSS وSQLi)، والتشفير — وانتهت بتصدّر لوحة النقاط بالمركز الأول.
+learned:
+  en: That week turned cybersecurity from a topic I read about into something I wanted to practice every day — and set the standard I would later bring back to the same campus as a trainer.
+  ar: الأسبوع ده حوّل الأمن السيبراني من مجال بقرأ عنه لحاجة بمارسها يومياً — ووضع المستوى اللي رجعت أدرّس بيه في نفس الجامعة بعدها بسنتين.
+skills: ['Linux', 'John the Ripper', 'Scapy', 'Wireshark', 'XSS', 'SQLi', 'Cryptography']
+claim: '1st Place · GDSC Benha Bootcamp Leaderboard'
+proof: 'https://0xmaro.github.io/journey/gdsc-benha-2023/leaderboard-1st.mp4'
+media:
+  - type: video
+    src: '/journey/gdsc-benha-2023/leaderboard-1st.mp4'
+    alt:
+      en: Leaderboard recording showing 1st place finish at the GDSC Benha x Cyber Cohesion Bootcamp
+      ar: فيديو لوحة النقاط يوضح المركز الأول في معسكر GDSC بنها وCyber Cohesion
+    caption:
+      en: Bootcamp leaderboard — 1st place finish
+      ar: لوحة نتائج المعسكر — المركز الأول
+  - type: image
+    src: '/journey/gdsc-benha-2023/hands-on-session.webp'
+    alt:
+      en: Hands-on cybersecurity practical session during GDSC Benha Bootcamp 2023
+      ar: جلسة تطبيق عملي خلال معسكر الأمن السيبراني في GDSC بنها 2023
+    caption:
+      en: Live practical labs during the 7-day bootcamp
+      ar: التطبيق العملي خلال المعسكر المكثّف
+  - type: image
+    src: '/journey/gdsc-benha-2023/heads-and-technicals.webp'
+    alt:
+      en: With the GDSC Benha Cybersecurity heads and technical mentors
+      ar: مع قيادات وفريق الأمن السيبراني التقني في GDSC بنها
+    caption:
+      en: With the technical leads and mentors
+      ar: مع الفريق التقني وقيادات المعسكر
+  - type: image
+    src: '/journey/gdsc-benha-2023/community-group.webp'
+    alt:
+      en: Group photo with the GDSC Benha and Cyber Cohesion community
+      ar: صورة جماعية مع مجتمع GDSC بنها وCyber Cohesion
+    caption:
+      en: GDSC Benha × Cyber Cohesion community
+      ar: مجتمع GDSC بنها × Cyber Cohesion
+  - type: image
+    src: '/journey/gdsc-benha-2023/cyber-cohesion-team.webp'
+    alt:
+      en: With peers and Cyber Cohesion team members
+      ar: مع الأصدقاء وأعضاء فريق Cyber Cohesion
+    caption:
+      en: With Cyber Cohesion mentors and peers
+      ar: مع أعضاء Cyber Cohesion والأصدقاء
+  - type: image
+    src: '/journey/gdsc-benha-2023/cyber-cohesion-story.webp'
+    alt:
+      en: Cyber Cohesion bootcamp story highlight
+      ar: توثيق من Cyber Cohesion للمعسكر
+    caption:
+      en: Cyber Cohesion highlight
+      ar: توثيق من Cyber Cohesion
+featuredOnHome: false

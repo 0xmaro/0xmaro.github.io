@@ -1,0 +1,30 @@
+date: 2025-09-01
+phase: competition
+org:
+  en: CAT Reloaded (CAT Station V.6) & IEEE Victoria CTF
+  ar: CAT Reloaded (CAT Station V.6) وIEEE Victoria CTF
+role:
+  en: CTF Competitor · Team liel0x1
+  ar: متسابق CTF · فريق liel0x1
+event:
+  en: CAT Reloaded CTF — 6th Place / 200+ Teams (Plus Top 10 at IEEE Victoria CTF)
+  ar: مسابقة CAT Reloaded CTF — المركز السادس من 200+ فريق (وTop 10 في IEEE Victoria CTF)
+summary:
+  en: Finished 6th overall (5085 pts, Top 10) with team liel0x1 in the 36-hour CAT Station V.6 CTF marathon featuring 600+ participants and 200+ teams across Egyptian universities, followed by another Top 10 finish at IEEE Victoria CTF.
+  ar: تحقيق المركز السادس عاماً (5085 نقطة، ضمن أفضل 10 فرق) مع فريق liel0x1 في ماراثون CAT Reloaded CTF الممتد 36 ساعة بمشاركة أكثر من 600 متسابق و200 فريق، وتبعها مركز جديد ضمن الـ Top 10 في مسابقة IEEE Victoria CTF.
+learned:
+  en: Competition taught me speed under pressure; production systems taught me what speed costs. Both halves belong in the same engineer.
+  ar: المسابقات علّمتني السرعة تحت الضغط، وأنظمة الـ production علّمتني السرعة بتكلّف إيه — والاتنين لازم يجتمعوا في نفس المهندس.
+skills: ['CTF Marathon', 'Web Security', 'DFIR', 'Reverse Engineering', 'Team Strategy']
+claim: '6th / 200+ Teams (5085 pts) · Top 10 IEEE Victoria'
+proof: 'https://0xmaro.github.io/journey/cat-reloaded-2025/leaderboard.webp'
+media:
+  - type: image
+    src: '/journey/cat-reloaded-2025/leaderboard.webp'
+    alt:
+      en: Official CAT Station V.6 by CAT Reloaded Top 10 leaderboard showing team liel0x1 in 6th place with 5085 points
+      ar: لوحة نتائج CAT Station V.6 الرسمية موضحة فريق liel0x1 في المركز السادس برصيد 5085 نقطة
+    caption:
+      en: CAT Reloaded CTF (CAT Station V.6) — 6th overall out of 200+ teams
+      ar: لوحة الترتيب الرسمية لمسابقة CAT Reloaded CTF — المركز السادس
+featuredOnHome: true

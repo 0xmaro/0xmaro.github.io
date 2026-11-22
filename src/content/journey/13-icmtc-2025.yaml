@@ -1,0 +1,54 @@
+date: 2025-07-26
+phase: competition
+org:
+  en: Military Technical College (ICMTC 2025 · CSC-3)
+  ar: الكلية الفنية العسكرية (ICMTC 2025 · CSC-3)
+role:
+  en: CTF Competitor · Team liel0x1
+  ar: متسابق CTF · فريق liel0x1
+event:
+  en: ICMTC 2025 Cybersecurity CTF — Cleared 100% of Qualifiers & Onsite Finalist
+  ar: مسابقة ICMTC 2025 بالكلية الفنية العسكرية — حل 100% من التصفيات والتأهل للنهائيات الحضورية
+summary:
+  en: Competed with team liel0x1 in one of Egypt's largest university cybersecurity competitions (CSC-3, Military Technical College). Solved all 5/5 qualification challenges (1777 pts), qualifying among the top 25 university teams nationwide for the onsite second round on 26 July 2025.
+  ar: المشاركة مع فريق liel0x1 في واحدة من أكبر مسابقات الأمن السيبراني الجامعية في مصر بالكلية الفنية العسكرية (CSC-3). حللنا كل تحديات التصفيات (5/5 بإجمالي 1777 نقطة) وتأهلنا ضمن أفضل 25 فريقاً على مستوى الجمهورية للجولة الحضورية بتاريخ 26 يوليو 2025.
+learned:
+  en: Onsite time-boxed CTFs reward calm triage and team division of labor far more than solo heroics.
+  ar: المسابقات الحضورية المقيّدة بالوقت بتكافئ التنظيم الهادئ وتوزيع المهام داخل الفريق أكتر بكتير من الشغل الفردي.
+skills: ['CTF', 'Web Exploitation', 'Digital Forensics', 'Team Operations', 'Rapid Triage']
+claim: '5/5 Qualifiers Solved · Top 25 Onsite Finalist (MTC)'
+proof: 'https://0xmaro.github.io/journey/icmtc-2025/team-scoreboard.webp'
+media:
+  - type: image
+    src: '/journey/icmtc-2025/team-scoreboard.webp'
+    alt:
+      en: Team liel0x1 ICMTC 2025 qualification profile showing 5 challenges solved and 1777 total points
+      ar: لوحة فريق liel0x1 في تصفيات ICMTC 2025 موضحة حل 5 تحديات بإجمالي 1777 نقطة
+    caption:
+      en: Team liel0x1 — 5/5 qualification challenges solved (1777 pts)
+      ar: فريق liel0x1 — حل جميع تحديات التصفيات (1777 نقطة)
+  - type: image
+    src: '/journey/icmtc-2025/onsite-team-1.webp'
+    alt:
+      en: Onsite at the Military Technical College wearing CSC-3 Cyber Security Competition lanyards
+      ar: صورة حضورية داخل الكلية الفنية العسكرية خلال الجولة الثانية من ICMTC 2025
+    caption:
+      en: Onsite at the Military Technical College — CSC-3
+      ar: من داخل الكلية الفنية العسكرية — CSC-3
+  - type: image
+    src: '/journey/icmtc-2025/onsite-team-2.webp'
+    alt:
+      en: Team liel0x1 together during the ICMTC 2025 onsite round
+      ar: فريق liel0x1 معاً خلال النهائيات الحضورية لمسابقة ICMTC 2025
+    caption:
+      en: Team liel0x1 during the onsite competition
+      ar: فريق liel0x1 خلال الجولة الحضورية
+  - type: image
+    src: '/journey/icmtc-2025/onsite-team-3.webp'
+    alt:
+      en: Team liel0x1 at the ICMTC 2025 venue
+      ar: فريق liel0x1 في مقر مسابقة ICMTC 2025
+    caption:
+      en: Post-round with team liel0x1
+      ar: مع فريق liel0x1 بعد الجولة
+featuredOnHome: false

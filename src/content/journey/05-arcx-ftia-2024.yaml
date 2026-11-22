@@ -1,0 +1,18 @@
+date: 2024-07-31
+phase: certification
+org:
+  en: arcX
+  ar: arcX
+event:
+  en: Foundation Level Threat Intelligence Analyst (FTIA)
+  ar: شهادة محلل استخبارات التهديدات التأسيسية (FTIA) من arcX
+summary:
+  en: Passed the arcX Cyber Threat Intelligence 101 examination, covering the intelligence lifecycle, threat actor profiling, IOCs, and mapping adversary tradecraft to defensive decisions.
+  ar: اجتياز امتحان Cyber Threat Intelligence 101 من arcX، شامل دورة حياة استخبارات التهديدات، تحليل الفاعلين، مؤشرات الاختراق (IOCs)، وربط تكتيكات المهاجمين بقرارات الدفاع.
+learned:
+  en: Threat intelligence is useless as a feed of raw IPs; it only matters when it changes a detection rule or hardens a real exposure.
+  ar: استخبارات التهديدات مالهاش قيمة كقائمة عناوين IP؛ قيمتها الحقيقية لما تغيّر قاعدة كشف أو تقفل ثغرة فعلية.
+skills: ['Threat Intelligence', 'CTI Lifecycle', 'IOC Analysis', 'Adversary Profiling']
+claim: 'Verified Credential · arcX FTIA (31 Jul 2024)'
+proof: 'https://arcx.io/verify-certificate?id=decd43f6509692e4c565b1f0741c5feb4f4195ae&k=31f0a80d820642609757baf50259d75b'
+featuredOnHome: false

@@ -1,5 +1,6 @@
 platform: ASCWG
-name: ASCWG 2025
-result: ''
-proof: 'TODO(proof)'
+name: Arab Security Cyber Wargames 2025
+date: 2025-08-02
+result: 'Rank #19 / 400+ teams (5430 pts)'
+proof: 'https://0xmaro.github.io/journey/ascwg-2025/scoreboard.webp'
 writeup: 'ascwg-2025-buzzer-beater'

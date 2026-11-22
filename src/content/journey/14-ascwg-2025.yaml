@@ -1,0 +1,30 @@
+date: 2025-08-02
+phase: competition
+org:
+  en: Arab Security Cyber Wargames (ASCWG 2025)
+  ar: Arab Security Cyber Wargames (ASCWG 2025)
+role:
+  en: CTF Competitor · Team liel0x1
+  ar: متسابق CTF · فريق liel0x1
+event:
+  en: Arab Security Cyber Wargames (ASCWG) 2025 — Rank #19 out of 400+ Teams
+  ar: مسابقة Arab Security Cyber Wargames (ASCWG 2025) — المركز 19 من بين أكثر من 400 فريق
+summary:
+  en: Debuted with team liel0x1 in one of the MENA region's most competitive CTF events (1–2 Aug 2025), securing 19th place overall out of 400+ regional teams with 5430 points across Web, Forensics, Mobile, Crypto, and OSINT challenges.
+  ar: أول مشاركة مع فريق liel0x1 في واحدة من أقوى مسابقات الأمن السيبراني في مصر والشرق الأوسط (1–2 أغسطس 2025)، وتحقيق المركز الـ 19 من بين أكثر من 400 فريق بإجمالي 5430 نقطة عبر تحديات الويب والتحليل الجنائي والموبايل والتشفير والـ OSINT.
+learned:
+  en: Competing against 400+ regional teams proved that speed gets you on the scoreboard, while disciplined methodology keeps you there in the final hours.
+  ar: المنافسة وسط أكثر من 400 فريق أثبتت إن السرعة بتطلعك على لوحة النقاط، لكن المنهجية المنضبطة هي اللي بتثبتك فيها لآخر ساعة.
+skills: ['Web Exploitation', 'Forensics', 'Mobile Security', 'Cryptography', 'OSINT', 'CTF']
+claim: 'Rank #19 / 400+ Teams · 5430 pts'
+proof: 'https://0xmaro.github.io/journey/ascwg-2025/scoreboard.webp'
+media:
+  - type: image
+    src: '/journey/ascwg-2025/scoreboard.webp'
+    alt:
+      en: Official ASCWG 2025 profile scoreboard for team liel0x1 showing Rank #19 and 5430 points across 11 solved challenges
+      ar: لوحة نتائج مسابقة ASCWG 2025 لفريق liel0x1 موضحة المركز #19 وإجمالي 5430 نقطة
+    caption:
+      en: ASCWG 2025 official scoreboard — Team liel0x1 (#19 · 5430 pts)
+      ar: لوحة النتائج الرسمية لـ ASCWG 2025 — فريق liel0x1 (المركز 19)
+featuredOnHome: true

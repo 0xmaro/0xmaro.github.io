@@ -1,0 +1,59 @@
+date: 2024-07-07
+phase: foundation
+org:
+  en: Benha University
+  ar: جامعة بنها
+role:
+  en: Software Lead
+  ar: مسؤول البرمجيات
+event:
+  en: Built "Qader A1" (V1 Arduino → V2 ESP32 Wi-Fi Radar Robot)
+  ar: بناء أول مشروع هندسي متكامل "Qader A1" (من Arduino إلى ESP32 برادار ويب)
+summary:
+  en: First full engineering project — led the software stack from an Arduino Uno + IR receiver prototype (V1) to an ESP32 Wi-Fi web server (V2) featuring real-time radar visualization, multi-directional motor control, ultrasonic distance tracking, laser targeting, and automated return-to-start navigation.
+  ar: أول مشروع هندسي متكامل — قدت فيه تطوير البرمجيات من نسخة V1 على Arduino Uno مع IR وحساسات ومكونات مُعاد تدويرها، إلى نسخة V2 على ESP32 بسيرفر ويب عبر Wi-Fi يعرض رادار حي للمسافات، تحكّم في الموتورات والسرعة، تصويب ليزر، وميزة العودة التلقائية لنقطة البداية.
+learned:
+  en: Bridging C++ firmware with an HTML/CSS/JS control interface over Wi-Fi taught me how embedded devices expose real network attack surfaces — the exact intuition behind my later IoT security work.
+  ar: ربط كود الـ C++ على المتحكم بواجهة ويب عبر Wi-Fi علّمني عملياً إزاي أجهزة الـ IoT بتفتح سطح هجوم شبكي حقيقي — وده نفس التفكير اللي استخدمته بعدين في أمن الأنظمة المدمجة.
+skills: ['ESP32', 'Arduino', 'Embedded C', 'C++', 'HTML', 'CSS', 'JavaScript', 'Wi-Fi Web Server']
+claim: 'Open-Source Hardware + Web Control Stack'
+proof: 'https://github.com/0xmaro/Qader-A1'
+links:
+  - label:
+      en: GitHub Repository (Qader-A1)
+      ar: مستودع المشروع على GitHub
+    url: 'https://github.com/0xmaro/Qader-A1'
+media:
+  - type: image
+    src: '/journey/qader-a1-2024/robot-radar-setup.webp'
+    alt:
+      en: Qader A1 ESP32 robot running alongside the real-time web radar interface and multimeter
+      ar: روبوت Qader A1 بـ ESP32 بجانب واجهة الرادار الحية وجهاز القياس
+    caption:
+      en: Qader A1 V2 — ESP32 robot with live browser radar telemetry
+      ar: Qader A1 V2 — الروبوت مع شاشة الرادار الحية عبر المتصفح
+  - type: image
+    src: '/journey/qader-a1-2024/coding-session.webp'
+    alt:
+      en: Writing and debugging C++ firmware and web control code for Qader A1
+      ar: أثناء كتابة وتصحيح كود C++ وواجهة الويب لمشروع Qader A1
+    caption:
+      en: Firmware & web-interface integration session
+      ar: جلسة كتابة الكود وربط الواجهة بالهاردوير
+  - type: image
+    src: '/journey/qader-a1-2024/demo-with-professor.webp'
+    alt:
+      en: Demonstrating Qader A1 with university faculty at Benha University
+      ar: عرض مشروع Qader A1 مع الدكتور في جامعة بنها
+    caption:
+      en: Live demonstration at Benha University
+      ar: العرض العملي للمشروع في جامعة بنها
+  - type: image
+    src: '/journey/qader-a1-2024/robot-closeup.webp'
+    alt:
+      en: Close-up of the Qader A1 hardware chassis and sensor assembly
+      ar: لقطة قريبة لهيكل وتوصيلات روبوت Qader A1
+    caption:
+      en: Hardware build & sensor layout
+      ar: تفاصيل الهيكل وتوصيل الحساسات
+featuredOnHome: true

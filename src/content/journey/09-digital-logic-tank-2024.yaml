@@ -1,0 +1,53 @@
+date: 2024-12-15
+phase: foundation
+org:
+  en: Benha University
+  ar: جامعة بنها
+role:
+  en: Digital Logic Designer
+  ar: مصمّم دوائر منطقية
+event:
+  en: Autonomous Obstacle-Avoiding & Line-Following Tank — Pure Digital Logic (Zero Code)
+  ar: بناء دبابة ذاتية الحركة وتتفادى العوائق بدوائر منطقية فقط (بدون سطر كود واحد)
+summary:
+  en: Designed and wired a fully hardware-driven autonomous tank using zero software or microcontrollers — combining IR TCRT5000 line tracking, HC-SR04 ultrasonic obstacle detection, dual 555 timers, L298 motor driver, NAND/NOT logic gates (IC 7400/7404), and a CD74HC4051 multiplexer/demultiplexer.
+  ar: تصميم وتوصيل دبابة ذاتية الحركة بالكامل باستخدام البوابات المنطقية فقط بدون متحكم أو كود — عبر دمج حساسات IR TCRT5000 لتتبع الخط الأسود، حساس Ultrasonic HC-SR04 لتفادي العوائق والتوقف التلقائي، مؤقّتات 555، درايفر L298، بوابات NAND/NOT، وMultiplexer CD74HC4051.
+learned:
+  en: Building state machines out of physical logic gates strips away every layer of abstraction — when you understand hardware truth tables, software control flow becomes crystal clear.
+  ar: بناء منطق اتخاذ القرار ببوابات إلكترونية حقيقية بيشيل كل طبقات التجريد — لما تفهم جداول الحقيقة على الهاردوير، منطق السوفتوير كله بيبقى شفاف قدامك.
+skills:
+  [
+    'Digital Logic',
+    'Proteus Schematic',
+    '555 Timer',
+    'L298 Motor Driver',
+    'NAND/NOT Gates',
+    'CD74HC4051',
+    'HC-SR04',
+    'IR TCRT5000',
+  ]
+claim: 'Zero-Code Hardware Demo & Full Schematic'
+proof: 'https://lnkd.in/exH_3ZHJ'
+links:
+  - label:
+      en: Watch Live Hardware Demo
+      ar: شاهد فيديو التشغيل العملي
+    url: 'https://lnkd.in/exH_3ZHJ'
+media:
+  - type: image
+    src: '/journey/logic-tank-2024/circuit-schematic.webp'
+    alt:
+      en: Complete Proteus circuit schematic showing IR TCRT5000, HC-SR04 ultrasonic sensor, 555 timers, NAND/NOT gates, CD74HC4051, and L298 motor driver
+      ar: المخطط الكامل للدائرة المنطقية على Proteus شامل الحساسات ومؤقتات 555 وبوابات NAND/NOT ودرايفر L298
+    caption:
+      en: Full Proteus circuit schematic — pure digital logic control
+      ar: مخطط الدائرة الكامل — تحكّم بالبوابات المنطقية فقط
+  - type: image
+    src: '/journey/logic-tank-2024/team-demo.webp'
+    alt:
+      en: With the Benha University project team presenting the pure digital logic tank
+      ar: مع فريق العمل في جامعة بنها أثناء عرض مشروع الدبابة المنطقية
+    caption:
+      en: Team presentation at Benha University
+      ar: عرض المشروع مع فريق العمل بجامعة بنها
+featuredOnHome: false

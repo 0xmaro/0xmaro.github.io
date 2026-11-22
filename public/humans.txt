@@ -4,11 +4,14 @@
 
 /* TEAM */
 
-	0xMARO
-		Role: Full-stack developer, moving into application security
-		Location: TODO(copy)
+	0xMARO (Ammar Mohamed)
+		Role: Full-stack developer & Application Security Engineer
+		Location: Egypt
 		GitHub: https://github.com/0xmaro
 		LinkedIn: https://www.linkedin.com/in/amar-mohamed-0xmaro
+		TryHackMe: https://tryhackme.com/p/0xmaro
+		X: https://x.com/0_xmaro
+		YouTube: https://www.youtube.com/@0xmaro
 
 /* SITE */
 
