@@ -95,10 +95,36 @@ export const journeySchema = (lang: Language, siteUrl: URL, stations: Journey[])
       position: index + 1,
       name: s.data.event[lang],
       description: s.data.summary?.[lang] ?? s.data.learned[lang],
-      url: isRealProof(s.data.proof) ? s.data.proof : undefined,
+      url: new URL(getRelativeLocaleUrl(lang, `/journey/${s.id}`), siteUrl).href,
     })),
   },
 });
+
+/** Dedicated milestone dossier JSON-LD (SEO + GEO). */
+export const journeyMilestoneSchema = (
+  lang: Language,
+  siteUrl: URL,
+  station: Journey
+): JsonLdNode => {
+  const firstImg = station.data.media.find((m) => m.type === 'image');
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: station.data.event[lang],
+    description: station.data.summary?.[lang] ?? station.data.learned[lang],
+    inLanguage: lang,
+    url: new URL(getRelativeLocaleUrl(lang, `/journey/${station.id}`), siteUrl).href,
+    ...(station.data.date ? { datePublished: station.data.date.toISOString().slice(0, 10) } : {}),
+    ...(firstImg ? { image: new URL(firstImg.src, siteUrl).href } : {}),
+    ...(station.data.skills.length > 0 ? { keywords: station.data.skills.join(', ') } : {}),
+    author: {
+      '@type': 'Person',
+      name: 'Ammar Mohamed (0xMARO)',
+      url: 'https://0xmaro.github.io/',
+    },
+    ...(isRealProof(station.data.proof) ? { sameAs: station.data.proof } : {}),
+  };
+};
 
 /**
  * WebSite — home page of each locale only.

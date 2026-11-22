@@ -16,6 +16,9 @@ export const site = {
     instagram: 'https://www.instagram.com/its_0xmaro',
     facebook: 'https://www.facebook.com/0xmaro',
   },
+  handles: {
+    discord: 'its_0xmaro',
+  },
 } as const;
 
 interface SectionConfig {

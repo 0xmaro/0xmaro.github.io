@@ -26,6 +26,11 @@ const topics = documentedTopics(
 const socialLinks = [
   { label: t('footer.github'), url: site.social.github },
   { label: t('footer.linkedin'), url: site.social.linkedin },
+  { label: t('social.tryhackme'), url: site.social.tryhackme },
+  { label: t('social.x'), url: site.social.x },
+  { label: t('social.youtube'), url: site.social.youtube },
+  { label: t('social.instagram'), url: site.social.instagram },
+  { label: t('social.facebook'), url: site.social.facebook },
 ].filter((l) => isRealProof(l.url));
 ---
 
@@ -65,11 +70,16 @@ const socialLinks = [
         <ul class="about__links">
           {socialLinks.map((l) => (
             <li>
-              <a class="ltr" href={l.url} rel="me">
-                {l.label}
+              <a class="ltr" href={l.url} rel="me" target="_blank">
+                {l.label} ↗
               </a>
             </li>
           ))}
+          <li>
+            <span class="about__handle ltr">
+              {t('social.discord')}: {site.handles.discord}
+            </span>
+          </li>
         </ul>
       )
     }
@@ -155,5 +165,14 @@ const socialLinks = [
   .about__links a:hover {
     color: var(--sulfur-400);
     border-block-end-color: var(--sulfur-400);
+  }
+
+  .about__handle {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-min);
+    font-family: var(--f-code);
+    font-size: var(--text-sm);
+    color: var(--text-lo);
   }
 </style>

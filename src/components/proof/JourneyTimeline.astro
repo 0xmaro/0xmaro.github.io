@@ -6,13 +6,9 @@ import type { Language, UIKey } from '../../i18n/ui';
 
 /**
  * The journey timeline (plan/04 F-07), shared by /journey and the home page
- * §03. Stations come through `surfaceJourney()` — a claim without a real
- * proof URL, or a station still in TODO(copy), never renders.
- *
- * `compact` renders the home-page highlight reel (featuredOnHome stations)
- * with a CTA to the full /journey showcase. Full mode adds summary metrics,
- * phase filters, skills, media galleries (WebP + native video + PDF), and a
- * native <dialog> lightbox.
+ * §03. Every milestone links to its own dedicated dossier page
+ * (`/journey/[slug]`, `/ar/journey/[slug]`) with full media gallery, proof
+ * links, and chronological navigation.
  */
 interface Props {
   lang: Language;
@@ -103,49 +99,69 @@ const journeyHref = getRelativeLocaleUrl(lang, '/journey');
 
       <ol class:list={['journey', { 'journey--compact': compact }]}>
         {timeline.map((s) => {
-          const images = s.data.media.filter((m) => m.type === 'image');
-          const videos = s.data.media.filter((m) => m.type === 'video');
-          const pdfs = s.data.media.filter((m) => m.type === 'pdf');
+          const stationHref = getRelativeLocaleUrl(lang, `/journey/${s.id}`);
+          const cover = s.data.media.find((m) => m.type === 'image');
+          const totalMedia = s.data.media.length;
           return (
             <li id={compact ? undefined : s.id} class="journey__stop" data-phase={s.data.phase}>
               <div
                 class:list={['journey__mark', `journey__mark--${s.data.phase}`]}
                 aria-hidden="true"
               />
-              <article class="journey__card">
-                <header class="journey__meta">
-                  {s.data.date && (
-                    <time
-                      class="journey__date ltr"
-                      datetime={s.data.date.toISOString().slice(0, 10)}
-                    >
-                      {dateFmt.format(s.data.date)}
-                    </time>
+              <article
+                class:list={[
+                  'journey__card',
+                  { 'journey__card--with-cover': !compact && Boolean(cover) },
+                ]}
+              >
+                <div class="journey__main">
+                  <header class="journey__meta">
+                    {s.data.date && (
+                      <time
+                        class="journey__date ltr"
+                        datetime={s.data.date.toISOString().slice(0, 10)}
+                      >
+                        {dateFmt.format(s.data.date)}
+                      </time>
+                    )}
+                    <span class:list={['journey__phase', `journey__phase--${s.data.phase}`]}>
+                      {t(phaseKey[s.data.phase])}
+                    </span>
+                    {s.data.org && <span class="journey__org">{s.data.org[lang]}</span>}
+                    {!compact && s.data.role && (
+                      <span class="journey__role">{s.data.role[lang]}</span>
+                    )}
+                  </header>
+
+                  <Heading class="journey__event">
+                    <a class="journey__title-link" href={stationHref}>
+                      {s.data.event[lang]}
+                    </a>
+                  </Heading>
+
+                  {!compact && s.data.summary && (
+                    <p class="journey__summary">{s.data.summary[lang]}</p>
                   )}
-                  <span class:list={['journey__phase', `journey__phase--${s.data.phase}`]}>
-                    {t(phaseKey[s.data.phase])}
-                  </span>
-                  {s.data.org && <span class="journey__org">{s.data.org[lang]}</span>}
-                  {!compact && s.data.role && (
-                    <span class="journey__role">{s.data.role[lang]}</span>
+
+                  {compact && !isTodo(s.data.learned[lang]) && (
+                    <p class="journey__learned">
+                      <span class="journey__learned-k">{t('journey.learned')}</span>
+                      {s.data.learned[lang]}
+                    </p>
                   )}
-                </header>
 
-                <Heading class="journey__event">{s.data.event[lang]}</Heading>
+                  {!compact && s.data.skills.length > 0 && (
+                    <ul class="journey__skills ltr">
+                      {s.data.skills.slice(0, 6).map((skill) => (
+                        <li class="journey__skill">{skill}</li>
+                      ))}
+                    </ul>
+                  )}
 
-                {!compact && s.data.summary && (
-                  <p class="journey__summary">{s.data.summary[lang]}</p>
-                )}
-
-                {!isTodo(s.data.learned[lang]) && (
-                  <p class="journey__learned">
-                    <span class="journey__learned-k">{t('journey.learned')}</span>
-                    {s.data.learned[lang]}
-                  </p>
-                )}
-
-                {(s.data.claim || (!compact && (s.data.links.length > 0 || pdfs.length > 0))) && (
-                  <div class="journey__actions">
+                  <footer class="journey__actions">
+                    <a class="journey__open" href={stationHref}>
+                      {t('journey.readMore')}
+                    </a>
                     {s.data.claim && isRealProof(s.data.proof) && (
                       <a
                         class="journey__claim ltr"
@@ -157,68 +173,24 @@ const journeyHref = getRelativeLocaleUrl(lang, '/journey');
                         <span class="journey__verify">{t('proof.verify')}</span>
                       </a>
                     )}
-                    {!compact &&
-                      s.data.links
-                        .filter((l) => isRealProof(l.url))
-                        .map((l) => (
-                          <a
-                            class="journey__ext"
-                            href={l.url}
-                            target="_blank"
-                            rel="nofollow noreferrer"
-                          >
-                            {l.label[lang]} ↗
-                          </a>
-                        ))}
-                    {!compact &&
-                      pdfs.map((p) => (
-                        <a class="journey__ext" href={p.src} target="_blank" rel="noreferrer">
-                          {p.alt[lang]} · {t('journey.pdf.open')}
-                        </a>
-                      ))}
-                  </div>
-                )}
+                    {!compact && totalMedia > 0 && (
+                      <span class="journey__count">
+                        {t('journey.mediaCount').replace('{0}', String(totalMedia))}
+                      </span>
+                    )}
+                  </footer>
+                </div>
 
-                {!compact && s.data.skills.length > 0 && (
-                  <ul class="journey__skills ltr">
-                    {s.data.skills.map((skill) => (
-                      <li class="journey__skill">{skill}</li>
-                    ))}
-                  </ul>
-                )}
-
-                {!compact && (images.length > 0 || videos.length > 0) && (
-                  <div class="journey__media">
-                    {images.map((m) => (
-                      <figure class="jfig">
-                        <button
-                          type="button"
-                          class="jfig__btn"
-                          data-lightbox-src={m.src}
-                          data-lightbox-alt={m.alt[lang]}
-                          data-lightbox-caption={m.caption?.[lang] ?? m.alt[lang]}
-                          aria-label={t('journey.media.zoom').replace('{0}', m.alt[lang])}
-                        >
-                          <img
-                            class="jfig__img"
-                            src={m.src}
-                            alt={m.alt[lang]}
-                            loading="lazy"
-                            decoding="async"
-                          />
-                        </button>
-                        {m.caption && <figcaption class="jfig__cap">{m.caption[lang]}</figcaption>}
-                      </figure>
-                    ))}
-                    {videos.map((v) => (
-                      <figure class="jfig jfig--video">
-                        <video class="jfig__video" controls preload="metadata" playsinline>
-                          <source src={v.src} type="video/mp4" />
-                        </video>
-                        {v.caption && <figcaption class="jfig__cap">{v.caption[lang]}</figcaption>}
-                      </figure>
-                    ))}
-                  </div>
+                {!compact && cover && (
+                  <a class="journey__thumb" href={stationHref} aria-label={s.data.event[lang]}>
+                    <img
+                      class="journey__thumb-img"
+                      src={cover.src}
+                      alt={cover.alt[lang]}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </a>
                 )}
               </article>
             </li>
@@ -233,18 +205,6 @@ const journeyHref = getRelativeLocaleUrl(lang, '/journey');
           </a>
         </div>
       )}
-
-      {!compact && (
-        <dialog class="jbox" id="journey-lightbox" aria-label={t('journey.lightbox.label')}>
-          <div class="jbox__bar">
-            <p class="jbox__cap" id="jbox-cap" />
-            <button type="button" class="jbox__close" id="jbox-close">
-              {t('journey.lightbox.close')}
-            </button>
-          </div>
-          <img class="jbox__img" id="jbox-img" src="" alt="" />
-        </dialog>
-      )}
     </div>
   ) : (
     <p class="journey__empty">{t('journey.empty')}</p>
@@ -254,7 +214,6 @@ const journeyHref = getRelativeLocaleUrl(lang, '/journey');
 <script>
   const root = document.querySelector<HTMLElement>('[data-journey-root="full"]');
   if (root) {
-    // Phase filtering
     const buttons = root.querySelectorAll<HTMLButtonElement>('[data-phase-filter]');
     const stops = root.querySelectorAll<HTMLLIElement>('.journey__stop');
     for (const btn of buttons) {
@@ -265,28 +224,6 @@ const journeyHref = getRelativeLocaleUrl(lang, '/journey');
           const match = phase === 'all' || stop.dataset.phase === phase;
           stop.hidden = !match;
         }
-      });
-    }
-
-    // Native <dialog> lightbox
-    const dialog = document.getElementById('journey-lightbox') as HTMLDialogElement | null;
-    const img = document.getElementById('jbox-img') as HTMLImageElement | null;
-    const cap = document.getElementById('jbox-cap');
-    const closeBtn = document.getElementById('jbox-close');
-
-    if (dialog && img && cap) {
-      root.addEventListener('click', (e) => {
-        const trigger = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-lightbox-src]');
-        if (!trigger) return;
-        img.src = trigger.dataset.lightboxSrc ?? '';
-        img.alt = trigger.dataset.lightboxAlt ?? '';
-        cap.textContent = trigger.dataset.lightboxCaption ?? '';
-        dialog.showModal();
-      });
-
-      closeBtn?.addEventListener('click', () => dialog.close());
-      dialog.addEventListener('click', (e) => {
-        if (e.target === dialog) dialog.close();
       });
     }
   }
@@ -407,7 +344,7 @@ const journeyHref = getRelativeLocaleUrl(lang, '/journey');
   .journey__stop {
     position: relative;
     padding-inline-start: var(--space-5);
-    padding-block-end: var(--space-6);
+    padding-block-end: var(--space-5);
   }
 
   .journey__stop[hidden] {
@@ -444,6 +381,24 @@ const journeyHref = getRelativeLocaleUrl(lang, '/journey');
     background: var(--ink-800);
     border: var(--hairline) solid var(--line);
     padding: var(--space-5);
+    transition: border-color var(--t-fast) var(--ease-out);
+  }
+
+  .journey__card:hover {
+    border-color: var(--ink-600);
+  }
+
+  .journey__card--with-cover {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+    align-items: start;
+  }
+
+  @media (min-width: 780px) {
+    .journey__card--with-cover {
+      grid-template-columns: minmax(0, 1fr) 240px;
+    }
   }
 
   .journey--compact .journey__card {
@@ -537,11 +492,21 @@ const journeyHref = getRelativeLocaleUrl(lang, '/journey');
     line-height: var(--lh-ar-display);
   }
 
+  .journey__title-link {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--t-fast) var(--ease-out);
+  }
+
+  .journey__title-link:hover {
+    color: var(--sulfur-300);
+  }
+
   .journey__summary {
     margin: var(--space-3) 0 0;
     max-width: var(--measure-read);
     color: var(--text);
-    font-size: var(--step-0);
+    font-size: var(--step--1);
     line-height: var(--lh-body);
   }
 
@@ -551,10 +516,8 @@ const journeyHref = getRelativeLocaleUrl(lang, '/journey');
   }
 
   .journey__learned {
-    margin: var(--space-4) 0 0;
-    padding-inline-start: var(--space-4);
-    border-inline-start: var(--rule-thickness) solid var(--blue-500);
-    max-width: var(--measure-read);
+    margin: var(--space-3) 0 0;
+    max-width: var(--measure-lead);
     color: var(--text-lo);
     line-height: var(--lh-body);
     font-size: var(--step--1);
@@ -580,56 +543,6 @@ const journeyHref = getRelativeLocaleUrl(lang, '/journey');
     letter-spacing: 0;
   }
 
-  .journey__actions {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-3) var(--space-5);
-    margin-block-start: var(--space-4);
-  }
-
-  .journey__claim {
-    display: inline-flex;
-    align-items: baseline;
-    gap: var(--space-2);
-    min-height: var(--touch-min);
-    padding-block: var(--space-2);
-    font-family: var(--f-code);
-    font-size: var(--step--1);
-    color: var(--sulfur-300);
-    text-decoration: none;
-    border-block-end: var(--hairline) solid var(--sulfur-400);
-  }
-
-  .journey__claim:hover {
-    color: var(--sulfur-400);
-  }
-
-  .journey__verify {
-    font-size: var(--text-2xs);
-    color: var(--blue-400);
-  }
-
-  .journey__ext {
-    display: inline-flex;
-    align-items: center;
-    min-height: var(--touch-min);
-    font-family: var(--f-code);
-    font-size: var(--text-xs);
-    color: var(--blue-400);
-    text-decoration: none;
-    border-block-end: var(--hairline) solid transparent;
-  }
-
-  html[lang='ar'] .journey__ext {
-    font-family: var(--f-body-ar);
-  }
-
-  .journey__ext:hover {
-    color: var(--sulfur-300);
-    border-block-end-color: var(--sulfur-400);
-  }
-
   .journey__skills {
     display: flex;
     flex-wrap: wrap;
@@ -648,124 +561,100 @@ const journeyHref = getRelativeLocaleUrl(lang, '/journey');
     padding: var(--space-1) var(--space-2);
   }
 
-  .journey__media {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(210px, 100%), 1fr));
-    gap: var(--space-3);
-    margin-block-start: var(--space-5);
-    padding-block-start: var(--space-4);
-    border-block-start: var(--hairline) solid var(--line);
-  }
-
-  .jfig {
-    margin: 0;
+  .journey__actions {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-5);
+    margin-block-start: var(--space-4);
+  }
+
+  .journey__open {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-min);
+    font-family: var(--f-cond);
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-label);
+    font-weight: 600;
+    color: var(--sulfur-400);
+    text-decoration: none;
+    border-block-end: var(--hairline) solid var(--sulfur-500);
+  }
+
+  html[lang='ar'] .journey__open {
+    font-family: var(--f-body-ar);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .journey__open:hover {
+    color: var(--sulfur-300);
+    border-block-end-color: var(--sulfur-300);
+  }
+
+  .journey__claim {
+    display: inline-flex;
+    align-items: baseline;
     gap: var(--space-2);
+    min-height: var(--touch-min);
+    padding-block: var(--space-2);
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--text);
+    text-decoration: none;
+    border-block-end: var(--hairline) solid var(--ink-600);
   }
 
-  .jfig--video {
-    grid-column: span 1;
+  .journey__claim:hover {
+    color: var(--sulfur-300);
+    border-block-end-color: var(--sulfur-400);
   }
 
-  .jfig__btn {
+  .journey__verify {
+    font-size: var(--text-2xs);
+    color: var(--blue-400);
+  }
+
+  .journey__count {
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--text-dim);
+  }
+
+  html[lang='ar'] .journey__count {
+    font-family: var(--f-body-ar);
+  }
+
+  .journey__thumb {
     display: block;
-    width: 100%;
-    padding: 0;
     border: var(--hairline) solid var(--ink-600);
     background: var(--ink-900);
-    cursor: zoom-in;
     overflow: hidden;
     transition: border-color var(--t-fast) var(--ease-out);
   }
 
-  .jfig__btn:hover {
+  .journey__thumb:hover {
     border-color: var(--sulfur-400);
   }
 
-  .jfig__img {
+  .journey__thumb-img {
     display: block;
     width: 100%;
     aspect-ratio: 16 / 10;
     object-fit: cover;
   }
 
-  .jfig__video {
-    display: block;
-    width: 100%;
-    aspect-ratio: 16 / 10;
-    background: var(--ink-900);
-    border: var(--hairline) solid var(--ink-600);
-  }
-
-  .jfig__cap {
-    font-size: var(--text-xs);
-    color: var(--text-dim);
-    line-height: var(--lh-lead);
-  }
-
   .journey__more {
     margin-block-start: var(--space-5);
   }
 
-  .jbox {
-    max-width: min(92vw, var(--wrap));
-    max-height: 90vh;
-    padding: var(--space-4);
-    background: var(--ink-900);
-    color: var(--text-hi);
-    border: var(--hairline) solid var(--ink-600);
-  }
-
-  .jbox::backdrop {
-    background: rgba(8, 10, 15, 0.88);
-  }
-
-  .jbox__bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-4);
-    margin-block-end: var(--space-3);
-  }
-
-  .jbox__cap {
-    margin: 0;
-    font-size: var(--text-sm);
-    color: var(--text);
-  }
-
-  .jbox__close {
-    min-height: var(--touch-min);
-    padding: var(--space-2) var(--space-4);
-    background: var(--ink-800);
-    border: var(--hairline) solid var(--ink-600);
-    color: var(--text-hi);
-    font-family: var(--f-code);
-    font-size: var(--text-xs);
-    cursor: pointer;
-  }
-
-  html[lang='ar'] .jbox__close {
-    font-family: var(--f-body-ar);
-  }
-
-  .jbox__close:hover {
-    border-color: var(--sulfur-400);
-    color: var(--sulfur-300);
-  }
-
-  .jbox__img {
-    display: block;
-    max-width: 100%;
-    max-height: 75vh;
-    margin-inline: auto;
-    object-fit: contain;
-  }
-
   @media (prefers-reduced-motion: reduce) {
     .jfilter__btn,
-    .jfig__btn {
+    .journey__card,
+    .journey__title-link,
+    .journey__thumb {
       transition: none;
     }
   }
