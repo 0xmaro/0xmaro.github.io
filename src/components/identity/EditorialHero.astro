@@ -72,7 +72,7 @@ const verifiedProof = proofItems.filter((p) => isRealProof(p.href));
         <span class="hero-id__dot" aria-hidden="true"></span>
         <span class="hero-id__name">{copy.name}</span>
         <span class="hero-id__sep" aria-hidden="true">/</span>
-        <span class="hero-id__role ltr">{copy.identity}</span>
+        <span class:list={['hero-id__role', { ltr: lang === 'en' }]}>{copy.identity}</span>
       </div>
 
       <div class="lens-switch" role="group" aria-label={copy.lensLabel}>
@@ -97,27 +97,30 @@ const verifiedProof = proofItems.filter((p) => isRealProof(p.href));
 
     <div class="hero-grid">
       <div class="hero-copy">
-        <div class="lens-panel" data-lens-panel="build" hidden>
-          <p class="hero-kicker hero-kicker--build">{copy.buildKicker}</p>
-          <h1 class="hero-headline">
+        <p class="hero-kicker hero-kicker--build" data-lens-panel="build" hidden>
+          {copy.buildKicker}
+        </p>
+        <p class="hero-kicker hero-kicker--break" data-lens-panel="break">
+          {copy.breakKicker}
+        </p>
+
+        <h1 class="hero-headline">
+          <span class="hero-headline__group" data-lens-panel="build" hidden>
             <span class="hero-headline__line">{copy.buildTitleA}</span>
             <span class="hero-headline__accent hero-headline__accent--build">
               {copy.buildTitleAccent}
             </span>
-          </h1>
-          <p class="hero-lead">{copy.buildLead}</p>
-        </div>
-
-        <div class="lens-panel" data-lens-panel="break">
-          <p class="hero-kicker hero-kicker--break">{copy.breakKicker}</p>
-          <h1 class="hero-headline">
+          </span>
+          <span class="hero-headline__group" data-lens-panel="break">
             <span class="hero-headline__line">{copy.breakTitleA}</span>
             <span class="hero-headline__accent hero-headline__accent--break">
               {copy.breakTitleAccent}
             </span>
-          </h1>
-          <p class="hero-lead">{copy.breakLead}</p>
-        </div>
+          </span>
+        </h1>
+
+        <p class="hero-lead" data-lens-panel="build" hidden>{copy.buildLead}</p>
+        <p class="hero-lead" data-lens-panel="break">{copy.breakLead}</p>
 
         <div class="hero-actions">
           <a class="btn btn--primary" href="#projects">
@@ -148,7 +151,7 @@ const verifiedProof = proofItems.filter((p) => isRealProof(p.href));
                   <dd class="hero-proof__row">
                     <span class="hero-proof__val ltr">{item.value}</span>
                     <a
-                      class="hero-proof__link ltr"
+                      class="hero-proof__link"
                       href={item.href}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -173,7 +176,10 @@ const verifiedProof = proofItems.filter((p) => isRealProof(p.href));
           {
             heroSpecimens.map((plate, idx) => (
               <figure
+                id={`specimen-plate-${idx}`}
                 class="specimen__plate"
+                role="tabpanel"
+                aria-labelledby={`specimen-tab-${idx}`}
                 data-plate-index={String(idx)}
                 data-plate-lens={plate.lens}
                 hidden={idx !== 2}
@@ -217,11 +223,14 @@ const verifiedProof = proofItems.filter((p) => isRealProof(p.href));
           {
             heroSpecimens.map((plate, idx) => (
               <button
+                id={`specimen-tab-${idx}`}
                 type="button"
                 role="tab"
                 class="specimen__thumb"
                 data-plate-select={String(idx)}
                 aria-selected={idx === 2 ? 'true' : 'false'}
+                aria-controls={`specimen-plate-${idx}`}
+                tabindex={idx === 2 ? 0 : -1}
                 title={plate.title[lang]}
               >
                 <img
@@ -250,12 +259,15 @@ const verifiedProof = proofItems.filter((p) => isRealProof(p.href));
     const plates = Array.from(stage.querySelectorAll<HTMLElement>('[data-plate-index]'));
     const thumbs = Array.from(stage.querySelectorAll<HTMLButtonElement>('[data-plate-select]'));
 
-    const showPlate = (index: number) => {
+    const showPlate = (index: number, focusTab = false) => {
       plates.forEach((p, i) => {
         p.hidden = i !== index;
       });
       thumbs.forEach((t, i) => {
-        t.setAttribute('aria-selected', String(i === index));
+        const active = i === index;
+        t.setAttribute('aria-selected', String(active));
+        t.tabIndex = active ? 0 : -1;
+        if (active && focusTab) t.focus();
       });
     };
 
@@ -282,6 +294,21 @@ const verifiedProof = proofItems.filter((p) => isRealProof(p.href));
       thumb.addEventListener('click', () => {
         const idx = Number(thumb.dataset.plateSelect);
         if (!Number.isNaN(idx)) showPlate(idx);
+      });
+      thumb.addEventListener('keydown', (e) => {
+        const idx = Number(thumb.dataset.plateSelect);
+        if (Number.isNaN(idx)) return;
+        const isRtl = document.documentElement.dir === 'rtl';
+        let next = -1;
+        if (e.key === 'ArrowRight') next = (idx + (isRtl ? -1 : 1) + thumbs.length) % thumbs.length;
+        else if (e.key === 'ArrowLeft')
+          next = (idx + (isRtl ? 1 : -1) + thumbs.length) % thumbs.length;
+        else if (e.key === 'Home') next = 0;
+        else if (e.key === 'End') next = thumbs.length - 1;
+        if (next !== -1) {
+          e.preventDefault();
+          showPlate(next, true);
+        }
       });
     });
   }
@@ -341,7 +368,7 @@ const verifiedProof = proofItems.filter((p) => isRealProof(p.href));
   }
 
   .lens-btn {
-    min-height: 40px;
+    min-height: var(--touch-min);
     padding-inline: var(--space-3);
     background: transparent;
     border: none;
@@ -355,7 +382,15 @@ const verifiedProof = proofItems.filter((p) => isRealProof(p.href));
       color var(--t-fast) ease;
   }
 
+  html[lang='ar'] .lens-btn {
+    font-family: var(--f-body-ar);
+  }
+
   @media (max-width: 540px) {
+    .hero-id__sep {
+      display: none;
+    }
+
     .lens-switch {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -377,7 +412,7 @@ const verifiedProof = proofItems.filter((p) => isRealProof(p.href));
 
   .lens-btn--break[aria-pressed='true'] {
     background: var(--sulfur-400);
-    color: #080a0f;
+    color: var(--ink-900);
     font-weight: 600;
   }
 
@@ -418,11 +453,30 @@ const verifiedProof = proofItems.filter((p) => isRealProof(p.href));
     color: var(--sulfur-400);
   }
 
+  .hero-kicker[hidden],
+  .hero-headline__group[hidden],
+  .hero-lead[hidden] {
+    display: none;
+  }
+
+  html[lang='ar'] .hero-kicker {
+    font-family: var(--f-body-ar);
+  }
+
   .hero-headline {
     margin: 0;
     font-size: clamp(2.25rem, 1.6rem + 3vw, 4.15rem);
     line-height: 1.08;
     letter-spacing: -0.03em;
+  }
+
+  html[lang='ar'] .hero-headline {
+    font-family: var(--f-body-ar);
+    line-height: 1.32;
+  }
+
+  .hero-headline__group {
+    display: block;
   }
 
   .hero-headline__line,
@@ -446,11 +500,19 @@ const verifiedProof = proofItems.filter((p) => isRealProof(p.href));
     color: var(--text);
   }
 
+  html[lang='ar'] .hero-lead {
+    line-height: var(--lh-ar);
+  }
+
   .hero-actions {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-3);
     margin-block-start: var(--space-6);
+  }
+
+  .hero-actions .btn {
+    padding-inline: var(--space-4);
   }
 
   .btn--ghost {
@@ -485,9 +547,10 @@ const verifiedProof = proofItems.filter((p) => isRealProof(p.href));
   .hero-proof__row {
     margin: 0;
     display: flex;
+    flex-wrap: wrap;
     align-items: baseline;
     justify-content: space-between;
-    gap: var(--space-2);
+    gap: var(--space-1) var(--space-2);
   }
 
   .hero-proof__val {
@@ -495,13 +558,22 @@ const verifiedProof = proofItems.filter((p) => isRealProof(p.href));
     font-size: var(--step-1);
     font-weight: 700;
     color: var(--text-hi);
+    white-space: nowrap;
   }
 
   .hero-proof__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-min);
     font-family: var(--f-code);
     font-size: var(--text-2xs);
     color: var(--sulfur-300);
     text-decoration: none;
+    white-space: nowrap;
+  }
+
+  html[lang='ar'] .hero-proof__link {
+    font-family: var(--f-body-ar);
   }
 
   .hero-proof__link:hover {
@@ -616,6 +688,12 @@ const verifiedProof = proofItems.filter((p) => isRealProof(p.href));
     color: var(--text-hi);
   }
 
+  html[lang='ar'] .specimen__title,
+  html[lang='ar'] .specimen__meta,
+  html[lang='ar'] .specimen__link {
+    font-family: var(--f-body-ar);
+  }
+
   .specimen__meta {
     font-family: var(--f-code);
     font-size: var(--text-2xs);
@@ -629,8 +707,15 @@ const verifiedProof = proofItems.filter((p) => isRealProof(p.href));
     line-height: 1.55;
   }
 
+  html[lang='ar'] .specimen__text {
+    line-height: var(--lh-ar);
+  }
+
   .specimen__link {
     justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-min);
     font-family: var(--f-code);
     font-size: var(--text-xs);
     color: var(--sulfur-300);
@@ -652,6 +737,7 @@ const verifiedProof = proofItems.filter((p) => isRealProof(p.href));
   .specimen__thumb {
     position: relative;
     padding: 0;
+    min-height: var(--touch-min);
     aspect-ratio: 16 / 10;
     overflow: hidden;
     background: var(--ink-800);

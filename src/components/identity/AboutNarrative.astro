@@ -69,7 +69,7 @@ const copy = {
 
 <div class="narrative" data-about-narrative>
   <header class="narrative__head">
-    <span class="narrative__eyebrow ltr">{copy.eyebrow}</span>
+    <span class="narrative__eyebrow">{copy.eyebrow}</span>
     <h1 class="narrative__title">{copy.title}</h1>
     <p class="narrative__subtitle">{copy.subtitle}</p>
   </header>
@@ -79,11 +79,14 @@ const copy = {
       {
         storyChapters.map((ch, idx) => (
           <button
+            id={`chapter-tab-${ch.num}`}
             type="button"
             role="tab"
             class:list={['ch-tab', `ch-tab--${ch.lens}`]}
             data-chapter-select={ch.num}
             aria-selected={idx === 0 ? 'true' : 'false'}
+            aria-controls={`chapter-panel-${ch.num}`}
+            tabindex={idx === 0 ? 0 : -1}
           >
             <span class="ch-tab__num ltr">{ch.num}</span>
             <span class="ch-tab__phase">{ch.phase[lang]}</span>
@@ -97,8 +100,10 @@ const copy = {
       {
         storyChapters.map((ch, idx) => (
           <article
+            id={`chapter-panel-${ch.num}`}
             class:list={['ch-panel', `ch-panel--${ch.lens}`]}
             role="tabpanel"
+            aria-labelledby={`chapter-tab-${ch.num}`}
             data-chapter-panel={ch.num}
             hidden={idx !== 0}
           >
@@ -114,8 +119,8 @@ const copy = {
             </div>
 
             <div class="ch-panel__content">
-              <span class="ch-panel__phase ltr">
-                {ch.num} · {ch.phase[lang]}
+              <span class="ch-panel__phase">
+                <bdi class="ltr">{ch.num}</bdi> · {ch.phase[lang]}
               </span>
               <h2 class="ch-panel__title">{ch.title[lang]}</h2>
               <p class="ch-panel__body">{ch.body[lang]}</p>
@@ -156,13 +161,34 @@ const copy = {
     const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-chapter-select]'));
     const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-chapter-panel]'));
 
-    tabs.forEach((tab) => {
-      tab.addEventListener('click', () => {
-        const num = tab.dataset.chapterSelect;
-        tabs.forEach((t) => t.setAttribute('aria-selected', String(t === tab)));
-        panels.forEach((p) => {
-          p.hidden = p.dataset.chapterPanel !== num;
-        });
+    const activate = (idx: number, focus = false) => {
+      const tab = tabs[idx];
+      if (!tab) return;
+      const num = tab.dataset.chapterSelect;
+      tabs.forEach((t, i) => {
+        const active = i === idx;
+        t.setAttribute('aria-selected', String(active));
+        t.tabIndex = active ? 0 : -1;
+        if (active && focus) t.focus();
+      });
+      panels.forEach((p) => {
+        p.hidden = p.dataset.chapterPanel !== num;
+      });
+    };
+
+    tabs.forEach((tab, idx) => {
+      tab.addEventListener('click', () => activate(idx));
+      tab.addEventListener('keydown', (e) => {
+        const isRtl = document.documentElement.dir === 'rtl';
+        let next = -1;
+        if (e.key === 'ArrowRight') next = (idx + (isRtl ? -1 : 1) + tabs.length) % tabs.length;
+        else if (e.key === 'ArrowLeft') next = (idx + (isRtl ? 1 : -1) + tabs.length) % tabs.length;
+        else if (e.key === 'Home') next = 0;
+        else if (e.key === 'End') next = tabs.length - 1;
+        if (next !== -1) {
+          e.preventDefault();
+          activate(next, true);
+        }
       });
     });
   });
@@ -244,6 +270,7 @@ const copy = {
   }
 
   .ch-tab__num {
+    justify-self: start;
     font-family: var(--f-code);
     font-size: var(--text-xs);
     color: var(--blue-400);
@@ -349,6 +376,9 @@ const copy = {
 
   .ch-panel__link {
     justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-min);
     font-family: var(--f-code);
     font-size: var(--text-xs);
     color: var(--sulfur-300);
@@ -357,6 +387,15 @@ const copy = {
 
   .ch-panel__link:hover {
     text-decoration: underline;
+  }
+
+  html[lang='ar'] .narrative__eyebrow,
+  html[lang='ar'] .ch-tab__phase,
+  html[lang='ar'] .ch-tab__title,
+  html[lang='ar'] .ch-panel__phase,
+  html[lang='ar'] .ch-panel__quote-label,
+  html[lang='ar'] .ch-panel__link {
+    font-family: var(--f-body-ar);
   }
 
   .principles {

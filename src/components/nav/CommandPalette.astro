@@ -295,8 +295,17 @@ const cfg = {
       }
     });
 
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) dialog.close();
+    });
+
     window.addEventListener('keydown', (e) => {
       if (!(e.metaKey || e.ctrlKey) || e.altKey || e.key.toLowerCase() !== 'k') return;
+      if (dialog.open) {
+        e.preventDefault();
+        dialog.close();
+        return;
+      }
       // Never hijack the shortcut while the visitor is typing elsewhere.
       const el = e.target instanceof Element ? e.target : null;
       if (el?.closest('input, textarea, select, [contenteditable]')) return;

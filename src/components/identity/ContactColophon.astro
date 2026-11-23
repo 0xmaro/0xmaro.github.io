@@ -46,7 +46,7 @@ const copy = {
 
 <div class="colophon">
   <div class="colophon__intro">
-    <span class="colophon__eyebrow ltr">{copy.eyebrow}</span>
+    <span class="colophon__eyebrow">{copy.eyebrow}</span>
     <h2 class="colophon__title">{copy.title}</h2>
     <p class="colophon__lead">{copy.lead}</p>
     <div class="colophon__meta-actions">
@@ -79,6 +79,7 @@ const copy = {
         class="channel__copy-btn"
         data-copy-handle={site.handles.discord}
         data-copied-label={copy.copiedBtn}
+        aria-label={`${copy.copyBtn} ${copy.discordLabel}: ${site.handles.discord}`}
       >
         {copy.copyBtn}
       </button>
@@ -89,16 +90,32 @@ const copy = {
 <script>
   document.querySelectorAll<HTMLButtonElement>('[data-copy-handle]').forEach((btn) => {
     const original = btn.textContent ?? 'Copy';
+    const copyText = async (value: string) => {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(value);
+        return true;
+      }
+      const ta = document.createElement('textarea');
+      ta.value = value;
+      ta.setAttribute('readonly', '');
+      ta.className = 'sr-copy';
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand('copy');
+      ta.remove();
+      return ok;
+    };
+
     btn.addEventListener('click', async () => {
       const value = btn.dataset.copyHandle ?? '';
       try {
-        await navigator.clipboard.writeText(value);
+        await copyText(value);
         btn.textContent = btn.dataset.copiedLabel ?? 'Copied ✓';
         window.setTimeout(() => {
           btn.textContent = original;
         }, 1800);
       } catch {
-        // Fallback: no-op if clipboard blocked
+        // Fallback: clipboard unavailable in restricted context
       }
     });
   });
@@ -202,7 +219,8 @@ const copy = {
   }
 
   .channel__copy-btn {
-    min-height: 34px;
+    min-height: var(--touch-min);
+    min-width: var(--touch-min);
     padding-inline: var(--space-3);
     background: var(--plate-bg);
     border: var(--hairline) solid var(--plate-border);
@@ -215,5 +233,11 @@ const copy = {
   .channel__copy-btn:hover {
     border-color: var(--sulfur-400);
     color: var(--sulfur-300);
+  }
+
+  html[lang='ar'] .colophon__eyebrow,
+  html[lang='ar'] .channel__name,
+  html[lang='ar'] .channel__copy-btn {
+    font-family: var(--f-body-ar);
   }
 </style>

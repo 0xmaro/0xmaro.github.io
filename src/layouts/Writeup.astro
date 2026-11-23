@@ -588,10 +588,15 @@ const breadcrumb = breadcrumbSchema(lang, Astro.site!, [
   /* ── Grid: content + sticky TOC in the rail margin (plan/03 §3.3) ── */
   .writeup__grid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-6);
     padding-block-start: var(--space-7);
     padding-block-end: var(--space-8);
+  }
+
+  .writeup__content,
+  .writeup__toc {
+    min-width: 0;
   }
 
   @media (min-width: 1080px) {
@@ -606,12 +611,12 @@ const breadcrumb = breadcrumbSchema(lang, Astro.site!, [
 
     .writeup__toc {
       order: 2;
+      position: sticky;
+      top: calc(var(--space-5) + 56px);
     }
   }
 
   .writeup__toc {
-    position: sticky;
-    top: calc(var(--space-5) + 56px);
     align-self: start;
     border-inline-start: var(--hairline) solid var(--line);
     padding-inline-start: var(--space-4);

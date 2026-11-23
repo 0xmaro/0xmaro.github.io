@@ -118,7 +118,7 @@ const journeyHref = getRelativeLocaleUrl(lang, '/journey');
                   <header class="journey__meta">
                     {s.data.date && (
                       <time
-                        class="journey__date ltr"
+                        class:list={['journey__date', { ltr: lang === 'en' }]}
                         datetime={s.data.date.toISOString().slice(0, 10)}
                       >
                         {dateFmt.format(s.data.date)}
@@ -423,6 +423,10 @@ const journeyHref = getRelativeLocaleUrl(lang, '/journey');
     font-family: var(--f-code);
     font-size: var(--text-xs);
     color: var(--blue-400);
+  }
+
+  html[lang='ar'] .journey__date {
+    font-family: var(--f-body-ar);
   }
 
   .journey__phase {

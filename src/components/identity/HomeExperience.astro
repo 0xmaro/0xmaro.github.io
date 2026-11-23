@@ -143,7 +143,11 @@ const sections = {
   )
 }
 
-<section id="contact" class="band band--closing" aria-label="Contact">
+<section
+  id="contact"
+  class="band band--closing"
+  aria-label={lang === 'ar' ? 'التواصل والحضور الرقمي' : 'Contact and social presence'}
+>
   <div class="wrap reveal">
     <ContactColophon lang={lang} />
   </div>

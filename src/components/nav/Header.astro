@@ -37,6 +37,7 @@ const extraDrawerLinks = [
 ];
 
 const menuLabel = lang === 'ar' ? 'القائمة' : 'Menu';
+const drawerNavLabel = lang === 'ar' ? 'التنقل السريع' : 'Mobile navigation';
 const themeLabel = lang === 'ar' ? 'تبديل المظهر' : 'Toggle theme';
 ---
 
@@ -44,7 +45,7 @@ const themeLabel = lang === 'ar' ? 'تبديل المظهر' : 'Toggle theme';
   <div class="wrap nav">
     <a class="brand ltr" href={getRelativeLocaleUrl(lang, '/')}>
       <span class="brand__mark" aria-hidden="true"></span>
-      0x<span class="brand__accent">MARO</span>
+      <span class="brand__word">0x<span class="brand__accent">MARO</span></span>
     </a>
 
     <nav class="nav__links" aria-label={t('nav.primary')}>
@@ -84,7 +85,7 @@ const themeLabel = lang === 'ar' ? 'تبديل المظهر' : 'Toggle theme';
         </svg>
       </button>
 
-      <button type="button" class="nav__search" data-palette-open>
+      <button type="button" class="nav__search" data-palette-open aria-label={t('palette.open')}>
         <svg
           class="nav__search-icon ltr"
           aria-hidden="true"
@@ -121,7 +122,7 @@ const themeLabel = lang === 'ar' ? 'تبديل المظهر' : 'Toggle theme';
 
   <div id="mobile-drawer" class="drawer" data-mobile-drawer hidden>
     <div class="wrap drawer__inner">
-      <nav class="drawer__primary" aria-label={t('nav.primary')}>
+      <nav class="drawer__primary" aria-label={drawerNavLabel}>
         {
           navItems.map((item, idx) => (
             <a
@@ -193,6 +194,14 @@ const themeLabel = lang === 'ar' ? 'تبديل المظهر' : 'Toggle theme';
       if (e.key === 'Escape' && !drawer.hidden) {
         closeDrawer();
         menuBtn.focus();
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (drawer.hidden) return;
+      const target = e.target instanceof Node ? e.target : null;
+      if (target && !drawer.contains(target) && !menuBtn.contains(target)) {
+        closeDrawer();
       }
     });
   }
@@ -448,6 +457,12 @@ const themeLabel = lang === 'ar' ? 'تبديل المظهر' : 'Toggle theme';
     background: var(--ink-800);
   }
 
+  @media (min-width: 860px) {
+    .drawer {
+      display: none;
+    }
+  }
+
   .drawer[hidden] {
     display: none;
   }
@@ -477,6 +492,10 @@ const themeLabel = lang === 'ar' ? 'تبديل المظهر' : 'Toggle theme';
     font-size: var(--step-0);
   }
 
+  html[lang='ar'] .drawer__link {
+    font-family: var(--f-body-ar);
+  }
+
   .drawer__link[aria-current='page'] {
     border-color: var(--sulfur-400);
     color: var(--sulfur-300);
@@ -501,9 +520,13 @@ const themeLabel = lang === 'ar' ? 'تبديل المظهر' : 'Toggle theme';
     font-size: var(--text-xs);
     color: var(--text-lo);
     text-decoration: none;
-    min-height: 36px;
+    min-height: var(--touch-min);
     display: inline-flex;
     align-items: center;
+  }
+
+  html[lang='ar'] .drawer__sublink {
+    font-family: var(--f-body-ar);
   }
 
   .drawer__sublink:hover {

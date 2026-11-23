@@ -85,7 +85,10 @@ const ogImage = images[0]?.src;
       <div class="dossier__eyebrow">
         {
           d.date && (
-            <time class="dossier__date ltr" datetime={d.date.toISOString().slice(0, 10)}>
+            <time
+              class:list={['dossier__date', { ltr: lang === 'en' }]}
+              datetime={d.date.toISOString().slice(0, 10)}
+            >
               {dateFmt.format(d.date)}
             </time>
           )
@@ -120,7 +123,7 @@ const ogImage = images[0]?.src;
         d.date && (
           <div class="facts__cell">
             <dt class="facts__k">{t('journey.date')}</dt>
-            <dd class="facts__v ltr">{dateFmt.format(d.date)}</dd>
+            <dd class:list={['facts__v', { ltr: lang === 'en' }]}>{dateFmt.format(d.date)}</dd>
           </div>
         )
       }
@@ -214,7 +217,13 @@ const ogImage = images[0]?.src;
             ))}
             {videos.map((v) => (
               <figure class="gfig gfig--video">
-                <video class="gfig__video" controls preload="metadata" playsinline>
+                <video
+                  class="gfig__video"
+                  controls
+                  preload="metadata"
+                  playsinline
+                  aria-label={v.alt[lang]}
+                >
                   <source src={v.src} type="video/mp4" />
                 </video>
                 {v.caption && <figcaption class="gfig__cap">{v.caption[lang]}</figcaption>}
@@ -256,7 +265,7 @@ const ogImage = images[0]?.src;
           {t('journey.lightbox.close')}
         </button>
       </div>
-      <img class="jbox__img" id="dbox-img" src="" alt="" />
+      <img class="jbox__img" id="dbox-img" alt="" />
     </dialog>
   </article>
 </Base>
@@ -281,6 +290,10 @@ const ogImage = images[0]?.src;
     closeBtn?.addEventListener('click', () => dialog.close());
     dialog.addEventListener('click', (e) => {
       if (e.target === dialog) dialog.close();
+    });
+    dialog.addEventListener('close', () => {
+      img.removeAttribute('src');
+      img.alt = '';
     });
   }
 </script>
@@ -330,6 +343,10 @@ const ogImage = images[0]?.src;
     font-family: var(--f-code);
     font-size: var(--text-sm);
     color: var(--blue-400);
+  }
+
+  html[lang='ar'] .dossier__date {
+    font-family: var(--f-body-ar);
   }
 
   .dossier__phase {

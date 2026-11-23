@@ -335,10 +335,15 @@ const breadcrumb = breadcrumbSchema(lang, Astro.site!, [
   /* ── Grid: content + TOC in the rail margin when a note earns one ── */
   .note-page__grid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-6);
     padding-block-start: var(--space-7);
     padding-block-end: var(--space-8);
+  }
+
+  .note-page__content,
+  .note-page__toc {
+    min-width: 0;
   }
 
   @media (min-width: 1080px) {
@@ -353,12 +358,12 @@ const breadcrumb = breadcrumbSchema(lang, Astro.site!, [
 
     .note-page__toc {
       order: 2;
+      position: sticky;
+      top: calc(var(--space-5) + 56px);
     }
   }
 
   .note-page__toc {
-    position: sticky;
-    top: calc(var(--space-5) + 56px);
     align-self: start;
     border-inline-start: var(--hairline) solid var(--line);
     padding-inline-start: var(--space-4);
