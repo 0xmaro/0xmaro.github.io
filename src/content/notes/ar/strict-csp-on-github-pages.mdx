@@ -1,0 +1,47 @@
+---
+title: 'فرض سياسة CSP صارمة (self فقط) على GitHub Pages مع Astro'
+summary: 'كيف تشحن سياسة Content Security Policy صارمة بدون unsafe-inline على GitHub Pages الساكن عبر تعطيل تضمين الأنماط في Astro، ومنع وميض المظهر بسكربت خارجي، وتوحيد مصدر السياسة.'
+lang: 'ar'
+translationOf: 'strict-csp-on-github-pages'
+publishedAt: 2026-09-26
+kind: 'note'
+tags: ['csp', 'astro', 'github-pages', 'appsec']
+relatedProjects: ['0xmaro-site']
+visibility:
+  draft: false
+---
+
+لا يسمح GitHub Pages بتعديل ترويسات استجابة HTTP، لذا يجب وضع سياسة أمان المحتوى داخل وسم `<meta http-equiv="Content-Security-Policy">`. ولأن وسم `<meta>` لا يدعم nonces لكل طلب، فإن أي `<script>` أو `<style>` مضمّن يجبرك على فتح `'unsafe-inline'`.
+
+## ثلاثة إعدادات افتراضية في Astro تكسر الصرامة
+
+افتراضياً يقوم Astro وVite بتضمين الملفات الصغيرة داخل HTML لتحسين عدد الطلبات:
+
+1. **ملفات CSS الأصغر من 4KB** تُضمّن مباشرة داخل `<style>`.
+2. **الأصول الصغيرة** تُحوّل إلى `data:` URIs.
+3. **كود تهيئة المظهر (Dark/Light)** يُكتب عادةً كسكربت مضمّن في `<head>` لتفادي وميض المظهر (FOUC).
+
+كل واحد من هذه الثلاثة يكسر `script-src 'self'; style-src 'self'`.
+
+## الإعدادات التي تحافظ على السياسة صارمة
+
+في `astro.config.mjs`:
+
+<Payload
+  lang="js"
+  code={`export default defineConfig({
+  build: {
+    inlineStylesheets: 'never',
+  },
+  vite: {
+    build: {
+      assetsInlineLimit: 0,
+      cssCodeSplit: false,
+    },
+  },
+});`}
+/>
+
+ضبط `cssCodeSplit: false` مهم للأداء: بعد منع التضمين، تقسيم CSS لكل مكوّن يخلق عدة طلبات متسلسلة تعيق الرسم الأول. تجميع الأنماط في ملف خارجي واحد تحت `/_astro/` يحفظ الأمان والأداء معاً.
+
+ولتهيئة المظهر بدون FOUC، يُحمّل ملف خارجي صغير `/js/root.js` مباشرة في `<head>`، مع تعريف التوجيهات في ملف واحد (`src/config/security.ts`) يغذّي القالب وصفحة `/ar/security` واختبارات Vitest معاً.

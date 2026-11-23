@@ -21,6 +21,8 @@ import {
   facetSlug,
   forSurface,
   relatedByCwe,
+  relatedNoteEntries,
+  relatedProjectEntries,
   seriesOrdered,
   seriesParts,
   slugOf,
@@ -80,6 +82,31 @@ const facets = facetIndex(archive);
 const parts = seriesParts(archive);
 const numbers = caseNumbers(allWriteups);
 const related = relatedByCwe(allWriteups, entry, lang);
+
+const allProjects = await getCollection('projects');
+const allNotes = await getCollection('notes');
+const linkedProjects = relatedProjectEntries(allProjects, data.relatedProjects, lang);
+const linkedNotes = relatedNoteEntries(allNotes, data.relatedNotes, lang);
+const hasKnowledgeLinks = linkedProjects.length > 0 || linkedNotes.length > 0;
+
+const researchCopy = {
+  en: {
+    connected: 'Connected knowledge graph',
+    projects: 'Audited & related systems',
+    notes: 'Related engineering notes',
+    disclosureTitle: 'Responsible Disclosure & Scope',
+    disclosureBody:
+      'Every case file published here targets self-built systems, authorized labs, or concluded CTF events. No sensitive client data or unpatched third-party vulnerabilities are exposed. For security issues on this site itself, see /.well-known/security.txt.',
+  },
+  ar: {
+    connected: 'المعرفة المرتبطة في الأرشيف',
+    projects: 'الأنظمة والمشاريع المرتبطة',
+    notes: 'الملاحظات الهندسية المرتبطة',
+    disclosureTitle: 'الإفصاح المسؤول ونطاق البحث',
+    disclosureBody:
+      'كل ملف قضية منشور هنا يستهدف أنظمة بنيتها بنفسي أو مختبرات مرخّصة أو مسابقات CTF منتهية، بدون كشف بيانات حساسة أو ثغرات غير مرقّعة لطرف ثالث. للإبلاغ عن أي مشكلة في الموقع نفسه راجع /.well-known/security.txt.',
+  },
+}[lang];
 
 // Metadata link vs text (plan/04 F-03): a value with its own route links to
 // it; a below-threshold value is plain text, never a dead href.
@@ -350,6 +377,51 @@ const breadcrumb = breadcrumbSchema(lang, Astro.site!, [
     </div>
 
     {
+      hasKnowledgeLinks && (
+        <aside class="wrap writeup__knowledge" aria-labelledby="writeup-graph-title">
+          <h2 id="writeup-graph-title" class="u-label">
+            {researchCopy.connected}
+          </h2>
+          <div class="wgraph">
+            {linkedProjects.length > 0 && (
+              <div class="wgraph__col">
+                <h3 class="wgraph__head">{researchCopy.projects}</h3>
+                <ul class="wgraph__list">
+                  {linkedProjects.map((p) => (
+                    <li>
+                      <a href={getRelativeLocaleUrl(p.data.lang, `/projects/${slugOf(p)}`)}>
+                        {p.data.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {linkedNotes.length > 0 && (
+              <div class="wgraph__col">
+                <h3 class="wgraph__head">{researchCopy.notes}</h3>
+                <ul class="wgraph__list">
+                  {linkedNotes.map((n) => (
+                    <li>
+                      <a href={getRelativeLocaleUrl(n.data.lang, `/notes/${slugOf(n)}`)}>
+                        {n.data.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </aside>
+      )
+    }
+
+    <aside class="wrap writeup__disclosure" aria-label={researchCopy.disclosureTitle}>
+      <p class="writeup__disclosure-title">{researchCopy.disclosureTitle}</p>
+      <p class="writeup__disclosure-body">{researchCopy.disclosureBody}</p>
+    </aside>
+
+    {
       related.length > 0 && (
         <aside class="wrap writeup__related" aria-labelledby="related-title">
           <h2 id="related-title" class="u-label">
@@ -553,6 +625,78 @@ const breadcrumb = breadcrumbSchema(lang, Astro.site!, [
 
   .writeup__series-current {
     color: var(--sulfur-300);
+  }
+
+  /* ── Connected knowledge graph & responsible disclosure ── */
+  .writeup__knowledge,
+  .writeup__disclosure {
+    padding-block: var(--space-6);
+    border-block-start: var(--hairline) solid var(--line);
+  }
+
+  .writeup__knowledge .u-label {
+    display: block;
+    margin: 0 0 var(--space-4);
+    color: var(--blue-400);
+  }
+
+  .wgraph {
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  }
+
+  .wgraph__head {
+    margin: 0 0 var(--space-2);
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-label);
+  }
+
+  .wgraph__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .wgraph__list a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-min);
+    color: var(--sulfur-300);
+    text-decoration: none;
+    border-block-end: var(--hairline) solid transparent;
+  }
+
+  .wgraph__list a:hover {
+    border-block-end-color: var(--sulfur-400);
+  }
+
+  .writeup__disclosure-title {
+    margin: 0 0 var(--space-2);
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--text-lo);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-label);
+  }
+
+  .writeup__disclosure-body {
+    margin: 0;
+    max-width: var(--measure-read);
+    font-size: var(--text-xs);
+    color: var(--text-dim);
+    line-height: var(--lh-body);
+  }
+
+  html[lang='ar'] .wgraph__head,
+  html[lang='ar'] .writeup__disclosure-title {
+    font-family: var(--f-body-ar);
   }
 
   /* ── Related case files (plan/04 F-02): matched by CWE, never padded ── */

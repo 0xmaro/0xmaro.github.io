@@ -58,6 +58,8 @@ const writeups = defineCollection({
       // when real http(s) (isRealProof); hasFix without one warns at build.
       fixCommits: z.array(z.string()).default([]),
       toolsUsed: z.array(z.string()).default([]),
+      relatedProjects: z.array(z.string()).default([]),
+      relatedNotes: z.array(z.string()).default([]),
       readingTime: z.number().optional(), // computed automatically
 
       cover: image().optional(),
@@ -89,8 +91,21 @@ const projects = defineCollection({
       publishedAt: z.coerce.date(),
       updatedAt: z.coerce.date().optional(),
       role: z.string().min(1), // mandatory; 'TODO(copy)' until written
+      kind: z
+        .enum(['hardware', 'digital-logic', 'security-web', 'fullstack', 'embedded-research'])
+        .optional(),
       status: z.enum(['live', 'archived', 'private']),
       stack: z.array(z.string()).default([]),
+      media: z
+        .array(
+          z.object({
+            type: z.enum(['image', 'video', 'pdf']),
+            src: z.string().min(1),
+            alt: l10nText,
+            caption: l10nText.optional(),
+          })
+        )
+        .default([]),
       metrics: z
         .array(
           z.object({
@@ -104,6 +119,8 @@ const projects = defineCollection({
       demo: z.string().default(''),
       securityNotes: z.string().default(''),
       relatedWriteups: z.array(z.string()).default([]),
+      relatedNotes: z.array(z.string()).default([]),
+      relatedJourney: z.array(z.string()).default([]),
       visibility: visibility.default(() => ({
         draft: true,
         unlisted: false,
@@ -148,6 +165,8 @@ const notes = defineCollection({
         kind: z.enum(['note', 'book-summary', 'paper-summary', 'til']),
         source: noteSource.optional(), // required for the summary kinds — see refinement
         tags: z.array(z.string()).max(8).default([]),
+        relatedProjects: z.array(z.string()).default([]),
+        relatedWriteups: z.array(z.string()).default([]),
         visibility: visibility.default(() => ({
           draft: true,
           unlisted: false,

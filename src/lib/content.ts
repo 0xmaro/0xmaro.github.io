@@ -199,6 +199,30 @@ export const relatedWriteupEntries = (
     })
     .filter((e): e is Writeup => Boolean(e && buildsInProd(e)));
 
+/**
+ * Resolve `relatedProjects` slugs to entries that build in production,
+ * preferring the current locale and falling back to English.
+ */
+export const relatedProjectEntries = (entries: Project[], slugs: string[], lang: Lang): Project[] =>
+  slugs
+    .map((slug) => {
+      const local = entries.find((e) => e.data.lang === lang && slugOf(e) === slug);
+      return local ?? entries.find((e) => e.data.lang === 'en' && slugOf(e) === slug);
+    })
+    .filter((e): e is Project => Boolean(e && buildsInProd(e)));
+
+/**
+ * Resolve `relatedNotes` slugs to entries that build in production,
+ * preferring the current locale and falling back to English.
+ */
+export const relatedNoteEntries = (entries: Note[], slugs: string[], lang: Lang): Note[] =>
+  slugs
+    .map((slug) => {
+      const local = entries.find((e) => e.data.lang === lang && slugOf(e) === slug);
+      return local ?? entries.find((e) => e.data.lang === 'en' && slugOf(e) === slug);
+    })
+    .filter((e): e is Note => Boolean(e && buildsInProd(e)));
+
 /* ────────────────────────────────────────────────────────────────────────────
  * Pre-rendered archive facets — plan/04-features.md F-03 (2026-09 correction).
  *

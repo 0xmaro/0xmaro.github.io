@@ -1,0 +1,50 @@
+---
+title: "Enforcing script-src 'self' & style-src 'self' on GitHub Pages"
+summary: 'How to ship a strict self-only meta Content Security Policy on static GitHub Pages with Astro — disabling asset inlining, avoiding theme FOUC via external JS, and keeping zero third-party origins.'
+lang: 'en'
+publishedAt: 2026-09-26
+kind: 'note'
+tags: ['csp', 'astro', 'github-pages', 'appsec']
+relatedProjects: ['0xmaro-site']
+visibility:
+  draft: false
+---
+
+GitHub Pages does not let you configure custom HTTP response headers, so a static site's Content Security Policy must be delivered via `<meta http-equiv="Content-Security-Policy">`. Because meta CSP cannot carry per-request nonces, allowing even one inline `<script>` or `<style>` forces you into `'unsafe-inline'`.
+
+## The three Astro defaults that break strict CSP
+
+By default, Astro and Vite optimize small assets by inlining them directly into the HTML:
+
+1. **Small stylesheets (`< 4 KB`)** are inlined as `<style>` tags.
+2. **Small assets** are inlined as `data:` URIs.
+3. **Theme initialization snippets** are commonly written as inline `<script>` tags in `<head>` to avoid a flash of unstyled content (FOUC).
+
+Every one of those violates `script-src 'self'; style-src 'self'`.
+
+## The exact configuration that keeps it self-only
+
+In `astro.config.mjs`:
+
+<Payload
+  lang="js"
+  code={`export default defineConfig({
+  build: {
+    inlineStylesheets: 'never',
+  },
+  vite: {
+    build: {
+      assetsInlineLimit: 0,
+      cssCodeSplit: false,
+    },
+  },
+});`}
+/>
+
+Setting `cssCodeSplit: false` is an important performance pairing: once stylesheets are external, splitting CSS per component creates multiple render-blocking round trips. Bundling into a single `/_astro/` stylesheet keeps both strict CSP and fast first paint.
+
+For theme persistence without FOUC, load a tiny external script synchronously in `<head>` (`<script src="/js/root.js" is:inline></script>` — note that `is:inline` with `src` tells Astro to leave the external tag untouched rather than bundling it as a deferred module).
+
+## Keeping policy and documentation in sync
+
+Define the CSP directives in one TypeScript module (`src/config/security.ts`), serialize it into `<meta>` in `Base.astro`, and render the same array on `/security` — then assert in Vitest that `csp` never contains `unsafe-inline`, `unsafe-eval`, or `*`.

@@ -269,7 +269,11 @@ export const showcaseProjects: ShowcaseProject[] = [
       },
     },
     primaryLink: {
-      label: { en: 'Open verified dossier', ar: 'افتح الملف الموثّق' },
+      label: { en: 'Read full case study', ar: 'اقرأ دراسة الحالة الكاملة' },
+      href: '/projects/qader-a1',
+    },
+    secondaryLink: {
+      label: { en: 'Journey milestone dossier', ar: 'ملف المحطة الموثّق' },
       href: '/journey/04-qader-a1-2024',
     },
   },
@@ -323,7 +327,11 @@ export const showcaseProjects: ShowcaseProject[] = [
       },
     },
     primaryLink: {
-      label: { en: 'Inspect schematic & demo', ar: 'استعرض المخطط والتجربة' },
+      label: { en: 'Read full case study', ar: 'اقرأ دراسة الحالة الكاملة' },
+      href: '/projects/autonomous-logic-tank',
+    },
+    secondaryLink: {
+      label: { en: 'Schematic & demo dossier', ar: 'المخطط والتجربة العملية' },
       href: '/journey/09-digital-logic-tank-2024',
     },
   },
@@ -358,12 +366,12 @@ export const showcaseProjects: ShowcaseProject[] = [
       'Exact-Count Pagefind',
     ],
     primaryLink: {
-      label: { en: 'Read Case #01 (CWE-200)', ar: 'اقرأ القضية #01 (CWE-200)' },
-      href: '/writeups/search-index-leaked-hidden-pages',
+      label: { en: 'Read architecture case study', ar: 'اقرأ الدراسة المعمارية' },
+      href: '/projects/0xmaro-site',
     },
     secondaryLink: {
-      label: { en: 'Live security posture', ar: 'وضع الأمان المباشر' },
-      href: '/security',
+      label: { en: 'Case #01 (CWE-200) & posture', ar: 'القضية #01 (CWE-200)' },
+      href: '/writeups/search-index-leaked-hidden-pages',
     },
   },
   {

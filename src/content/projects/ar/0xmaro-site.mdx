@@ -1,0 +1,74 @@
+---
+title: '0xmaro.github.io — منصة هندسة أمنية مدقّقة ذاتياً'
+summary: 'منصة نشر تقني وأمني ثنائية اللغة (عربي/إنجليزي) مبنية على Astro 7 بسياسة CSP صارمة (self فقط)، وصفر مصادر خارجية وقت التشغيل، وسلسلة توريد CI مثبّتة بـ SHA، وبحث Pagefind محكوم بقواعد الإظهار.'
+lang: 'ar'
+translationOf: '0xmaro-site'
+publishedAt: 2026-09-26
+role: 'المؤلف والمصمم المعماري والمدقّق الأمني'
+kind: 'security-web'
+status: 'live'
+stack:
+  ['Astro 7', 'TypeScript', 'Pagefind', 'Strict CSP', 'Vitest', 'Bilingual RTL', 'GitHub Actions']
+repo: 'https://github.com/0xmaro/0xmaro.github.io'
+demo: 'https://0xmaro.github.io/ar/'
+metrics:
+  - value: '0 مصادر'
+    label: 'سكربتات أو خطوط أو متتبّعات خارجية وقت التشغيل'
+    proof: 'https://0xmaro.github.io/ar/security/'
+  - value: '3 commits'
+    label: 'إصلاحات موثّقة لثغرة تسريب فهرس Pagefind (CWE-200)'
+    proof: 'https://github.com/0xmaro/0xmaro.github.io/commit/6cbe0ead72b8a7c940028173822b6f6faa0dc6b6'
+securityNotes: "يفرض الموقع `script-src 'self'` و`style-src 'self'` من مصدر واحد (`src/config/security.ts`)، ويثبّت كل GitHub Action بـ SHA كامل، ويشترط نجاح Vitest وفحص الروابط وفحص الفهرسة قبل كل نشر."
+relatedWriteups: ['search-index-leaked-hidden-pages']
+relatedNotes: ['strict-csp-on-github-pages', 'pagefind-opt-in-zero-state']
+visibility:
+  draft: false
+  featured: true
+---
+
+## 01 — المشكلة ونموذج التهديد
+
+معظم المواقع الشخصية تُعامل كصفحات عرض سريعة: خطوط من خوادم خارجية، وسكربتات مضمّنة، وخطوط CI غير مثبّتة، وأرقام مكتوبة يدوياً بلا تحقق. ولأن هذه المنصة تنشر أبحاثاً في أمن التطبيقات والتحقيق الجنائي الرقمي، **الموقع نفسه هو أول نظام يخضع للتدقيق**.
+
+كان الهدف بناء منصة ثنائية اللغة (إنجليزي + عربي RTL) على GitHub Pages تُفرض فيها قواعد الأمان والإظهار والأدلة آلياً في خط البناء بدلاً من الاعتماد على الوعود النصية.
+
+## 02 — البنية المعمارية ومصدر الحقيقة الواحد
+
+كل قاعدة حرجة تُستمد من ملف واحد فقط:
+
+- **بوابة الإظهار الموحدة (`src/lib/content.ts`)**: كل قوائم الموقع (الرئيسية، الأرشيف، RSS، خريطة الموقع، والمواضيع المرتبطة) تمر عبر `forSurface()` بحيث يغيّر سطر واحد في الـ frontmatter حالة الظهور في كل مكان.
+- **مصدر سياسة الأمان (`src/config/security.ts`)**: يولّد `Base.astro` وسم `<meta http-equiv="Content-Security-Policy">` مباشرة من `cspDirectives`، وتعرض صفحة `/ar/security` نفس السياسة مع قراءة حية لوضع المستودع.
+- **طبقة الإثبات (`src/lib/proof.ts`)**: لا يُعرض أي مركز أو رقم أو نتيجة مختبر إلا إذا ارتبط برابط `http(s)` حقيقي قابل للتحقق.
+
+## 03 — فرض CSP صارمة على GitHub Pages
+
+لا يسمح GitHub Pages بتخصيص ترويسات HTTP للردود، لذا تُفرض سياسة CSP عبر وسم `<meta>` الذي لا يدعم nonces أو hashes. ولتحقيق `script-src 'self'` و`style-src 'self'` بدون `'unsafe-inline'`:
+
+1. تعطيل تضمين الأنماط عالمياً في Astro عبر `build.inlineStylesheets: 'never'`.
+2. ضبط `vite.build.assetsInlineLimit: 0` و`cssCodeSplit: false` لتجميع الأنماط في ملف خارجي واحد تحت `/_astro/`.
+3. نقل تهيئة المظهر قبل الرسم إلى ملف خارجي `/js/root.js` لتجنب وميض المظهر (FOUC) بدون أي سكربت مضمّن.
+4. استضافة خطوط IBM Plex (العربية واللاتينية والأحادية) محلياً بصيغة WOFF2 تحت `public/fonts/`.
+
+## 04 — نتائج التدقيق الذاتي (CWE-200)
+
+تدقيق خط بناء البحث Pagefind كشف مسارين حقيقيين لتسريب الصفحات المخفية (موثّقين بالكامل في **القضية #01**):
+
+- قالب مشاريع كان يُصدر `data-pagefind-body` دون شرط، ما سمح بدخول الصفحات غير المدرجة إلى نتائج البحث.
+- الوضع الافتراضي لـ Pagefind عند عدم وجود أي صفحة مختارة فهرس جميع الصفحات الـ 22 بما فيها صفحات `noindex` و`404`.
+
+تم إصلاح المسارين في 3 commits موثّقة وإغلاق الثغرة نهائياً عبر `scripts/check-pagefind.sh` الذي يوقف البناء إذا لم يتطابق عدد الصفحات المفهرسة بدقة مع عدد الصفحات المسموح بها.
+
+## 05 — سلسلة التوريد وبوابات الجودة
+
+كل دفعة إلى `main` تمر عبر `.github/workflows/deploy.yml` مع تثبيت كل GitHub Action على معرّف commit SHA كامل من 40 حرفاً:
+
+1. `npm test` — اختبارات Vitest لبوابة الإظهار والترجمة وطبقة الإثبات وصرامة CSP.
+2. `astro build` — البناء الساكن للغتين وتوليد صور OG.
+3. `scripts/check-copy.mjs` — منع نشر أي صفحة مفهرسة تحتوي على نصوص مسودة غير مكتملة.
+4. `scripts/check-links.mjs` — منع أي رابط داخلي مكسور في `dist/`.
+5. `pagefind --site dist && bash scripts/check-pagefind.sh` — ضمان التطابق الدقيق لفهرس البحث.
+
+## 06 — الدروس المستفادة والتطوير المستقبلي
+
+- **الدرس**: القواعد المفروضة على طبقة البيانات (`forSurface()`) تظل عرضة للانحراف إذا كانت أدوات ما بعد البناء تقرأ مخرجات HTML مباشرة؛ لذلك يجب تدقيق القوالب كسياسة أمنية.
+- **تطوير مستقبلي**: إضافة طبقة Edge/Proxy مستقبلاً إذا احتجنا لفرض ترويسات HTTP التي لا يدعمها GitHub Pages مثل `frame-ancestors` و`Permissions-Policy`.
