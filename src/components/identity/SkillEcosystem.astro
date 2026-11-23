@@ -1,0 +1,317 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import type { Language } from '../../i18n/ui';
+import { skillDomains } from '../../data/identity';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const copy = {
+  en: {
+    tablist: 'Engineering and security domains',
+    tools: 'Verified tools & technologies',
+    evidence: 'Where it was actually used',
+    build: 'BUILD',
+    break: 'BREAK',
+  },
+  ar: {
+    tablist: 'المجالات الهندسية والأمنية',
+    tools: 'الأدوات والتقنيات الموثّقة',
+    evidence: 'أين استُخدمت فعلياً',
+    build: 'بناء',
+    break: 'أمن وتحليل',
+  },
+}[lang];
+---
+
+<div class="eco" data-skill-eco>
+  <div class="eco__nav" role="tablist" aria-label={copy.tablist}>
+    {
+      skillDomains.map((dom, idx) => (
+        <button
+          type="button"
+          role="tab"
+          class:list={['eco__tab', `eco__tab--${dom.lens}`]}
+          data-eco-select={dom.id}
+          aria-selected={idx === 0 ? 'true' : 'false'}
+        >
+          <span class="eco__tab-top">
+            <span class="eco__code ltr">{dom.code}</span>
+            <span class:list={['eco__lens', `eco__lens--${dom.lens}`]}>
+              {dom.lens === 'build' ? copy.build : copy.break}
+            </span>
+          </span>
+          <span class="eco__tab-title">{dom.title[lang]}</span>
+        </button>
+      ))
+    }
+  </div>
+
+  <div class="eco__panels">
+    {
+      skillDomains.map((dom, idx) => (
+        <section
+          class:list={['eco__panel', `eco__panel--${dom.lens}`]}
+          role="tabpanel"
+          data-eco-panel={dom.id}
+          hidden={idx !== 0}
+        >
+          <header class="eco__panel-head">
+            <span class="eco__code ltr">{dom.code}</span>
+            <h3 class="eco__panel-title">{dom.title[lang]}</h3>
+            <p class="eco__panel-summary">{dom.summary[lang]}</p>
+          </header>
+
+          <div class="eco__group">
+            <h4 class="eco__group-label">{copy.tools}</h4>
+            <ul class="eco__tools ltr">
+              {dom.tools.map((tool) => (
+                <li>{tool}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div class="eco__group">
+            <h4 class="eco__group-label">{copy.evidence}</h4>
+            <ul class="eco__evidence">
+              {dom.evidence.map((ev) => (
+                <li>
+                  <a
+                    href={
+                      ev.href.startsWith('/writeups/')
+                        ? ev.href
+                        : getRelativeLocaleUrl(lang, ev.href)
+                    }
+                  >
+                    <span>{ev.label[lang]}</span>
+                    <span class="ltr" aria-hidden="true">
+                      ↗
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      ))
+    }
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-skill-eco]').forEach((root) => {
+    const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-eco-select]'));
+    const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-eco-panel]'));
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const id = tab.dataset.ecoSelect;
+        tabs.forEach((t) => t.setAttribute('aria-selected', String(t === tab)));
+        panels.forEach((p) => {
+          p.hidden = p.dataset.ecoPanel !== id;
+        });
+      });
+    });
+  });
+</script>
+
+<style>
+  .eco {
+    display: grid;
+    gap: var(--space-4);
+    align-items: start;
+  }
+
+  @media (min-width: 860px) {
+    .eco {
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    }
+  }
+
+  .eco__nav {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  @media (max-width: 859px) {
+    .eco__nav {
+      grid-template-columns: repeat(auto-fit, minmax(min(170px, 100%), 1fr));
+    }
+
+    .eco__tab {
+      padding: var(--space-3);
+    }
+
+    .eco__tab-title {
+      font-size: var(--step--1);
+    }
+  }
+
+  .eco__tab {
+    text-align: start;
+    padding: var(--space-4);
+    background: var(--plate-bg);
+    border: var(--hairline) solid var(--plate-border);
+    color: var(--text-lo);
+    cursor: pointer;
+    display: grid;
+    gap: var(--space-2);
+    transition:
+      border-color var(--t-fast) ease,
+      background-color var(--t-fast) ease;
+  }
+
+  .eco__tab:hover {
+    border-color: var(--text-dim);
+    color: var(--text-hi);
+  }
+
+  .eco__tab--build[aria-selected='true'] {
+    background: var(--plate-raised);
+    border-color: var(--blue-400);
+    border-inline-start-width: 3px;
+    color: var(--text-hi);
+  }
+
+  .eco__tab--break[aria-selected='true'] {
+    background: var(--plate-raised);
+    border-color: var(--sulfur-400);
+    border-inline-start-width: 3px;
+    color: var(--text-hi);
+  }
+
+  .eco__tab-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .eco__code {
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    color: var(--text-dim);
+  }
+
+  .eco__lens {
+    font-family: var(--f-code);
+    font-size: 0.64rem;
+    padding: 1px 6px;
+    border: var(--hairline) solid currentColor;
+  }
+
+  .eco__lens--build {
+    color: var(--blue-400);
+  }
+
+  .eco__lens--break {
+    color: var(--sulfur-400);
+  }
+
+  .eco__tab-title {
+    font-family: var(--f-display);
+    font-size: var(--step-0);
+    font-weight: 600;
+  }
+
+  .eco__panel {
+    background: var(--plate-bg);
+    border: var(--hairline) solid var(--plate-border);
+    padding: clamp(1.4rem, 3vw, 2.25rem);
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .eco__panel[hidden] {
+    display: none;
+  }
+
+  .eco__panel--build {
+    border-block-start: 3px solid var(--blue-400);
+  }
+
+  .eco__panel--break {
+    border-block-start: 3px solid var(--sulfur-400);
+  }
+
+  .eco__panel-head {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .eco__panel-title {
+    margin: 0;
+    font-size: var(--step-1);
+    color: var(--text-hi);
+  }
+
+  .eco__panel-summary {
+    margin: 0;
+    color: var(--text);
+    font-size: var(--step--1);
+    line-height: 1.65;
+  }
+
+  .eco__group {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .eco__group-label {
+    margin: 0;
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-label);
+    color: var(--text-dim);
+  }
+
+  .eco__tools {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .eco__tools li {
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--text-hi);
+    background: var(--ink-800);
+    border: var(--hairline) solid var(--line);
+    padding: 6px 11px;
+  }
+
+  .eco__evidence {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .eco__evidence a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    min-height: var(--touch-min);
+    padding: var(--space-2) var(--space-3);
+    background: var(--ink-800);
+    border: var(--hairline) solid var(--line);
+    color: var(--sulfur-300);
+    text-decoration: none;
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    transition: border-color var(--t-fast) ease;
+  }
+
+  .eco__evidence a:hover {
+    border-color: var(--sulfur-400);
+  }
+</style>

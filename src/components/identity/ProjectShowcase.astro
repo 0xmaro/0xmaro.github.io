@@ -1,0 +1,708 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import type { Language } from '../../i18n/ui';
+import { showcaseProjects, type ProjectStatus, type ShowcaseProject } from '../../data/identity';
+
+interface Props {
+  lang: Language;
+  compact?: boolean;
+}
+
+const { lang, compact = false } = Astro.props;
+
+const statusLabels: Record<ProjectStatus, Record<Language, string>> = {
+  completed: { en: 'Completed', ar: 'مكتمل' },
+  'in-progress': { en: 'In Progress', ar: 'قيد التطوير والتوثيق' },
+  research: { en: 'Research · Private', ar: 'بحث · خاص' },
+  archived: { en: 'Archived', ar: 'مؤرشف' },
+};
+
+const copy = {
+  en: {
+    all: 'All systems',
+    filterLabel: 'Filter projects by status',
+    arch: 'Architecture flow',
+    decision: 'Key engineering decision',
+    security: 'Security perspective',
+    detailsToggle: 'Inspect engineering & security breakdown',
+    viewAll: 'Open full project atlas ({0} systems) →',
+    livePosture: 'LIVE SECURITY TELEMETRY',
+    cspVal: "script-src 'self' · style-src 'self'",
+    originsVal: '0 third-party runtime origins',
+    patchVal: 'CWE-200 caught & patched (3 commits)',
+  },
+  ar: {
+    all: 'كل الأنظمة',
+    filterLabel: 'تصفية المشاريع حسب الحالة',
+    arch: 'تدفق البنية المعمارية',
+    decision: 'القرار الهندسي الأهم',
+    security: 'الزاوية الأمنية',
+    detailsToggle: 'افتح التفاصيل الهندسية والأمنية',
+    viewAll: 'استعرض أطلس المشاريع الكامل ({0} أنظمة) ←',
+    livePosture: 'قراءة الوضع الأمني المباشر',
+    cspVal: "script-src 'self' · style-src 'self'",
+    originsVal: 'صفر مصادر خارجية وقت التشغيل',
+    patchVal: 'رصد وإصلاح CWE-200 (3 commits)',
+  },
+}[lang];
+
+const filters: ProjectStatus[] = ['completed', 'in-progress', 'research', 'archived'];
+
+const items: ShowcaseProject[] = compact ? showcaseProjects : showcaseProjects;
+const completedBuilds = items.filter((p) => p.kind === 'hardware' || p.kind === 'security-web');
+const labDossiers = items.filter((p) => p.kind === 'fullstack' || p.kind === 'embedded-research');
+---
+
+<div class="atlas" data-project-atlas>
+  <div class="atlas__filters" role="group" aria-label={copy.filterLabel}>
+    <button type="button" class="atlas__filter" data-proj-filter="all" aria-pressed="true">
+      <span>{copy.all}</span>
+      <span class="atlas__count ltr">{items.length}</span>
+    </button>
+    {
+      filters.map((st) => {
+        const count = items.filter((p) => p.status === st).length;
+        return (
+          count > 0 && (
+            <button type="button" class="atlas__filter" data-proj-filter={st} aria-pressed="false">
+              <span>{statusLabels[st][lang]}</span>
+              <span class="atlas__count ltr">{count}</span>
+            </button>
+          )
+        );
+      })
+    }
+  </div>
+
+  <!-- Featured Completed Systems (Hardware & Security-Audited Web) -->
+  <div class="atlas__featured">
+    {
+      completedBuilds.map((project) => (
+        <article class:list={['plate', `plate--${project.kind}`]} data-proj-status={project.status}>
+          <div class="plate__head">
+            <div class="plate__ids">
+              <span class="plate__index ltr">{project.index}</span>
+              <span class:list={['status-pill', `status-pill--${project.status}`]}>
+                {statusLabels[project.status][lang]}
+              </span>
+              <span class="plate__year ltr">{project.year}</span>
+            </div>
+            <h3 class="plate__title">{project.name}</h3>
+            <p class="plate__tagline">{project.tagline[lang]}</p>
+          </div>
+
+          {project.media && (
+            <div class="plate__gallery">
+              <figure class="plate__img plate__img--primary">
+                <img
+                  src={project.media.primary}
+                  alt={project.media.primaryAlt[lang]}
+                  width="900"
+                  height="560"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </figure>
+              {project.media.secondary && project.media.secondaryAlt && (
+                <figure class="plate__img plate__img--secondary">
+                  <img
+                    src={project.media.secondary}
+                    alt={project.media.secondaryAlt[lang]}
+                    width="600"
+                    height="560"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </figure>
+              )}
+            </div>
+          )}
+
+          {project.kind === 'security-web' && (
+            <div class="telemetry-strip">
+              <span class="telemetry-strip__label ltr">{copy.livePosture}</span>
+              <div class="telemetry-strip__grid">
+                <div class="telemetry-strip__item">
+                  <span class="telemetry-strip__k ltr">CSP</span>
+                  <span class="telemetry-strip__v ltr">{copy.cspVal}</span>
+                </div>
+                <div class="telemetry-strip__item">
+                  <span class="telemetry-strip__k ltr">ORIGINS</span>
+                  <span class="telemetry-strip__v">{copy.originsVal}</span>
+                </div>
+                <div class="telemetry-strip__item">
+                  <span class="telemetry-strip__k ltr">SELF-AUDIT</span>
+                  <span class="telemetry-strip__v">{copy.patchVal}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div class="plate__body">
+            <p class="plate__story">{project.story[lang]}</p>
+
+            <div class="arch-flow" aria-label={copy.arch}>
+              <span class="arch-flow__label">{copy.arch}</span>
+              <ol class="arch-flow__nodes ltr">
+                {project.architectureNodes.map((node, i) => (
+                  <li class="arch-flow__node">
+                    <span>{node}</span>
+                    {i < project.architectureNodes.length - 1 && (
+                      <span class="arch-flow__arrow" aria-hidden="true">
+                        →
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ol>
+            </div>
+
+            <details class="plate__details">
+              <summary class="plate__summary">{copy.detailsToggle}</summary>
+              <div class="plate__breakdown">
+                <div class="plate__col">
+                  <h4 class="plate__col-title plate__col-title--build">{copy.decision}</h4>
+                  <p>{project.engineeringDecision[lang]}</p>
+                </div>
+                <div class="plate__col">
+                  <h4 class="plate__col-title plate__col-title--break">{copy.security}</h4>
+                  <p>{project.securityAngle[lang]}</p>
+                </div>
+              </div>
+            </details>
+
+            <div class="plate__foot">
+              <ul class="stack-list ltr">
+                {project.stack.map((tech) => (
+                  <li>{tech}</li>
+                ))}
+              </ul>
+              <div class="plate__links">
+                {project.primaryLink && (
+                  <a
+                    class="plate__cta"
+                    href={
+                      project.primaryLink.href.startsWith('/writeups/')
+                        ? project.primaryLink.href
+                        : getRelativeLocaleUrl(lang, project.primaryLink.href)
+                    }
+                  >
+                    {project.primaryLink.label[lang]} →
+                  </a>
+                )}
+                {project.secondaryLink && (
+                  <a
+                    class="plate__cta plate__cta--sub"
+                    href={getRelativeLocaleUrl(lang, project.secondaryLink.href)}
+                  >
+                    {project.secondaryLink.label[lang]} ↗
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        </article>
+      ))
+    }
+  </div>
+
+  <!-- Active Lab Dossiers (In Progress / Research / Archived) -->
+  <div class="atlas__dossiers">
+    {
+      labDossiers.map((project) => (
+        <article class="dossier" data-proj-status={project.status}>
+          <div class="dossier__top">
+            <span class="plate__index ltr">{project.index}</span>
+            <span class:list={['status-pill', `status-pill--${project.status}`]}>
+              {statusLabels[project.status][lang]}
+            </span>
+          </div>
+          <h3 class="dossier__title">{project.name}</h3>
+          <p class="dossier__tagline">{project.tagline[lang]}</p>
+
+          <ol class="arch-mini ltr" aria-label={copy.arch}>
+            {project.architectureNodes.map((node, i) => (
+              <li>
+                <span>{node}</span>
+                {i < project.architectureNodes.length - 1 && <span aria-hidden="true">/</span>}
+              </li>
+            ))}
+          </ol>
+
+          <p class="dossier__angle">{project.securityAngle[lang]}</p>
+
+          <ul class="stack-list ltr">
+            {project.stack.map((tech) => (
+              <li>{tech}</li>
+            ))}
+          </ul>
+
+          {project.draftNote && <p class="dossier__note">{project.draftNote[lang]}</p>}
+        </article>
+      ))
+    }
+  </div>
+
+  {
+    compact && (
+      <div class="atlas__more">
+        <a class="btn" href={getRelativeLocaleUrl(lang, '/projects')}>
+          {copy.viewAll.replace('{0}', String(showcaseProjects.length))}
+        </a>
+      </div>
+    )
+  }
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-project-atlas]').forEach((root) => {
+    const btns = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-proj-filter]'));
+    const cards = Array.from(root.querySelectorAll<HTMLElement>('[data-proj-status]'));
+
+    btns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const filter = btn.dataset.projFilter ?? 'all';
+        btns.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+        cards.forEach((card) => {
+          card.hidden = filter !== 'all' && card.dataset.projStatus !== filter;
+        });
+      });
+    });
+  });
+</script>
+
+<style>
+  .atlas {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .atlas__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .atlas__filter {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 40px;
+    padding-inline: var(--space-3);
+    background: var(--plate-bg);
+    border: var(--hairline) solid var(--plate-border);
+    color: var(--text-lo);
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    cursor: pointer;
+    transition:
+      border-color var(--t-fast) ease,
+      color var(--t-fast) ease,
+      background-color var(--t-fast) ease;
+  }
+
+  .atlas__filter:hover {
+    border-color: var(--sulfur-400);
+    color: var(--text-hi);
+  }
+
+  .atlas__filter[aria-pressed='true'] {
+    background: var(--sulfur-400);
+    border-color: var(--sulfur-400);
+    color: #080a0f;
+    font-weight: 600;
+  }
+
+  .atlas__count {
+    opacity: 0.72;
+  }
+
+  .atlas__featured {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .plate {
+    background: var(--plate-bg);
+    border: var(--hairline) solid var(--plate-border);
+    padding: clamp(1.25rem, 3vw, 2.25rem);
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .plate[hidden],
+  .dossier[hidden] {
+    display: none;
+  }
+
+  .plate--hardware {
+    border-inline-start: 3px solid var(--blue-400);
+  }
+
+  .plate--security-web {
+    border-inline-start: 3px solid var(--sulfur-400);
+  }
+
+  .plate__head {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .plate__ids {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .plate__index {
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--blue-400);
+  }
+
+  .plate__year {
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--text-dim);
+  }
+
+  .status-pill {
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    padding: 2px 8px;
+    border: var(--hairline) solid currentColor;
+    text-transform: uppercase;
+    letter-spacing: var(--ls-label);
+  }
+
+  .status-pill--completed {
+    color: var(--ok);
+    background: color-mix(in srgb, var(--ok) 12%, transparent);
+  }
+
+  .status-pill--in-progress {
+    color: var(--sulfur-400);
+    background: color-mix(in srgb, var(--sulfur-400) 12%, transparent);
+  }
+
+  .status-pill--research {
+    color: var(--blue-400);
+    background: color-mix(in srgb, var(--blue-400) 12%, transparent);
+  }
+
+  .status-pill--archived {
+    color: var(--text-lo);
+    background: color-mix(in srgb, var(--text-lo) 10%, transparent);
+  }
+
+  .plate__title {
+    margin: 0;
+    font-size: var(--step-2);
+    color: var(--text-hi);
+  }
+
+  .plate__tagline {
+    margin: 0;
+    max-width: 68ch;
+    font-size: var(--step-0);
+    color: var(--text);
+  }
+
+  .plate__gallery {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  @media (min-width: 720px) {
+    .plate__gallery {
+      grid-template-columns: 1.45fr 1fr;
+    }
+  }
+
+  .plate__img {
+    margin: 0;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: var(--ink-800);
+    border: var(--hairline) solid var(--line);
+  }
+
+  .plate__img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--t-slow) var(--ease-out);
+  }
+
+  .plate__img:hover img {
+    transform: scale(1.025);
+  }
+
+  .telemetry-strip {
+    background: var(--ink-800);
+    border: var(--hairline) solid var(--line);
+    padding: var(--space-4);
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .telemetry-strip__label {
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    color: var(--sulfur-400);
+    letter-spacing: var(--ls-label);
+  }
+
+  .telemetry-strip__grid {
+    display: grid;
+    gap: var(--space-3);
+    grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+  }
+
+  .telemetry-strip__item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .telemetry-strip__k {
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    color: var(--text-dim);
+  }
+
+  .telemetry-strip__v {
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--text-hi);
+  }
+
+  .plate__body {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .plate__story {
+    margin: 0;
+    max-width: 72ch;
+    color: var(--text-lo);
+    font-size: var(--step--1);
+  }
+
+  .arch-flow {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    background: var(--ink-800);
+    border: var(--hairline) solid var(--line);
+  }
+
+  .arch-flow__label {
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-label);
+    color: var(--text-dim);
+  }
+
+  .arch-flow__nodes {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--text-hi);
+  }
+
+  .arch-flow__node {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .arch-flow__arrow {
+    color: var(--blue-400);
+  }
+
+  .plate__details {
+    border: var(--hairline) solid var(--line);
+    background: var(--plate-raised);
+  }
+
+  .plate__summary {
+    padding: var(--space-3) var(--space-4);
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--sulfur-300);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .plate__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .plate__summary::before {
+    content: '+ ';
+    color: var(--sulfur-400);
+  }
+
+  .plate__details[open] .plate__summary::before {
+    content: '− ';
+  }
+
+  .plate__breakdown {
+    display: grid;
+    gap: var(--space-4);
+    padding: 0 var(--space-4) var(--space-4);
+    grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+  }
+
+  .plate__col p {
+    margin: var(--space-2) 0 0;
+    font-size: var(--step--1);
+    color: var(--text-lo);
+  }
+
+  .plate__col-title {
+    margin: 0;
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-label);
+  }
+
+  .plate__col-title--build {
+    color: var(--blue-400);
+  }
+
+  .plate__col-title--break {
+    color: var(--sulfur-400);
+  }
+
+  .plate__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-block-start: var(--space-3);
+    border-block-start: var(--hairline) solid var(--line);
+  }
+
+  .stack-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .stack-list li {
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    color: var(--text-lo);
+    border: var(--hairline) solid var(--line);
+    padding: 2px 8px;
+    background: var(--ink-900);
+  }
+
+  .plate__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+
+  .plate__cta {
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--sulfur-300);
+    text-decoration: none;
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .plate__cta:hover {
+    text-decoration: underline;
+  }
+
+  .plate__cta--sub {
+    color: var(--blue-400);
+  }
+
+  /* ── Active Lab Dossiers Grid ── */
+  .atlas__dossiers {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fit, minmax(min(290px, 100%), 1fr));
+  }
+
+  .dossier {
+    background: var(--plate-bg);
+    border: var(--hairline) dashed var(--plate-border);
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .dossier__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .dossier__title {
+    margin: 0;
+    font-size: var(--step-1);
+    color: var(--text-hi);
+  }
+
+  .dossier__tagline {
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--text);
+  }
+
+  .arch-mini {
+    margin: 0;
+    padding: var(--space-2) var(--space-3);
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    color: var(--blue-400);
+    background: var(--ink-800);
+  }
+
+  .dossier__angle {
+    margin: 0;
+    font-size: var(--text-xs);
+    color: var(--text-lo);
+    line-height: 1.55;
+  }
+
+  .dossier__note {
+    margin: auto 0 0;
+    padding-block-start: var(--space-3);
+    border-block-start: var(--hairline) solid var(--line);
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    color: var(--text-dim);
+  }
+
+  .atlas__more {
+    display: flex;
+    justify-content: flex-start;
+  }
+</style>

@@ -1,0 +1,688 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import type { Language } from '../../i18n/ui';
+import { heroSpecimens } from '../../data/identity';
+import { proofItems } from '../../data/proof';
+import { isRealProof } from '../../lib/proof';
+
+interface Props {
+  lang: Language;
+  featuredCount: number;
+  stationCount: number;
+}
+
+const { lang, featuredCount, stationCount } = Astro.props;
+
+const copy = {
+  en: {
+    name: 'Ammar Mohammed Abdelrahman',
+    identity: '0xMARO · CS & AI · Full-Stack · AppSec · DFIR',
+    lensLabel: 'Active Lens',
+    lensBuild: '01 · Blueprint (Build)',
+    lensBreak: '02 · Breach (Break)',
+    buildKicker: 'ARCHITECTURAL MODE — SYSTEMS, FIRMWARE & FULL-STACK',
+    buildTitleA: 'I engineer systems',
+    buildTitleAccent: 'from voltage to web.',
+    buildLead:
+      'Computer Science & AI student and Full-Stack Developer building production web applications, ESP32 IoT prototypes, and bare-metal digital logic — designed to survive real users and real scrutiny.',
+    breakKicker: 'ADVERSARIAL MODE — APPSEC, DFIR & CODE-LEVEL FIXES',
+    breakTitleA: 'Then I break them',
+    breakTitleAccent: 'and ship the patch.',
+    breakLead:
+      'Certified AppSec Practitioner (CAP With Merit) & Digital Forensics Professional (eCDFP). Every vulnerability writeup keeps the dead ends in and closes with real code in the language the bug was written in.',
+    ctaProjects: 'Explore systems & builds',
+    ctaCases: 'Read case files',
+    ctaJourney: 'Verified journey',
+    inspect: 'Open dossier →',
+    plateNav: 'Select evidence plate',
+    verify: 'verify ↗',
+  },
+  ar: {
+    name: 'عمّار محمد عبدالرحمن',
+    identity: '0xMARO · علوم حاسب وذكاء اصطناعي · Full-Stack · AppSec · DFIR',
+    lensLabel: 'العدسة النشطة',
+    lensBuild: '01 · المخطط (البناء)',
+    lensBreak: '02 · الاختراق (التحليل)',
+    buildKicker: 'وضع البناء — الأنظمة والهاردوير وتطبيقات الويب',
+    buildTitleA: 'أبني أنظمة حقيقية',
+    buildTitleAccent: 'من الإشارة حتى الويب.',
+    buildLead:
+      'طالب علوم حاسب وذكاء اصطناعي ومطوّر Full-Stack. أصمّم تطبيقات ويب إنتاجية وأنظمة ESP32 ودوائر منطق رقمي — بعقلية هندسية تفهم كل طبقة في النظام.',
+    breakKicker: 'وضع التحليل — أمن التطبيقات والتحقيق الجنائي والإصلاح',
+    breakTitleA: 'ثم أختبر كسرها',
+    breakTitleAccent: 'وأكتب الإصلاح بنفسي.',
+    breakLead:
+      'حاصل على CAP بتقدير امتياز وINE eCDFP. كل تحليل أمني هنا يوثّق الطرق المسدودة وينتهي بكود إصلاح حقيقي بنفس اللغة التي كُتبت بها الثغرة.',
+    ctaProjects: 'استعرض المشاريع والأنظمة',
+    ctaCases: 'اقرأ ملفات القضايا',
+    ctaJourney: 'المسار الموثّق',
+    inspect: 'افتح الملف ←',
+    plateNav: 'اختر لوحة إثبات',
+    verify: 'تحقّق ↗',
+  },
+}[lang];
+
+const verifiedProof = proofItems.filter((p) => isRealProof(p.href));
+---
+
+<section class="hero-stage" data-hero-lens="break" data-pagefind-body>
+  <div class="wrap">
+    <div class="hero-meta">
+      <div class="hero-id">
+        <span class="hero-id__dot" aria-hidden="true"></span>
+        <span class="hero-id__name">{copy.name}</span>
+        <span class="hero-id__sep" aria-hidden="true">/</span>
+        <span class="hero-id__role ltr">{copy.identity}</span>
+      </div>
+
+      <div class="lens-switch" role="group" aria-label={copy.lensLabel}>
+        <button
+          type="button"
+          class="lens-btn lens-btn--build"
+          data-set-lens="build"
+          aria-pressed="false"
+        >
+          {copy.lensBuild}
+        </button>
+        <button
+          type="button"
+          class="lens-btn lens-btn--break"
+          data-set-lens="break"
+          aria-pressed="true"
+        >
+          {copy.lensBreak}
+        </button>
+      </div>
+    </div>
+
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <div class="lens-panel" data-lens-panel="build" hidden>
+          <p class="hero-kicker hero-kicker--build">{copy.buildKicker}</p>
+          <h1 class="hero-headline">
+            <span class="hero-headline__line">{copy.buildTitleA}</span>
+            <span class="hero-headline__accent hero-headline__accent--build">
+              {copy.buildTitleAccent}
+            </span>
+          </h1>
+          <p class="hero-lead">{copy.buildLead}</p>
+        </div>
+
+        <div class="lens-panel" data-lens-panel="break">
+          <p class="hero-kicker hero-kicker--break">{copy.breakKicker}</p>
+          <h1 class="hero-headline">
+            <span class="hero-headline__line">{copy.breakTitleA}</span>
+            <span class="hero-headline__accent hero-headline__accent--break">
+              {copy.breakTitleAccent}
+            </span>
+          </h1>
+          <p class="hero-lead">{copy.breakLead}</p>
+        </div>
+
+        <div class="hero-actions">
+          <a class="btn btn--primary" href="#projects">
+            {copy.ctaProjects}
+          </a>
+          {
+            featuredCount > 0 && (
+              <a class="btn" href="#research">
+                {copy.ctaCases}
+              </a>
+            )
+          }
+          {
+            stationCount > 0 && (
+              <a class="btn btn--ghost" href={getRelativeLocaleUrl(lang, '/journey')}>
+                {copy.ctaJourney}
+              </a>
+            )
+          }
+        </div>
+
+        {
+          verifiedProof.length > 0 && (
+            <dl class="hero-proof">
+              {verifiedProof.map((item) => (
+                <div class="hero-proof__cell">
+                  <dt class="hero-proof__label">{item.label[lang]}</dt>
+                  <dd class="hero-proof__row">
+                    <span class="hero-proof__val ltr">{item.value}</span>
+                    <a
+                      class="hero-proof__link ltr"
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {copy.verify}
+                    </a>
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          )
+        }
+      </div>
+
+      <aside class="specimen" aria-label={copy.plateNav}>
+        <div class="specimen__frame">
+          <span class="crosshair crosshair--tl" aria-hidden="true">+</span>
+          <span class="crosshair crosshair--tr" aria-hidden="true">+</span>
+          <span class="crosshair crosshair--bl" aria-hidden="true">+</span>
+          <span class="crosshair crosshair--br" aria-hidden="true">+</span>
+
+          {
+            heroSpecimens.map((plate, idx) => (
+              <figure
+                class="specimen__plate"
+                data-plate-index={String(idx)}
+                data-plate-lens={plate.lens}
+                hidden={idx !== 2}
+              >
+                <div class="specimen__bar">
+                  <span class:list={['specimen__code', 'ltr', `specimen__code--${plate.lens}`]}>
+                    {plate.code}
+                  </span>
+                  <span class="specimen__counter ltr">
+                    0{idx + 1} / 0{heroSpecimens.length}
+                  </span>
+                </div>
+
+                <div class="specimen__media">
+                  <img
+                    src={plate.image}
+                    alt={plate.alt[lang]}
+                    width="800"
+                    height="540"
+                    loading={idx === 2 ? 'eager' : 'lazy'}
+                    decoding="async"
+                  />
+                </div>
+
+                <figcaption class="specimen__caption">
+                  <div class="specimen__title-row">
+                    <strong class="specimen__title">{plate.title[lang]}</strong>
+                    <span class="specimen__meta">{plate.meta[lang]}</span>
+                  </div>
+                  <p class="specimen__text">{plate.caption[lang]}</p>
+                  <a class="specimen__link" href={getRelativeLocaleUrl(lang, plate.href)}>
+                    {copy.inspect}
+                  </a>
+                </figcaption>
+              </figure>
+            ))
+          }
+        </div>
+
+        <div class="specimen__strip" role="tablist" aria-label={copy.plateNav}>
+          {
+            heroSpecimens.map((plate, idx) => (
+              <button
+                type="button"
+                role="tab"
+                class="specimen__thumb"
+                data-plate-select={String(idx)}
+                aria-selected={idx === 2 ? 'true' : 'false'}
+                title={plate.title[lang]}
+              >
+                <img
+                  src={plate.image}
+                  alt={plate.alt[lang]}
+                  width="120"
+                  height="80"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <span class="specimen__thumb-num ltr">0{idx + 1}</span>
+              </button>
+            ))
+          }
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<script>
+  const stage = document.querySelector<HTMLElement>('[data-hero-lens]');
+  if (stage) {
+    const lensBtns = Array.from(stage.querySelectorAll<HTMLButtonElement>('[data-set-lens]'));
+    const panels = Array.from(stage.querySelectorAll<HTMLElement>('[data-lens-panel]'));
+    const plates = Array.from(stage.querySelectorAll<HTMLElement>('[data-plate-index]'));
+    const thumbs = Array.from(stage.querySelectorAll<HTMLButtonElement>('[data-plate-select]'));
+
+    const showPlate = (index: number) => {
+      plates.forEach((p, i) => {
+        p.hidden = i !== index;
+      });
+      thumbs.forEach((t, i) => {
+        t.setAttribute('aria-selected', String(i === index));
+      });
+    };
+
+    const setLens = (lens: 'build' | 'break') => {
+      stage.dataset.heroLens = lens;
+      lensBtns.forEach((btn) => {
+        btn.setAttribute('aria-pressed', String(btn.dataset.setLens === lens));
+      });
+      panels.forEach((panel) => {
+        panel.hidden = panel.dataset.lensPanel !== lens;
+      });
+      const firstMatch = plates.findIndex((p) => p.dataset.plateLens === lens);
+      if (firstMatch !== -1) showPlate(firstMatch);
+    };
+
+    lensBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const lens = btn.dataset.setLens as 'build' | 'break' | undefined;
+        if (lens) setLens(lens);
+      });
+    });
+
+    thumbs.forEach((thumb) => {
+      thumb.addEventListener('click', () => {
+        const idx = Number(thumb.dataset.plateSelect);
+        if (!Number.isNaN(idx)) showPlate(idx);
+      });
+    });
+  }
+</script>
+
+<style>
+  .hero-stage {
+    padding-block: clamp(2rem, 5vw, 3.75rem) clamp(2.5rem, 6vw, 4.5rem);
+    border-block-start: none;
+  }
+
+  .hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3) var(--space-5);
+    padding-block-end: var(--space-5);
+    margin-block-end: clamp(1.75rem, 4vw, 3rem);
+    border-block-end: var(--hairline) solid var(--line);
+  }
+
+  .hero-id {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--text-lo);
+  }
+
+  .hero-id__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--ok);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--ok) 22%, transparent);
+  }
+
+  .hero-id__name {
+    color: var(--text-hi);
+    font-weight: 600;
+  }
+
+  .hero-id__sep {
+    color: var(--text-dim);
+  }
+
+  .lens-switch {
+    display: inline-flex;
+    border: var(--hairline) solid var(--plate-border);
+    background: var(--plate-bg);
+    padding: 3px;
+    gap: 3px;
+    max-width: 100%;
+  }
+
+  .lens-btn {
+    min-height: 40px;
+    padding-inline: var(--space-3);
+    background: transparent;
+    border: none;
+    color: var(--text-lo);
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    cursor: pointer;
+    white-space: nowrap;
+    transition:
+      background-color var(--t-fast) ease,
+      color var(--t-fast) ease;
+  }
+
+  @media (max-width: 540px) {
+    .lens-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      width: 100%;
+    }
+
+    .lens-btn {
+      white-space: normal;
+      padding-block: var(--space-2);
+      line-height: 1.3;
+      text-align: center;
+    }
+  }
+
+  .lens-btn--build[aria-pressed='true'] {
+    background: var(--blue-500);
+    color: #ffffff;
+  }
+
+  .lens-btn--break[aria-pressed='true'] {
+    background: var(--sulfur-400);
+    color: #080a0f;
+    font-weight: 600;
+  }
+
+  .hero-grid {
+    display: grid;
+    gap: clamp(2rem, 4.5vw, 3.5rem);
+    align-items: start;
+  }
+
+  @media (min-width: 980px) {
+    .hero-grid {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.95fr);
+    }
+  }
+
+  .hero-kicker {
+    margin: 0 0 var(--space-4);
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    letter-spacing: var(--ls-label);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .hero-kicker::before {
+    content: '';
+    width: 18px;
+    height: 2px;
+    background: currentColor;
+  }
+
+  .hero-kicker--build {
+    color: var(--blue-400);
+  }
+
+  .hero-kicker--break {
+    color: var(--sulfur-400);
+  }
+
+  .hero-headline {
+    margin: 0;
+    font-size: clamp(2.25rem, 1.6rem + 3vw, 4.15rem);
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+  }
+
+  .hero-headline__line,
+  .hero-headline__accent {
+    display: block;
+  }
+
+  .hero-headline__accent--build {
+    color: var(--blue-400);
+  }
+
+  .hero-headline__accent--break {
+    color: var(--sulfur-400);
+  }
+
+  .hero-lead {
+    margin: var(--space-5) 0 0;
+    max-width: 54ch;
+    font-size: clamp(1rem, 0.95rem + 0.35vw, 1.2rem);
+    line-height: 1.65;
+    color: var(--text);
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-block-start: var(--space-6);
+  }
+
+  .btn--ghost {
+    background: transparent;
+    border-color: var(--line);
+    color: var(--text-lo);
+  }
+
+  .hero-proof {
+    margin: var(--space-7) 0 0;
+    display: grid;
+    gap: var(--hairline);
+    background: var(--line);
+    border: var(--hairline) solid var(--line);
+    grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
+  }
+
+  .hero-proof__cell {
+    background: var(--plate-bg);
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .hero-proof__label {
+    font-size: var(--text-xs);
+    color: var(--text-lo);
+    line-height: 1.4;
+  }
+
+  .hero-proof__row {
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .hero-proof__val {
+    font-family: var(--f-display);
+    font-size: var(--step-1);
+    font-weight: 700;
+    color: var(--text-hi);
+  }
+
+  .hero-proof__link {
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    color: var(--sulfur-300);
+    text-decoration: none;
+  }
+
+  .hero-proof__link:hover {
+    text-decoration: underline;
+  }
+
+  /* ── Specimen Plate Viewer ── */
+  .specimen {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .specimen__frame {
+    position: relative;
+    background: var(--plate-bg);
+    border: var(--hairline) solid var(--plate-border);
+    box-shadow: var(--plate-shadow);
+    padding: var(--space-4);
+  }
+
+  .crosshair {
+    position: absolute;
+    font-family: var(--f-code);
+    font-size: 0.75rem;
+    line-height: 1;
+    color: var(--crosshair);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .crosshair--tl {
+    top: 4px;
+    left: 6px;
+  }
+
+  .crosshair--tr {
+    top: 4px;
+    right: 6px;
+  }
+
+  .crosshair--bl {
+    bottom: 4px;
+    left: 6px;
+  }
+
+  .crosshair--br {
+    bottom: 4px;
+    right: 6px;
+  }
+
+  .specimen__plate {
+    margin: 0;
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .specimen__plate[hidden] {
+    display: none;
+  }
+
+  .specimen__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    letter-spacing: var(--ls-label);
+  }
+
+  .specimen__code--build {
+    color: var(--blue-400);
+  }
+
+  .specimen__code--break {
+    color: var(--sulfur-400);
+  }
+
+  .specimen__counter {
+    color: var(--text-dim);
+  }
+
+  .specimen__media {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: var(--ink-800);
+    border: var(--hairline) solid var(--line);
+  }
+
+  .specimen__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .specimen__caption {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .specimen__title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .specimen__title {
+    font-family: var(--f-display);
+    font-size: var(--step-0);
+    color: var(--text-hi);
+  }
+
+  .specimen__meta {
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    color: var(--text-dim);
+  }
+
+  .specimen__text {
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--text-lo);
+    line-height: 1.55;
+  }
+
+  .specimen__link {
+    justify-self: start;
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--sulfur-300);
+    text-decoration: none;
+    padding-block: var(--space-1);
+    border-block-end: var(--hairline) solid transparent;
+  }
+
+  .specimen__link:hover {
+    border-block-end-color: var(--sulfur-400);
+  }
+
+  .specimen__strip {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+
+  .specimen__thumb {
+    position: relative;
+    padding: 0;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: var(--ink-800);
+    border: var(--hairline) solid var(--line);
+    cursor: pointer;
+    opacity: 0.58;
+    transition:
+      opacity var(--t-fast) ease,
+      border-color var(--t-fast) ease;
+  }
+
+  .specimen__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .specimen__thumb:hover,
+  .specimen__thumb[aria-selected='true'] {
+    opacity: 1;
+    border-color: var(--sulfur-400);
+  }
+
+  .specimen__thumb-num {
+    position: absolute;
+    inset-block-end: 2px;
+    inset-inline-end: 4px;
+    font-family: var(--f-code);
+    font-size: 0.62rem;
+    color: #ffffff;
+    background: rgba(8, 10, 15, 0.78);
+    padding: 1px 4px;
+  }
+</style>

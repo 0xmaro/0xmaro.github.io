@@ -1,10 +1,12 @@
 ---
 import Base from '../../../layouts/Base.astro';
 import Seo from '../../../components/Seo.astro';
+import ProjectShowcase from '../../../components/identity/ProjectShowcase.astro';
 import ProjectCard from '../../../components/cards/ProjectCard.astro';
 import { getCollection } from 'astro:content';
 import { projectSurface } from '../../../lib/content';
 import { useTranslations } from '../../../i18n/utils';
+import { showcaseProjects } from '../../../data/identity';
 
 const lang = 'ar';
 const t = useTranslations(lang);
@@ -26,19 +28,21 @@ const surfaced = projectSurface(entries, lang);
       <h1 class="archive__title">{t('projects.title')}</h1>
       <p class="archive__desc">{t('projects.desc')}</p>
       <p class="archive__count ltr">
-        {t('projects.count').replace('{0}', String(surfaced.length))}
+        {t('projects.count').replace('{0}', String(showcaseProjects.length))}
       </p>
     </header>
 
+    <div class="archive__showcase">
+      <ProjectShowcase lang={lang} />
+    </div>
+
     {
-      surfaced.length > 0 ? (
+      surfaced.length > 0 && (
         <div class="archive__grid">
           {surfaced.map((e, i) => (
             <ProjectCard entry={e} index={i} />
           ))}
         </div>
-      ) : (
-        <p class="archive__empty">{t('projects.empty')}</p>
       )
     }
   </div>
@@ -57,7 +61,7 @@ const surfaced = projectSurface(entries, lang);
   .archive__eyebrow {
     font-family: var(--f-code);
     font-size: var(--text-sm);
-    color: var(--blue-500);
+    color: var(--blue-400);
   }
 
   .archive__title {
@@ -79,18 +83,16 @@ const surfaced = projectSurface(entries, lang);
     color: var(--text-dim);
   }
 
-  .archive__grid {
+  .archive__showcase {
     margin-block-start: var(--space-6);
+  }
+
+  .archive__grid {
+    margin-block-start: var(--space-7);
     display: grid;
     gap: var(--hairline);
     background: var(--line);
     border: var(--hairline) solid var(--line);
     grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
-  }
-
-  .archive__empty {
-    margin-block-start: var(--space-7);
-    color: var(--text-lo);
-    font-size: var(--step-1);
   }
 </style>

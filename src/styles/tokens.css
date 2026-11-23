@@ -115,6 +115,53 @@
   --focus-width: 2px;
   --focus-color: var(--sulfur-400);
   --focus-offset: 3px;
+
+  /* ── Monograph elevation & plate accents ── */
+  --plate-bg: #0b0f18;
+  --plate-raised: #111725;
+  --plate-border: #1e2638;
+  --plate-shadow: 0 24px 60px -28px rgba(0, 0, 0, 0.72);
+  --crosshair: rgba(127, 166, 255, 0.28);
+  --glow-blue: rgba(78, 124, 246, 0.14);
+  --glow-sulfur: rgba(227, 197, 103, 0.14);
+}
+
+/* ── Archival Paper (Lightroom) Theme — warm drafting vellum & deep ink ── */
+html[data-theme='paper'] {
+  --ink-900: #f3efe6;
+  --ink-800: #ebe5d8;
+  --ink-700: #e0d8c7;
+  --ink-600: #c8bda8;
+  --line: #d4cab6;
+  --grid: #e3dbcb;
+
+  --text-hi: #0f141e;
+  --text: #272f3f;
+  --text-lo: #4b5568;
+  --text-dim: #667084;
+
+  --blue-400: #2755cc;
+  --blue-500: #1e47b5;
+  --blue-900: #dce5fb;
+
+  --sulfur-300: #8c6608;
+  --sulfur-400: #9e720a;
+  --sulfur-500: #7c5806;
+  --sulfur-900: #f6eccb;
+
+  --stamp-crit: #bf2f1d;
+  --stamp-high: #a64a1c;
+  --stamp-med: #856c18;
+  --stamp-low: #1e47b5;
+  --ok: #20794d;
+
+  --plate-bg: #f8f5ee;
+  --plate-raised: #efeae0;
+  --plate-border: #cfc4af;
+  --plate-shadow: 0 20px 50px -28px rgba(15, 20, 30, 0.22);
+  --crosshair: rgba(30, 71, 181, 0.26);
+  --glow-blue: rgba(30, 71, 181, 0.08);
+  --glow-sulfur: rgba(158, 114, 10, 0.1);
 }
 
 /* ── Print (plan/09 F-17) — the same components on paper. Remapping the tokens
