@@ -37,7 +37,7 @@ const openLabel = lang === 'ar' ? 'افتح ملف المحطة ←' : 'Open mil
               decoding="async"
             />
           )}
-          <span class="reel__tag ltr">{item.tag[lang]}</span>
+          <span class:list={['reel__tag', { ltr: lang === 'en' }]}>{item.tag[lang]}</span>
         </div>
 
         <div class="reel__body">
@@ -79,11 +79,18 @@ const openLabel = lang === 'ar' ? 'افتح ملف المحطة ←' : 'Open mil
     overflow: hidden;
   }
 
-  .reel__media img,
-  .reel__media video {
+  .reel__media img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
+  }
+
+  .reel__media video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #05070b;
     display: block;
   }
 
@@ -135,7 +142,9 @@ const openLabel = lang === 'ar' ? 'افتح ملف المحطة ←' : 'Open mil
 
   .reel__link {
     margin-block-start: auto;
-    padding-block-start: var(--space-2);
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-min);
     font-family: var(--f-code);
     font-size: var(--text-xs);
     color: var(--sulfur-300);
@@ -145,5 +154,11 @@ const openLabel = lang === 'ar' ? 'افتح ملف المحطة ←' : 'Open mil
 
   .reel__link:hover {
     text-decoration: underline;
+  }
+
+  html[lang='ar'] .reel__tag,
+  html[lang='ar'] .reel__meta,
+  html[lang='ar'] .reel__link {
+    font-family: var(--f-body-ar);
   }
 </style>

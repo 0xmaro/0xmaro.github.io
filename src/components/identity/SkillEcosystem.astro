@@ -32,11 +32,14 @@ const copy = {
     {
       skillDomains.map((dom, idx) => (
         <button
+          id={`eco-tab-${dom.id}`}
           type="button"
           role="tab"
           class:list={['eco__tab', `eco__tab--${dom.lens}`]}
           data-eco-select={dom.id}
           aria-selected={idx === 0 ? 'true' : 'false'}
+          aria-controls={`eco-panel-${dom.id}`}
+          tabindex={idx === 0 ? 0 : -1}
         >
           <span class="eco__tab-top">
             <span class="eco__code ltr">{dom.code}</span>
@@ -54,8 +57,10 @@ const copy = {
     {
       skillDomains.map((dom, idx) => (
         <section
+          id={`eco-panel-${dom.id}`}
           class:list={['eco__panel', `eco__panel--${dom.lens}`]}
           role="tabpanel"
+          aria-labelledby={`eco-tab-${dom.id}`}
           data-eco-panel={dom.id}
           hidden={idx !== 0}
         >
@@ -106,13 +111,47 @@ const copy = {
     const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-eco-select]'));
     const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-eco-panel]'));
 
-    tabs.forEach((tab) => {
-      tab.addEventListener('click', () => {
-        const id = tab.dataset.ecoSelect;
-        tabs.forEach((t) => t.setAttribute('aria-selected', String(t === tab)));
-        panels.forEach((p) => {
-          p.hidden = p.dataset.ecoPanel !== id;
-        });
+    const activate = (idx: number, focus = false) => {
+      const tab = tabs[idx];
+      if (!tab) return;
+      const id = tab.dataset.ecoSelect;
+      tabs.forEach((t, i) => {
+        const active = i === idx;
+        t.setAttribute('aria-selected', String(active));
+        t.tabIndex = active ? 0 : -1;
+        if (active && focus) t.focus();
+      });
+      panels.forEach((p) => {
+        p.hidden = p.dataset.ecoPanel !== id;
+      });
+    };
+
+    tabs.forEach((tab, idx) => {
+      tab.addEventListener('click', () => activate(idx));
+      tab.addEventListener('keydown', (e) => {
+        const isRtl = document.documentElement.dir === 'rtl';
+        let next = -1;
+        if (
+          e.key === 'ArrowDown' ||
+          (!isRtl && e.key === 'ArrowRight') ||
+          (isRtl && e.key === 'ArrowLeft')
+        ) {
+          next = (idx + 1) % tabs.length;
+        } else if (
+          e.key === 'ArrowUp' ||
+          (!isRtl && e.key === 'ArrowLeft') ||
+          (isRtl && e.key === 'ArrowRight')
+        ) {
+          next = (idx - 1 + tabs.length) % tabs.length;
+        } else if (e.key === 'Home') {
+          next = 0;
+        } else if (e.key === 'End') {
+          next = tabs.length - 1;
+        }
+        if (next !== -1) {
+          e.preventDefault();
+          activate(next, true);
+        }
       });
     });
   });
@@ -313,5 +352,12 @@ const copy = {
 
   .eco__evidence a:hover {
     border-color: var(--sulfur-400);
+  }
+
+  html[lang='ar'] .eco__tab-title,
+  html[lang='ar'] .eco__lens,
+  html[lang='ar'] .eco__group-label,
+  html[lang='ar'] .eco__evidence a {
+    font-family: var(--f-body-ar);
   }
 </style>

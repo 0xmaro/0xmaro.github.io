@@ -51,17 +51,31 @@ const copy = {
         return (
           <article class="case-plate">
             <div class="case-plate__top">
-              <span class="case-plate__tag ltr">
-                {copy.publishedTag} · #{caseNo}
+              <span class="case-plate__tag">
+                {copy.publishedTag} · <bdi class="ltr">#{caseNo}</bdi>
               </span>
               {entry.data.hasFix && <span class="case-plate__fix">✓ {copy.fixIncluded}</span>}
             </div>
 
-            <h3 class="case-plate__title">
+            <h3
+              class="case-plate__title"
+              lang={entry.data.lang !== lang ? entry.data.lang : undefined}
+              dir={
+                entry.data.lang !== lang ? (entry.data.lang === 'ar' ? 'rtl' : 'ltr') : undefined
+              }
+            >
               <a href={href}>{entry.data.title}</a>
             </h3>
 
-            <p class="case-plate__summary">{entry.data.summary}</p>
+            <p
+              class="case-plate__summary"
+              lang={entry.data.lang !== lang ? entry.data.lang : undefined}
+              dir={
+                entry.data.lang !== lang ? (entry.data.lang === 'ar' ? 'rtl' : 'ltr') : undefined
+              }
+            >
+              {entry.data.summary}
+            </p>
 
             <div class="case-plate__meta ltr">
               <span class="meta-chip">{entry.data.target}</span>
@@ -327,5 +341,12 @@ const copy = {
 
   .workbench__cwe {
     color: var(--sulfur-300);
+  }
+
+  html[lang='ar'] .case-plate__tag,
+  html[lang='ar'] .case-plate__fix,
+  html[lang='ar'] .case-plate__contract,
+  html[lang='ar'] .workbench__badge {
+    font-family: var(--f-body-ar);
   }
 </style>
