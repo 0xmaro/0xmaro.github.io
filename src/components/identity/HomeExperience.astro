@@ -1,0 +1,207 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import type { Language } from '../../i18n/ui';
+import type { Journey } from '../../lib/proof';
+import Rail from '../Rail.astro';
+import EditorialHero from './EditorialHero.astro';
+import ProjectShowcase from './ProjectShowcase.astro';
+import ResearchBench from './ResearchBench.astro';
+import SkillEcosystem from './SkillEcosystem.astro';
+import CommunityReel from './CommunityReel.astro';
+import JourneyTimeline from '../proof/JourneyTimeline.astro';
+import ContactColophon from './ContactColophon.astro';
+
+interface Props {
+  lang: Language;
+  featured: CollectionEntry<'writeups'>[];
+  numbers: Map<string, number>;
+  stations: Journey[];
+}
+
+const { lang, featured, numbers, stations } = Astro.props;
+
+const sections = {
+  en: {
+    projectsNum: '§01',
+    projectsTitle: 'Systems & Hardware Builds',
+    projectsNote:
+      'Hardware prototypes, self-audited web systems, and production builds — each presented according to its true nature and status.',
+    researchNum: '§02',
+    researchTitle: 'Case Files & Research Bench',
+    researchNote:
+      'Own systems first. Published forensic writeups alongside active research currently on the workbench.',
+    ecoNum: '§03',
+    ecoTitle: 'Capability Ecosystem',
+    ecoNote:
+      'No empty skill badges. Select any domain to inspect the verified tools and the exact milestones where they were used.',
+    communityNum: '§04',
+    communityTitle: 'Community, Teaching & Proof Reel',
+    communityNote:
+      'Campus training, CTF authoring, robotics judging, and verified credentials — backed by real footage and artifacts.',
+    journeyNum: '§05',
+    journeyTitle: 'Verified Journey',
+    journeyNote:
+      'From bare-metal Arduino and logic gates to CAP, eCDFP, and national CTF finals — every step lists what it changed.',
+  },
+  ar: {
+    projectsNum: '§01',
+    projectsTitle: 'الأنظمة ومشاريع الهاردوير',
+    projectsNote:
+      'نماذج هاردوير وأنظمة ويب مدقّقة أمنياً ومشاريع إنتاجية — كل مشروع معروض حسب طبيعته وحالته الحقيقية.',
+    researchNum: '§02',
+    researchTitle: 'ملفات القضايا وطاولة البحث',
+    researchNote:
+      'الأنظمة التي بنيتها أولاً. تحليلات منشورة بجانب الأبحاث النشطة قيد الكتابة بشفافية كاملة.',
+    ecoNum: '§03',
+    ecoTitle: 'منظومة القدرات والتقنيات',
+    ecoNote:
+      'لا شارات مهارات فارغة. اختر أي مجال لتستعرض الأدوات الموثّقة والمحطات التي استُخدمت فيها فعلياً.',
+    communityNum: '§04',
+    communityTitle: 'المجتمع والتدريب ولقطات الإثبات',
+    communityNote:
+      'التدريب الجامعي وتأليف تحديات CTF وتحكيم مسابقات الروبوتات والشهادات المهنية بالصور والفيديو.',
+    journeyNum: '§05',
+    journeyTitle: 'المسار الموثّق',
+    journeyNote:
+      'من Arduino والبوابات المنطقية إلى CAP وeCDFP ونهائيات الـ CTF — كل محطة توضّح ما الذي غيّرته.',
+  },
+}[lang];
+---
+
+<Rail />
+
+<EditorialHero lang={lang} featuredCount={featured.length} stationCount={stations.length} />
+
+<section id="projects" class="band" aria-labelledby="projects-heading">
+  <div class="wrap">
+    <div class="sec__head reveal">
+      <span class="sec__num ltr">{sections.projectsNum}</span>
+      <h2 id="projects-heading" class="sec__title">{sections.projectsTitle}</h2>
+      <p class="sec__note">{sections.projectsNote}</p>
+    </div>
+    <div class="reveal">
+      <ProjectShowcase lang={lang} compact />
+    </div>
+  </div>
+</section>
+
+<section id="research" class="band" aria-labelledby="research-heading">
+  <div class="wrap">
+    <div class="sec__head reveal">
+      <span class="sec__num ltr">{sections.researchNum}</span>
+      <h2 id="research-heading" class="sec__title">{sections.researchTitle}</h2>
+      <p class="sec__note">{sections.researchNote}</p>
+    </div>
+    <div class="reveal">
+      <ResearchBench lang={lang} featured={featured} numbers={numbers} />
+    </div>
+  </div>
+</section>
+
+<section id="ecosystem" class="band" aria-labelledby="ecosystem-heading">
+  <div class="wrap">
+    <div class="sec__head reveal">
+      <span class="sec__num ltr">{sections.ecoNum}</span>
+      <h2 id="ecosystem-heading" class="sec__title">{sections.ecoTitle}</h2>
+      <p class="sec__note">{sections.ecoNote}</p>
+    </div>
+    <div class="reveal">
+      <SkillEcosystem lang={lang} />
+    </div>
+  </div>
+</section>
+
+<section id="community" class="band" aria-labelledby="community-heading">
+  <div class="wrap">
+    <div class="sec__head reveal">
+      <span class="sec__num ltr">{sections.communityNum}</span>
+      <h2 id="community-heading" class="sec__title">{sections.communityTitle}</h2>
+      <p class="sec__note">{sections.communityNote}</p>
+    </div>
+    <div class="reveal">
+      <CommunityReel lang={lang} />
+    </div>
+  </div>
+</section>
+
+{
+  stations.length > 0 && (
+    <section id="journey" class="band" aria-labelledby="journey-heading">
+      <div class="wrap">
+        <div class="sec__head reveal">
+          <span class="sec__num ltr">{sections.journeyNum}</span>
+          <h2 id="journey-heading" class="sec__title">
+            {sections.journeyTitle}
+          </h2>
+          <p class="sec__note">{sections.journeyNote}</p>
+        </div>
+        <div class="reveal">
+          <JourneyTimeline lang={lang} level={3} stations={stations} compact />
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<section id="contact" class="band band--closing" aria-label="Contact">
+  <div class="wrap reveal">
+    <ContactColophon lang={lang} />
+  </div>
+</section>
+
+<script>
+  const revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-in');
+            io.unobserve(entry.target);
+          }
+        }
+      },
+      { rootMargin: '0px 0px -6% 0px' }
+    );
+    for (const el of revealEls) io.observe(el);
+  } else {
+    for (const el of revealEls) el.classList.add('is-in');
+  }
+</script>
+
+<style>
+  .band {
+    padding-block: clamp(3rem, 6.5vw, 5.25rem);
+    border-block-start: var(--hairline) solid var(--line);
+  }
+
+  .band--closing {
+    padding-block-end: clamp(3.5rem, 7vw, 5.5rem);
+  }
+
+  .sec__head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3) var(--space-4);
+    flex-wrap: wrap;
+    margin-block-end: var(--space-6);
+  }
+
+  .sec__num {
+    font-family: var(--f-code);
+    font-size: var(--text-sm);
+    color: var(--blue-400);
+  }
+
+  .sec__title {
+    margin: 0;
+  }
+
+  .sec__note {
+    margin: 0;
+    margin-inline-start: auto;
+    max-width: var(--measure-lead);
+    font-size: var(--step--1);
+    color: var(--text-lo);
+  }
+</style>

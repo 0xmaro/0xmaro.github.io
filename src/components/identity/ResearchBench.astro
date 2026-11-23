@@ -1,0 +1,331 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import type { CollectionEntry } from 'astro:content';
+import type { Language } from '../../i18n/ui';
+import { slugOf } from '../../lib/content';
+import { workbenchResearch } from '../../data/identity';
+
+interface Props {
+  lang: Language;
+  featured: CollectionEntry<'writeups'>[];
+  numbers: Map<string, number>;
+}
+
+const { lang, featured, numbers } = Astro.props;
+
+const copy = {
+  en: {
+    publishedTag: 'PUBLISHED CASE FILE',
+    fixIncluded: 'Code-level patch verified',
+    readCase: 'Open full case file →',
+    allCases: 'Browse writeups archive',
+    notesLink: 'Field notes & summaries',
+    workbenchTitle: 'On the Workbench',
+    workbenchSub:
+      'Active research & writeups currently being drafted — kept visible so the lab stays honest.',
+    draftBadge: 'In Progress',
+    contract: '7-section contract: Target · Recon · Bug · Exploit · Dead ends · Fix · Lesson',
+  },
+  ar: {
+    publishedTag: 'ملف قضية منشور',
+    fixIncluded: 'إصلاح برمجي موثّق',
+    readCase: 'اقرأ الملف الكامل ←',
+    allCases: 'تصفّح أرشيف التحليلات',
+    notesLink: 'الملاحظات والملخصات',
+    workbenchTitle: 'على طاولة البحث حالياً',
+    workbenchSub: 'أبحاث وملفات قضايا قيد الكتابة — معروضة بشفافية لتعكس ما يُعمل عليه فعلياً.',
+    draftBadge: 'قيد الكتابة',
+    contract:
+      'عقد السبعة أقسام: الهدف · الاستطلاع · الثغرة · الاستغلال · الطرق المسدودة · الإصلاح · الدرس',
+  },
+}[lang];
+---
+
+<div class="research">
+  <div class="research__published">
+    {
+      featured.map((entry) => {
+        const slug = slugOf(entry);
+        const caseNo = String(numbers.get(slug) ?? 1).padStart(2, '0');
+        const href = getRelativeLocaleUrl(entry.data.lang, `/writeups/${slug}`);
+        return (
+          <article class="case-plate">
+            <div class="case-plate__top">
+              <span class="case-plate__tag ltr">
+                {copy.publishedTag} · #{caseNo}
+              </span>
+              {entry.data.hasFix && <span class="case-plate__fix">✓ {copy.fixIncluded}</span>}
+            </div>
+
+            <h3 class="case-plate__title">
+              <a href={href}>{entry.data.title}</a>
+            </h3>
+
+            <p class="case-plate__summary">{entry.data.summary}</p>
+
+            <div class="case-plate__meta ltr">
+              <span class="meta-chip">{entry.data.target}</span>
+              {entry.data.cwe.map((c) => (
+                <span class="meta-chip meta-chip--cwe">{c}</span>
+              ))}
+              {entry.data.owasp.map((o) => (
+                <span class="meta-chip meta-chip--owasp">{o}</span>
+              ))}
+              {entry.data.severity && (
+                <span class="meta-chip meta-chip--sev">{entry.data.severity}</span>
+              )}
+            </div>
+
+            <p class="case-plate__contract">{copy.contract}</p>
+
+            <div class="case-plate__actions">
+              <a class="btn btn--primary" href={href}>
+                {copy.readCase}
+              </a>
+              <a class="btn" href={getRelativeLocaleUrl(lang, '/writeups')}>
+                {copy.allCases}
+              </a>
+              <a class="btn btn--ghost" href={getRelativeLocaleUrl(lang, '/notes')}>
+                {copy.notesLink}
+              </a>
+            </div>
+          </article>
+        );
+      })
+    }
+  </div>
+
+  <aside class="workbench">
+    <div class="workbench__head">
+      <h3 class="workbench__title">{copy.workbenchTitle}</h3>
+      <p class="workbench__sub">{copy.workbenchSub}</p>
+    </div>
+
+    <ul class="workbench__list">
+      {
+        workbenchResearch.map((item) => (
+          <li class="workbench__item">
+            <div class="workbench__row">
+              <span class="workbench__code ltr">{item.code}</span>
+              <span class="workbench__badge">{copy.draftBadge}</span>
+            </div>
+            <h4 class="workbench__name">{item.title[lang]}</h4>
+            <p class="workbench__desc">{item.summary[lang]}</p>
+            <div class="workbench__tags ltr">
+              <span>{item.target}</span>
+              {item.cwe.map((c) => (
+                <span class="workbench__cwe">{c}</span>
+              ))}
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </aside>
+</div>
+
+<style>
+  .research {
+    display: grid;
+    gap: var(--space-5);
+    align-items: start;
+  }
+
+  @media (min-width: 940px) {
+    .research {
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.95fr);
+    }
+  }
+
+  .case-plate {
+    background: var(--plate-bg);
+    border: var(--hairline) solid var(--plate-border);
+    border-block-start: 3px solid var(--sulfur-400);
+    padding: clamp(1.4rem, 3vw, 2.25rem);
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .case-plate__top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .case-plate__tag {
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--sulfur-400);
+    letter-spacing: var(--ls-label);
+  }
+
+  .case-plate__fix {
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    color: var(--ok);
+    border: var(--hairline) solid var(--ok);
+    padding: 2px 8px;
+  }
+
+  .case-plate__title {
+    margin: 0;
+    font-size: var(--step-2);
+    line-height: 1.2;
+  }
+
+  .case-plate__title a {
+    color: var(--text-hi);
+    text-decoration: none;
+  }
+
+  .case-plate__title a:hover {
+    color: var(--sulfur-300);
+  }
+
+  .case-plate__summary {
+    margin: 0;
+    color: var(--text);
+    font-size: var(--step-0);
+    max-width: 60ch;
+  }
+
+  .case-plate__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .meta-chip {
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    padding: 3px 8px;
+    border: var(--hairline) solid var(--line);
+    background: var(--ink-800);
+    color: var(--text-lo);
+  }
+
+  .meta-chip--cwe {
+    color: var(--sulfur-300);
+    border-color: color-mix(in srgb, var(--sulfur-400) 45%, transparent);
+  }
+
+  .meta-chip--owasp {
+    color: var(--blue-400);
+    border-color: color-mix(in srgb, var(--blue-400) 45%, transparent);
+  }
+
+  .meta-chip--sev {
+    text-transform: uppercase;
+    color: var(--text-hi);
+  }
+
+  .case-plate__contract {
+    margin: 0;
+    padding: var(--space-3);
+    background: var(--ink-800);
+    border-inline-start: 2px solid var(--blue-400);
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    color: var(--text-lo);
+  }
+
+  .case-plate__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    padding-block-start: var(--space-2);
+  }
+
+  .btn--ghost {
+    background: transparent;
+    border-color: var(--line);
+    color: var(--text-lo);
+  }
+
+  /* ── Workbench Queue ── */
+  .workbench {
+    background: var(--plate-bg);
+    border: var(--hairline) solid var(--plate-border);
+    padding: clamp(1.25rem, 2.5vw, 1.75rem);
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .workbench__title {
+    margin: 0;
+    font-size: var(--step-1);
+    color: var(--text-hi);
+  }
+
+  .workbench__sub {
+    margin: var(--space-2) 0 0;
+    font-size: var(--text-xs);
+    color: var(--text-lo);
+  }
+
+  .workbench__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .workbench__item {
+    padding: var(--space-4);
+    background: var(--ink-800);
+    border: var(--hairline) dashed var(--line);
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .workbench__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .workbench__code {
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    color: var(--blue-400);
+  }
+
+  .workbench__badge {
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    color: var(--sulfur-400);
+    border: var(--hairline) solid color-mix(in srgb, var(--sulfur-400) 45%, transparent);
+    padding: 1px 6px;
+  }
+
+  .workbench__name {
+    margin: 0;
+    font-size: var(--step-0);
+    color: var(--text-hi);
+    line-height: 1.35;
+  }
+
+  .workbench__desc {
+    margin: 0;
+    font-size: var(--text-xs);
+    color: var(--text-lo);
+    line-height: 1.5;
+  }
+
+  .workbench__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    color: var(--text-dim);
+  }
+
+  .workbench__cwe {
+    color: var(--sulfur-300);
+  }
+</style>

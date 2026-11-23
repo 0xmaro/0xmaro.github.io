@@ -38,7 +38,7 @@ export const sections = {
   // Routes stay built; the nav slot waits until the section has published
   // content — an empty page one click from every page reads as abandoned.
   // Flip back to true with the first published project / proven station.
-  projects: { enabled: true, inNav: false },
+  projects: { enabled: true, inNav: true },
   labs: { enabled: true, inNav: false },
   arsenal: { enabled: true, inNav: true },
   journey: { enabled: true, inNav: true },

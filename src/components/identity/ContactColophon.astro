@@ -1,0 +1,219 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import type { Language } from '../../i18n/ui';
+import { site, sectionPaths } from '../../config/site';
+import { isRealProof } from '../../lib/proof';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const channels = [
+  { name: 'GitHub', handle: '@0xmaro', url: site.social.github },
+  { name: 'LinkedIn', handle: 'amar-mohamed-0xmaro', url: site.social.linkedin },
+  { name: 'TryHackMe', handle: '0xmaro', url: site.social.tryhackme },
+  { name: 'X', handle: '@0_xmaro', url: site.social.x },
+  { name: 'YouTube', handle: '@0xmaro', url: site.social.youtube },
+  { name: 'Instagram', handle: '@its_0xmaro', url: site.social.instagram },
+  { name: 'Facebook', handle: '/0xmaro', url: site.social.facebook },
+].filter((c) => isRealProof(c.url));
+
+const copy = {
+  en: {
+    eyebrow: 'TRANSMISSION & PRESENCE',
+    title: 'Want to build, break, or collaborate?',
+    lead: 'Every profile below is verified and active. For security disclosures on this site itself, use the RFC 9116 contact in /.well-known/security.txt.',
+    discordLabel: 'Discord handle',
+    copyBtn: 'Copy',
+    copiedBtn: 'Copied ✓',
+    postureBtn: 'Inspect site security posture',
+    disclosureBtn: '/.well-known/security.txt',
+  },
+  ar: {
+    eyebrow: 'التواصل والحضور الرقمي',
+    title: 'تريد أن نبني أو نحلّل أو نتعاون معاً؟',
+    lead: 'كل الحسابات أدناه موثّقة ونشطة. وللإبلاغ عن أي ثغرة في هذا الموقع نفسه، استخدم بيانات التواصل في /.well-known/security.txt.',
+    discordLabel: 'حساب Discord',
+    copyBtn: 'نسخ',
+    copiedBtn: 'تم النسخ ✓',
+    postureBtn: 'استعرض الوضع الأمني للموقع',
+    disclosureBtn: '/.well-known/security.txt',
+  },
+}[lang];
+---
+
+<div class="colophon">
+  <div class="colophon__intro">
+    <span class="colophon__eyebrow ltr">{copy.eyebrow}</span>
+    <h2 class="colophon__title">{copy.title}</h2>
+    <p class="colophon__lead">{copy.lead}</p>
+    <div class="colophon__meta-actions">
+      <a class="btn" href={getRelativeLocaleUrl(lang, sectionPaths.security)}>
+        {copy.postureBtn}
+      </a>
+      <a class="btn btn--ghost ltr" href="/.well-known/security.txt">
+        {copy.disclosureBtn}
+      </a>
+    </div>
+  </div>
+
+  <div class="colophon__grid">
+    {
+      channels.map((ch) => (
+        <a class="channel" href={ch.url} rel="me noopener noreferrer" target="_blank">
+          <span class="channel__name">{ch.name}</span>
+          <span class="channel__handle ltr">{ch.handle} ↗</span>
+        </a>
+      ))
+    }
+
+    <div class="channel channel--copy">
+      <div>
+        <span class="channel__name">{copy.discordLabel}</span>
+        <span class="channel__handle ltr">{site.handles.discord}</span>
+      </div>
+      <button
+        type="button"
+        class="channel__copy-btn"
+        data-copy-handle={site.handles.discord}
+        data-copied-label={copy.copiedBtn}
+      >
+        {copy.copyBtn}
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-copy-handle]').forEach((btn) => {
+    const original = btn.textContent ?? 'Copy';
+    btn.addEventListener('click', async () => {
+      const value = btn.dataset.copyHandle ?? '';
+      try {
+        await navigator.clipboard.writeText(value);
+        btn.textContent = btn.dataset.copiedLabel ?? 'Copied ✓';
+        window.setTimeout(() => {
+          btn.textContent = original;
+        }, 1800);
+      } catch {
+        // Fallback: no-op if clipboard blocked
+      }
+    });
+  });
+</script>
+
+<style>
+  .colophon {
+    background: var(--plate-bg);
+    border: var(--hairline) solid var(--plate-border);
+    padding: clamp(1.5rem, 4vw, 3rem);
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 900px) {
+    .colophon {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+      align-items: start;
+    }
+  }
+
+  .colophon__intro {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .colophon__eyebrow {
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--sulfur-400);
+    letter-spacing: var(--ls-label);
+  }
+
+  .colophon__title {
+    margin: 0;
+    font-size: var(--step-2);
+    color: var(--text-hi);
+  }
+
+  .colophon__lead {
+    margin: 0;
+    color: var(--text-lo);
+    font-size: var(--step--1);
+    max-width: 48ch;
+  }
+
+  .colophon__meta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    padding-block-start: var(--space-2);
+  }
+
+  .btn--ghost {
+    background: transparent;
+    border-color: var(--line);
+    color: var(--text-lo);
+  }
+
+  .colophon__grid {
+    display: grid;
+    gap: var(--space-2);
+    grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+  }
+
+  .channel {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-3);
+    min-height: 54px;
+    padding: var(--space-3) var(--space-4);
+    background: var(--ink-800);
+    border: var(--hairline) solid var(--line);
+    text-decoration: none;
+    transition: border-color var(--t-fast) ease;
+  }
+
+  .channel:hover {
+    border-color: var(--sulfur-400);
+  }
+
+  .channel__name {
+    display: block;
+    font-family: var(--f-display);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-hi);
+  }
+
+  .channel__handle {
+    display: block;
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--sulfur-300);
+  }
+
+  .channel--copy {
+    border-style: dashed;
+  }
+
+  .channel__copy-btn {
+    min-height: 34px;
+    padding-inline: var(--space-3);
+    background: var(--plate-bg);
+    border: var(--hairline) solid var(--plate-border);
+    color: var(--text-hi);
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    cursor: pointer;
+  }
+
+  .channel__copy-btn:hover {
+    border-color: var(--sulfur-400);
+    color: var(--sulfur-300);
+  }
+</style>

@@ -1,0 +1,149 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import type { Language } from '../../i18n/ui';
+import { communityHighlights } from '../../data/identity';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const openLabel = lang === 'ar' ? 'افتح ملف المحطة ←' : 'Open milestone dossier →';
+---
+
+<div class="reel">
+  {
+    communityHighlights.map((item) => (
+      <article class="reel__card">
+        <div class="reel__media">
+          {item.mediaType === 'video' ? (
+            <video
+              controls
+              preload="metadata"
+              playsinline
+              poster={item.poster}
+              aria-label={item.alt[lang]}
+            >
+              <source src={item.src} type="video/mp4" />
+            </video>
+          ) : (
+            <img
+              src={item.src}
+              alt={item.alt[lang]}
+              width="720"
+              height="450"
+              loading="lazy"
+              decoding="async"
+            />
+          )}
+          <span class="reel__tag ltr">{item.tag[lang]}</span>
+        </div>
+
+        <div class="reel__body">
+          <div class="reel__meta">
+            <span>{item.org[lang]}</span>
+            <span class="ltr">{item.date}</span>
+          </div>
+          <h3 class="reel__title">{item.title[lang]}</h3>
+          <p class="reel__text">{item.body[lang]}</p>
+          <a class="reel__link" href={getRelativeLocaleUrl(lang, item.href)}>
+            {openLabel}
+          </a>
+        </div>
+      </article>
+    ))
+  }
+</div>
+
+<style>
+  .reel {
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  }
+
+  .reel__card {
+    background: var(--plate-bg);
+    border: var(--hairline) solid var(--plate-border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .reel__media {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background: var(--ink-800);
+    border-block-end: var(--hairline) solid var(--line);
+    overflow: hidden;
+  }
+
+  .reel__media img,
+  .reel__media video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .reel__tag {
+    position: absolute;
+    inset-block-start: var(--space-3);
+    inset-inline-start: var(--space-3);
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    letter-spacing: var(--ls-label);
+    color: #ffffff;
+    background: rgba(8, 10, 15, 0.84);
+    border: var(--hairline) solid rgba(255, 255, 255, 0.18);
+    padding: 3px 8px;
+    pointer-events: none;
+  }
+
+  .reel__body {
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    flex: 1;
+  }
+
+  .reel__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    color: var(--blue-400);
+  }
+
+  .reel__title {
+    margin: 0;
+    font-size: var(--step-0);
+    color: var(--text-hi);
+    line-height: 1.35;
+  }
+
+  .reel__text {
+    margin: 0;
+    font-size: var(--text-xs);
+    color: var(--text-lo);
+    line-height: 1.6;
+  }
+
+  .reel__link {
+    margin-block-start: auto;
+    padding-block-start: var(--space-2);
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--sulfur-300);
+    text-decoration: none;
+    align-self: flex-start;
+  }
+
+  .reel__link:hover {
+    text-decoration: underline;
+  }
+</style>

@@ -1,0 +1,403 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import type { Language } from '../../i18n/ui';
+import { storyChapters } from '../../data/identity';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const copy = {
+  en: {
+    eyebrow: 'IDENTITY MONOGRAPH · 0xMARO',
+    title: 'Ammar Mohammed Abdelrahman',
+    subtitle:
+      'Computer Science & AI student, Full-Stack Developer, Application Security Practitioner, and DFIR enthusiast. Still learning, always shipping, always verifying.',
+    chapterNav: 'Select story chapter',
+    takeaway: 'What it changed',
+    openMilestone: 'See verified milestone →',
+    principlesTitle: 'Operating Principles',
+    principles: [
+      {
+        num: 'P1',
+        title: 'Build first, audit honestly',
+        body: 'Production systems with real users — auth, permissions, invoicing, hardware — teach you failure modes no slide deck can.',
+      },
+      {
+        num: 'P2',
+        title: 'Dead ends stay in',
+        body: 'Every case file follows seven sections and documents what failed along the way, not just the polished final payload.',
+      },
+      {
+        num: 'P3',
+        title: 'No proof, no render',
+        body: 'Every rank, certificate, and fix on this site links to a verifiable artifact or commit. If it cannot be verified, it stays off the page.',
+      },
+    ],
+  },
+  ar: {
+    eyebrow: 'ملف الهوية · 0xMARO',
+    title: 'عمّار محمد عبدالرحمن',
+    subtitle:
+      'طالب علوم حاسب وذكاء اصطناعي، مطوّر Full-Stack، ومهتم بأمن التطبيقات والتحقيق الجنائي الرقمي. في رحلة تعلّم وتجريب مستمرة.',
+    chapterNav: 'اختر فصلاً من القصة',
+    takeaway: 'ما الذي غيّره ذلك',
+    openMilestone: 'استعرض المحطة الموثّقة ←',
+    principlesTitle: 'مبادئ العمل',
+    principles: [
+      {
+        num: 'P1',
+        title: 'ابنِ أولاً ثم دقّق بصدق',
+        body: 'الأنظمة الحقيقية بمصادقتها وصلاحياتها وهاردويرها تعلّمك أنماط الفشل التي لا تظهر في العروض النظرية.',
+      },
+      {
+        num: 'P2',
+        title: 'الطرق المسدودة تبقى مكتوبة',
+        body: 'كل ملف قضية يلتزم بسبعة أقسام ويوثّق المحاولات الفاشلة بجانب الاستغلال والإصلاح النهائي.',
+      },
+      {
+        num: 'P3',
+        title: 'لا إثبات، لا عرض',
+        body: 'كل مركز وشهادة وإصلاح على هذا الموقع مربوط بدليل أو commit قابل للتحقق.',
+      },
+    ],
+  },
+}[lang];
+---
+
+<div class="narrative" data-about-narrative>
+  <header class="narrative__head">
+    <span class="narrative__eyebrow ltr">{copy.eyebrow}</span>
+    <h1 class="narrative__title">{copy.title}</h1>
+    <p class="narrative__subtitle">{copy.subtitle}</p>
+  </header>
+
+  <div class="chapters">
+    <div class="chapters__tabs" role="tablist" aria-label={copy.chapterNav}>
+      {
+        storyChapters.map((ch, idx) => (
+          <button
+            type="button"
+            role="tab"
+            class:list={['ch-tab', `ch-tab--${ch.lens}`]}
+            data-chapter-select={ch.num}
+            aria-selected={idx === 0 ? 'true' : 'false'}
+          >
+            <span class="ch-tab__num ltr">{ch.num}</span>
+            <span class="ch-tab__phase">{ch.phase[lang]}</span>
+            <span class="ch-tab__title">{ch.title[lang]}</span>
+          </button>
+        ))
+      }
+    </div>
+
+    <div class="chapters__stage">
+      {
+        storyChapters.map((ch, idx) => (
+          <article
+            class:list={['ch-panel', `ch-panel--${ch.lens}`]}
+            role="tabpanel"
+            data-chapter-panel={ch.num}
+            hidden={idx !== 0}
+          >
+            <div class="ch-panel__media">
+              <img
+                src={ch.image}
+                alt={ch.imageAlt[lang]}
+                width="840"
+                height="520"
+                loading={idx === 0 ? 'eager' : 'lazy'}
+                decoding="async"
+              />
+            </div>
+
+            <div class="ch-panel__content">
+              <span class="ch-panel__phase ltr">
+                {ch.num} · {ch.phase[lang]}
+              </span>
+              <h2 class="ch-panel__title">{ch.title[lang]}</h2>
+              <p class="ch-panel__body">{ch.body[lang]}</p>
+
+              <blockquote class="ch-panel__quote">
+                <span class="ch-panel__quote-label">{copy.takeaway}</span>
+                <p>{ch.takeaway[lang]}</p>
+              </blockquote>
+
+              <a class="ch-panel__link" href={getRelativeLocaleUrl(lang, ch.href)}>
+                {copy.openMilestone}
+              </a>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+
+  <section class="principles" aria-labelledby="principles-heading">
+    <h2 id="principles-heading" class="principles__heading">{copy.principlesTitle}</h2>
+    <div class="principles__grid">
+      {
+        copy.principles.map((p) => (
+          <div class="principle">
+            <span class="principle__num ltr">{p.num}</span>
+            <h3 class="principle__title">{p.title}</h3>
+            <p class="principle__body">{p.body}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-about-narrative]').forEach((root) => {
+    const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-chapter-select]'));
+    const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-chapter-panel]'));
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const num = tab.dataset.chapterSelect;
+        tabs.forEach((t) => t.setAttribute('aria-selected', String(t === tab)));
+        panels.forEach((p) => {
+          p.hidden = p.dataset.chapterPanel !== num;
+        });
+      });
+    });
+  });
+</script>
+
+<style>
+  .narrative {
+    display: grid;
+    gap: var(--space-7);
+  }
+
+  .narrative__head {
+    padding-block-end: var(--space-6);
+    border-block-end: var(--hairline) solid var(--line);
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .narrative__eyebrow {
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--sulfur-400);
+    letter-spacing: var(--ls-label);
+  }
+
+  .narrative__title {
+    margin: 0;
+    font-size: clamp(2rem, 1.5rem + 2.5vw, 3.6rem);
+  }
+
+  .narrative__subtitle {
+    margin: 0;
+    max-width: 62ch;
+    font-size: var(--step-1);
+    color: var(--text-lo);
+    line-height: 1.6;
+  }
+
+  .chapters {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .chapters__tabs {
+    display: grid;
+    gap: var(--space-2);
+    grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+  }
+
+  .ch-tab {
+    text-align: start;
+    padding: var(--space-4);
+    background: var(--plate-bg);
+    border: var(--hairline) solid var(--plate-border);
+    color: var(--text-lo);
+    cursor: pointer;
+    display: grid;
+    gap: var(--space-1);
+    transition: border-color var(--t-fast) ease;
+  }
+
+  .ch-tab:hover {
+    border-color: var(--text-dim);
+    color: var(--text-hi);
+  }
+
+  .ch-tab--build[aria-selected='true'] {
+    border-color: var(--blue-400);
+    border-block-start-width: 3px;
+    background: var(--plate-raised);
+    color: var(--text-hi);
+  }
+
+  .ch-tab--break[aria-selected='true'] {
+    border-color: var(--sulfur-400);
+    border-block-start-width: 3px;
+    background: var(--plate-raised);
+    color: var(--text-hi);
+  }
+
+  .ch-tab__num {
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--blue-400);
+  }
+
+  .ch-tab--break .ch-tab__num {
+    color: var(--sulfur-400);
+  }
+
+  .ch-tab__phase {
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    color: var(--text-dim);
+  }
+
+  .ch-tab__title {
+    font-family: var(--f-display);
+    font-size: var(--step--1);
+    font-weight: 600;
+  }
+
+  .ch-panel {
+    background: var(--plate-bg);
+    border: var(--hairline) solid var(--plate-border);
+    padding: clamp(1.25rem, 3vw, 2.25rem);
+    display: grid;
+    gap: var(--space-6);
+    align-items: center;
+  }
+
+  .ch-panel[hidden] {
+    display: none;
+  }
+
+  @media (min-width: 860px) {
+    .ch-panel {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    }
+  }
+
+  .ch-panel__media {
+    aspect-ratio: 16 / 11;
+    overflow: hidden;
+    background: var(--ink-800);
+    border: var(--hairline) solid var(--line);
+  }
+
+  .ch-panel__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ch-panel__content {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .ch-panel__phase {
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--blue-400);
+  }
+
+  .ch-panel--break .ch-panel__phase {
+    color: var(--sulfur-400);
+  }
+
+  .ch-panel__title {
+    margin: 0;
+    font-size: var(--step-2);
+    color: var(--text-hi);
+  }
+
+  .ch-panel__body {
+    margin: 0;
+    color: var(--text);
+    line-height: 1.7;
+  }
+
+  .ch-panel__quote {
+    margin: 0;
+    padding: var(--space-4);
+    background: var(--ink-800);
+    border-inline-start: 3px solid var(--sulfur-400);
+  }
+
+  .ch-panel__quote-label {
+    display: block;
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-label);
+    color: var(--sulfur-400);
+    margin-block-end: var(--space-1);
+  }
+
+  .ch-panel__quote p {
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--text-hi);
+  }
+
+  .ch-panel__link {
+    justify-self: start;
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--sulfur-300);
+    text-decoration: none;
+  }
+
+  .ch-panel__link:hover {
+    text-decoration: underline;
+  }
+
+  .principles {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .principles__heading {
+    margin: 0;
+    font-size: var(--step-1);
+  }
+
+  .principles__grid {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+  }
+
+  .principle {
+    background: var(--plate-bg);
+    border: var(--hairline) solid var(--plate-border);
+    padding: var(--space-5);
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .principle__num {
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--blue-400);
+  }
+
+  .principle__title {
+    margin: 0;
+    font-size: var(--step-0);
+    color: var(--text-hi);
+  }
+
+  .principle__body {
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--text-lo);
+  }
+</style>

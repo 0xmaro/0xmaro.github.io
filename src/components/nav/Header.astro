@@ -12,26 +12,78 @@ interface Props {
 
 const { lang, langFallback } = Astro.props;
 const t = useTranslations(lang);
+const currentPath = Astro.url.pathname.replace(/\/+$/, '') || '/';
 
 type SectionEntry = [keyof typeof sections, { enabled: boolean; inNav: boolean }];
 
 const navItems = (Object.entries(sections) as SectionEntry[])
   .filter(([, conf]) => conf.enabled && conf.inNav)
-  .map(([key]) => ({
-    href: getRelativeLocaleUrl(lang, sectionPaths[key]),
-    label: t(`nav.${key}` as UIKey),
-  }));
+  .map(([key]) => {
+    const href = getRelativeLocaleUrl(lang, sectionPaths[key]);
+    const cleanHref = href.replace(/\/+$/, '') || '/';
+    const active = currentPath === cleanHref || currentPath.startsWith(`${cleanHref}/`);
+    return {
+      key,
+      href,
+      active,
+      label: t(`nav.${key}` as UIKey),
+    };
+  });
+
+const extraDrawerLinks = [
+  { href: getRelativeLocaleUrl(lang, sectionPaths.labs), label: t('nav.labs') },
+  { href: getRelativeLocaleUrl(lang, sectionPaths.notes), label: t('nav.notes') },
+  { href: getRelativeLocaleUrl(lang, sectionPaths.security), label: t('security.title') },
+];
+
+const menuLabel = lang === 'ar' ? 'القائمة' : 'Menu';
+const themeLabel = lang === 'ar' ? 'تبديل المظهر' : 'Toggle theme';
 ---
 
-<header>
+<header class="site-header">
   <div class="wrap nav">
     <a class="brand ltr" href={getRelativeLocaleUrl(lang, '/')}>
-      0x<span>MARO</span>
+      <span class="brand__mark" aria-hidden="true"></span>
+      0x<span class="brand__accent">MARO</span>
     </a>
+
     <nav class="nav__links" aria-label={t('nav.primary')}>
-      {navItems.map((item) => <a href={item.href}>{item.label}</a>)}
+      {
+        navItems.map((item) => (
+          <a href={item.href} aria-current={item.active ? 'page' : undefined}>
+            {item.label}
+          </a>
+        ))
+      }
     </nav>
+
     <div class="nav__end">
+      <button
+        type="button"
+        class="nav__theme"
+        data-theme-toggle
+        aria-label={themeLabel}
+        title={themeLabel}
+      >
+        <svg class="icon-sun" width="15" height="15" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"
+          ></circle>
+          <path
+            d="M12 2.5v2.5M12 19v2.5M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M2.5 12H5M19 12h2.5M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"></path>
+        </svg>
+        <svg class="icon-moon" width="15" height="15" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11Z"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linejoin="round"></path>
+        </svg>
+      </button>
+
       <button type="button" class="nav__search" data-palette-open>
         <svg
           class="nav__search-icon ltr"
@@ -48,48 +100,154 @@ const navItems = (Object.entries(sections) as SectionEntry[])
         <span class="nav__search-label">{t('palette.open')}</span>
         <kbd class="nav__search-kbd ltr" data-palette-kbd aria-hidden="true"></kbd>
       </button>
+
       <LangSwitch lang={lang} fallback={langFallback} />
+
+      <button
+        type="button"
+        class="nav__menu-btn"
+        data-mobile-nav-toggle
+        aria-expanded="false"
+        aria-controls="mobile-drawer"
+        aria-label={menuLabel}
+      >
+        <span class="nav__menu-bars" aria-hidden="true">
+          <span></span>
+          <span></span>
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <div id="mobile-drawer" class="drawer" data-mobile-drawer hidden>
+    <div class="wrap drawer__inner">
+      <nav class="drawer__primary" aria-label={t('nav.primary')}>
+        {
+          navItems.map((item, idx) => (
+            <a
+              class="drawer__link"
+              href={item.href}
+              aria-current={item.active ? 'page' : undefined}
+            >
+              <span class="drawer__idx ltr">0{idx + 1}</span>
+              <span>{item.label}</span>
+            </a>
+          ))
+        }
+      </nav>
+      <div class="drawer__secondary">
+        {
+          extraDrawerLinks.map((item) => (
+            <a class="drawer__sublink" href={item.href}>
+              {item.label}
+            </a>
+          ))
+        }
+      </div>
     </div>
   </div>
 </header>
 
+<script>
+  const themeBtn = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+  const root = document.documentElement;
+
+  const syncThemeAria = () => {
+    if (!themeBtn) return;
+    const isPaper = root.dataset.theme === 'paper';
+    themeBtn.setAttribute('aria-pressed', String(isPaper));
+  };
+  syncThemeAria();
+
+  themeBtn?.addEventListener('click', () => {
+    const next = root.dataset.theme === 'paper' ? 'darkroom' : 'paper';
+    root.dataset.theme = next;
+    try {
+      localStorage.setItem('0xmaro-theme', next);
+    } catch {
+      // ignore storage errors
+    }
+    syncThemeAria();
+  });
+
+  const menuBtn = document.querySelector<HTMLButtonElement>('[data-mobile-nav-toggle]');
+  const drawer = document.querySelector<HTMLElement>('[data-mobile-drawer]');
+
+  if (menuBtn && drawer) {
+    const closeDrawer = () => {
+      drawer.hidden = true;
+      menuBtn.setAttribute('aria-expanded', 'false');
+    };
+
+    menuBtn.addEventListener('click', () => {
+      const open = drawer.hidden;
+      drawer.hidden = !open;
+      menuBtn.setAttribute('aria-expanded', String(open));
+    });
+
+    drawer.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', closeDrawer);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !drawer.hidden) {
+        closeDrawer();
+        menuBtn.focus();
+      }
+    });
+  }
+</script>
+
 <style>
-  header {
+  .site-header {
     position: sticky;
     top: 0;
-    z-index: 10;
-    background: color-mix(in srgb, var(--ink-900) 82%, transparent);
-    backdrop-filter: blur(10px);
+    z-index: 20;
+    background: color-mix(in srgb, var(--ink-900) 86%, transparent);
+    backdrop-filter: blur(12px);
     border-block-end: var(--hairline) solid var(--line);
   }
 
   .nav {
     display: flex;
     align-items: center;
-    gap: var(--space-5);
-    padding-block: var(--space-4);
+    gap: var(--space-4);
+    padding-block: var(--space-3);
   }
 
   .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
     font-family: var(--f-display);
     font-weight: 700;
     letter-spacing: var(--ls-display);
     color: var(--text-hi);
     text-decoration: none;
     font-size: var(--step-0);
+    min-height: var(--touch-min);
   }
 
-  .brand span {
+  .brand__mark {
+    width: 9px;
+    height: 9px;
+    border: 1.5px solid var(--blue-400);
+    background: var(--sulfur-400);
+    transform: rotate(45deg);
+    flex: none;
+  }
+
+  .brand__accent {
     color: var(--sulfur-400);
   }
 
   .nav__links {
     display: none;
-    gap: var(--space-5);
+    gap: var(--space-4);
     margin-inline-start: auto;
   }
 
-  @media (min-width: 760px) {
+  @media (min-width: 860px) {
     .nav__links {
       display: flex;
     }
@@ -106,13 +264,14 @@ const navItems = (Object.entries(sections) as SectionEntry[])
     font-size: var(--text-sm);
     color: var(--text-lo);
     text-decoration: none;
-    border-block-end: var(--hairline) solid transparent;
+    border-block-end: 2px solid transparent;
     transition:
       color var(--t-fast) ease,
       border-color var(--t-fast) ease;
   }
 
-  .nav__links a:hover {
+  .nav__links a:hover,
+  .nav__links a[aria-current='page'] {
     color: var(--text-hi);
     border-block-end-color: var(--sulfur-400);
   }
@@ -123,23 +282,55 @@ const navItems = (Object.entries(sections) as SectionEntry[])
     letter-spacing: 0;
   }
 
-  /* ── Command palette trigger — touch-first, shortcut hint on fine pointers ── */
   .nav__end {
     display: flex;
     align-items: center;
-    gap: var(--space-3);
+    gap: var(--space-2);
   }
 
-  /* Below 760px the nav links are gone; the trigger + language switch still
-     push to the inline-end edge. */
-  @media (max-width: 759px) {
+  @media (max-width: 859px) {
     .nav__end {
       margin-inline-start: auto;
     }
   }
 
-  /* Hidden until JS is live — without it the palette cannot open, and a dead
-     button would fail the a11y floor. */
+  .nav__theme {
+    display: none;
+  }
+
+  :global(html.js) .nav__theme {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--touch-min);
+    min-height: var(--touch-min);
+    color: var(--text-lo);
+    background: none;
+    border: var(--hairline) solid var(--ink-600);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition:
+      color var(--t-fast) ease,
+      border-color var(--t-fast) ease;
+  }
+
+  :global(html.js) .nav__theme:hover {
+    color: var(--sulfur-400);
+    border-color: var(--sulfur-400);
+  }
+
+  .icon-moon {
+    display: none;
+  }
+
+  :global(html[data-theme='paper']) .icon-sun {
+    display: none;
+  }
+
+  :global(html[data-theme='paper']) .icon-moon {
+    display: block;
+  }
+
   .nav__search {
     display: none;
   }
@@ -169,14 +360,32 @@ const navItems = (Object.entries(sections) as SectionEntry[])
     border-color: var(--sulfur-400);
   }
 
+  @media (max-width: 520px) {
+    .nav {
+      gap: var(--space-2);
+    }
+
+    .brand {
+      font-size: var(--step--1);
+    }
+
+    .nav__search-label {
+      display: none;
+    }
+
+    :global(html.js) .nav__search {
+      padding-inline: 0;
+      min-width: var(--touch-min);
+      justify-content: center;
+    }
+  }
+
   html[lang='ar'] .nav__search {
     font-family: var(--f-body-ar);
     text-transform: none;
     letter-spacing: 0;
   }
 
-  /* Empty until the palette script fills the platform hint (⌘K / Ctrl K);
-     coarse pointers get no hint at all. */
   .nav__search-kbd {
     display: none;
     font-family: var(--f-code);
@@ -184,12 +393,120 @@ const navItems = (Object.entries(sections) as SectionEntry[])
     color: var(--text-dim);
     border: var(--hairline) solid var(--ink-600);
     border-radius: var(--radius);
-    padding: var(--space-1) var(--space-2);
+    padding: 2px 6px;
   }
 
   @media (pointer: fine) {
     :global(html.js) .nav__search-kbd:not(:empty) {
       display: inline-block;
     }
+  }
+
+  .nav__menu-btn {
+    display: none;
+  }
+
+  @media (max-width: 859px) {
+    :global(html.js) .nav__menu-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: var(--touch-min);
+      min-height: var(--touch-min);
+      background: none;
+      border: var(--hairline) solid var(--ink-600);
+      border-radius: var(--radius);
+      color: var(--text-hi);
+      cursor: pointer;
+    }
+  }
+
+  .nav__menu-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 18px;
+  }
+
+  .nav__menu-bars span {
+    display: block;
+    height: 1.5px;
+    background: currentColor;
+    transition: transform var(--t-fast) ease;
+  }
+
+  .nav__menu-btn[aria-expanded='true'] .nav__menu-bars span:first-child {
+    transform: translateY(3.2px) rotate(45deg);
+  }
+
+  .nav__menu-btn[aria-expanded='true'] .nav__menu-bars span:last-child {
+    transform: translateY(-3.2px) rotate(-45deg);
+  }
+
+  .drawer {
+    border-block-start: var(--hairline) solid var(--line);
+    background: var(--ink-800);
+  }
+
+  .drawer[hidden] {
+    display: none;
+  }
+
+  .drawer__inner {
+    padding-block: var(--space-5);
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .drawer__primary {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .drawer__link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: var(--touch-min);
+    padding-inline: var(--space-3);
+    border: var(--hairline) solid var(--line);
+    background: var(--ink-900);
+    text-decoration: none;
+    color: var(--text-hi);
+    font-family: var(--f-display);
+    font-size: var(--step-0);
+  }
+
+  .drawer__link[aria-current='page'] {
+    border-color: var(--sulfur-400);
+    color: var(--sulfur-300);
+  }
+
+  .drawer__idx {
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--blue-400);
+  }
+
+  .drawer__secondary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    padding-block-start: var(--space-3);
+    border-block-start: var(--hairline) solid var(--line);
+  }
+
+  .drawer__sublink {
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--text-lo);
+    text-decoration: none;
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .drawer__sublink:hover {
+    color: var(--sulfur-400);
   }
 </style>
