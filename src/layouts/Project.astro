@@ -5,11 +5,18 @@ import JsonLd from '../components/seo/JsonLd.astro';
 import Stamp from '../components/writeup/Stamp.astro';
 import Callout from '../components/writeup/Callout.astro';
 import { getRelativeLocaleUrl } from 'astro:i18n';
-import { render } from 'astro:content';
+import { getCollection, render } from 'astro:content';
+import type { MarkdownHeading } from 'astro';
 import { useTranslations } from '../i18n/utils';
-import { projectSlugOf, slugOf, type Project, type Writeup } from '../lib/content';
+import {
+  projectSlugOf,
+  relatedNoteEntries,
+  slugOf,
+  type Project,
+  type Writeup,
+} from '../lib/content';
 import { ogImagePath } from '../lib/og';
-import { isTodo, surfaceProjectMetrics } from '../lib/proof';
+import { isTodo, journeyTimeline, surfaceProjectMetrics } from '../lib/proof';
 import { breadcrumbSchema } from '../lib/schema';
 import type { Language, UIKey } from '../i18n/ui';
 import '../styles/prose.css';
@@ -29,7 +36,48 @@ const t = useTranslations(lang);
 const other: Language = lang === 'en' ? 'ar' : 'en';
 const slug = projectSlugOf(entry);
 const path = `/projects/${slug}`;
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
+
+const toc: MarkdownHeading[] = headings.filter((h) => h.depth === 2);
+const images = data.media.filter((m) => m.type === 'image');
+
+// Connected Knowledge Graph — resolve related notes & verified journey dossiers
+const allNotes = await getCollection('notes');
+const relatedNotes = relatedNoteEntries(allNotes, data.relatedNotes, lang);
+const allJourney = await journeyTimeline();
+const relatedJourney = data.relatedJourney
+  .map((id) => allJourney.find((s) => s.id === id))
+  .filter((s): s is (typeof allJourney)[number] => Boolean(s));
+
+const hasConnected =
+  relatedWriteups.length > 0 || relatedNotes.length > 0 || relatedJourney.length > 0;
+
+const kindLabels: Record<NonNullable<typeof data.kind>, Record<Language, string>> = {
+  hardware: { en: 'HARDWARE · EMBEDDED', ar: 'هاردوير · أنظمة مدمجة' },
+  'digital-logic': { en: 'PURE DIGITAL LOGIC', ar: 'منطق رقمي صرف' },
+  'security-web': { en: 'SECURITY-AUDITED WEB', ar: 'ويب مدقّق أمنياً' },
+  fullstack: { en: 'FULL-STACK SYSTEM', ar: 'نظام Full-Stack' },
+  'embedded-research': { en: 'EMBEDDED RESEARCH', ar: 'بحث أنظمة مدمجة' },
+};
+
+const graphCopy = {
+  en: {
+    toc: 'Dossier sections',
+    gallery: 'Verified artifacts & visual evidence',
+    connected: 'Connected knowledge graph',
+    writeups: 'Security case files',
+    notes: 'Engineering notes',
+    journey: 'Verified journey milestones',
+  },
+  ar: {
+    toc: 'أقسام الدراسة',
+    gallery: 'الصور والمخططات الموثّقة',
+    connected: 'المعرفة المرتبطة في الأرشيف',
+    writeups: 'ملفات القضايا الأمنية',
+    notes: 'الملاحظات الهندسية',
+    journey: 'محطات المسار الموثّقة',
+  },
+}[lang];
 
 const statusVariant = { live: 'ok', archived: 'med', private: 'blue' } as const;
 
@@ -101,9 +149,12 @@ const breadcrumb = breadcrumbSchema(lang, Astro.site!, [
   <JsonLd slot="head" data={jsonLd} />
   <JsonLd slot="head" data={breadcrumb} />
 
-  <article class="project">
+  <article class="project" data-project-root>
     <header class="wrap project__head">
-      <p class="project__eyebrow ltr">{t('projects.eyebrow')} · {slug}</p>
+      <p class="project__eyebrow">
+        <bdi class="ltr">{t('projects.eyebrow')} · {slug}</bdi>
+        {data.kind && <span class="project__kind"> · {kindLabels[data.kind][lang]}</span>}
+      </p>
       <h1 class="project__title" data-pagefind-meta="title">{data.title}</h1>
       {summary && <p class="project__summary">{summary}</p>}
 
@@ -159,19 +210,67 @@ const breadcrumb = breadcrumbSchema(lang, Astro.site!, [
 
     {
       metrics.length > 0 && (
-        <div class="wrap project__metrics" aria-label={t('project.metrics')}>
-          {metrics.map((m) => (
-            <a class="metric" href={m.proof} rel="nofollow noreferrer">
-              <span class="metric__value ltr">{m.value}</span>
-              <span class="metric__label">{m.label}</span>
-              <span class="metric__verify ltr">{t('proof.verify')}</span>
-            </a>
-          ))}
+        <div class="wrap project__metrics-wrap" aria-label={t('project.metrics')}>
+          <div class="project__metrics">
+            {metrics.map((m) => (
+              <a class="metric" href={m.proof} rel="nofollow noreferrer">
+                <span class="metric__value ltr">{m.value}</span>
+                <span class="metric__label">{m.label}</span>
+                <span class="metric__verify ltr">{t('proof.verify')}</span>
+              </a>
+            ))}
+          </div>
         </div>
       )
     }
 
+    {
+      images.length > 0 && (
+        <section class="wrap project__gallery" aria-label={graphCopy.gallery}>
+          <h2 class="u-label project__sec-label">{graphCopy.gallery}</h2>
+          <div class="pgallery">
+            {images.map((m) => (
+              <figure class="pfig">
+                <button
+                  type="button"
+                  class="pfig__btn"
+                  data-proj-lightbox-src={m.src}
+                  data-proj-lightbox-alt={m.alt[lang]}
+                  data-proj-lightbox-caption={m.caption?.[lang] ?? m.alt[lang]}
+                  aria-label={t('journey.media.zoom').replace('{0}', m.alt[lang])}
+                >
+                  <img
+                    class="pfig__img"
+                    src={m.src}
+                    alt={m.alt[lang]}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </button>
+                {m.caption && <figcaption class="pfig__cap">{m.caption[lang]}</figcaption>}
+              </figure>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
     <div class="wrap project__grid">
+      {
+        toc.length > 0 && (
+          <aside class="project__toc" aria-label={graphCopy.toc}>
+            <p class="project__toc-label u-label">{graphCopy.toc}</p>
+            <ol class="project__toc-list">
+              {toc.map((h) => (
+                <li>
+                  <a href={`#${h.slug}`}>{h.text}</a>
+                </li>
+              ))}
+            </ol>
+          </aside>
+        )
+      }
+
       <div class="project__content prose" data-pagefind-body={pagefindIgnore ? undefined : ''}>
         <Content components={mdxComponents} />
       </div>
@@ -187,19 +286,68 @@ const breadcrumb = breadcrumbSchema(lang, Astro.site!, [
     }
 
     {
-      relatedWriteups.length > 0 && (
-        <div class="wrap project__related">
-          <h2>{t('project.related')}</h2>
-          <ul class="project__related-list">
-            {relatedWriteups.map((w) => (
-              <li>
-                <a href={getRelativeLocaleUrl(lang, `/writeups/${slugOf(w)}`)}>{w.data.title}</a>
-              </li>
-            ))}
-          </ul>
-        </div>
+      hasConnected && (
+        <aside class="wrap project__related" aria-labelledby="proj-connected-title">
+          <h2 id="proj-connected-title" class="u-label project__sec-label">
+            {graphCopy.connected}
+          </h2>
+          <div class="pgraph">
+            {relatedWriteups.length > 0 && (
+              <div class="pgraph__col">
+                <h3 class="pgraph__head">{graphCopy.writeups}</h3>
+                <ul class="project__related-list">
+                  {relatedWriteups.map((w) => (
+                    <li>
+                      <a href={getRelativeLocaleUrl(w.data.lang, `/writeups/${slugOf(w)}`)}>
+                        {w.data.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {relatedNotes.length > 0 && (
+              <div class="pgraph__col">
+                <h3 class="pgraph__head">{graphCopy.notes}</h3>
+                <ul class="project__related-list">
+                  {relatedNotes.map((n) => (
+                    <li>
+                      <a href={getRelativeLocaleUrl(n.data.lang, `/notes/${slugOf(n)}`)}>
+                        {n.data.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {relatedJourney.length > 0 && (
+              <div class="pgraph__col">
+                <h3 class="pgraph__head">{graphCopy.journey}</h3>
+                <ul class="project__related-list">
+                  {relatedJourney.map((s) => (
+                    <li>
+                      <a href={getRelativeLocaleUrl(lang, `/journey/${s.id}`)}>
+                        {s.data.event[lang]}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </aside>
       )
     }
+
+    <dialog class="pbox" id="project-lightbox" aria-label={t('journey.lightbox.label')}>
+      <div class="pbox__bar">
+        <p class="pbox__cap" id="pbox-cap"></p>
+        <button type="button" class="pbox__close" id="pbox-close">
+          {t('journey.lightbox.close')}
+        </button>
+      </div>
+      <img class="pbox__img" id="pbox-img" alt="" />
+    </dialog>
 
     <footer class="wrap project__foot">
       {
@@ -215,6 +363,36 @@ const breadcrumb = breadcrumbSchema(lang, Astro.site!, [
     </footer>
   </article>
 </Base>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-project-root]');
+  const dialog = document.getElementById('project-lightbox') as HTMLDialogElement | null;
+  const img = document.getElementById('pbox-img') as HTMLImageElement | null;
+  const cap = document.getElementById('pbox-cap');
+  const closeBtn = document.getElementById('pbox-close');
+
+  if (root && dialog && img && cap) {
+    root.addEventListener('click', (e) => {
+      const trigger = (e.target as HTMLElement).closest<HTMLButtonElement>(
+        '[data-proj-lightbox-src]'
+      );
+      if (!trigger) return;
+      img.src = trigger.dataset.projLightboxSrc ?? '';
+      img.alt = trigger.dataset.projLightboxAlt ?? '';
+      cap.textContent = trigger.dataset.projLightboxCaption ?? '';
+      dialog.showModal();
+    });
+
+    closeBtn?.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) dialog.close();
+    });
+    dialog.addEventListener('close', () => {
+      img.removeAttribute('src');
+      img.alt = '';
+    });
+  }
+</script>
 
 <style>
   .project__head {
@@ -297,19 +475,16 @@ const breadcrumb = breadcrumbSchema(lang, Astro.site!, [
   }
 
   /* ── Metrics: proof-gated figures, same visual language as StatStrip ── */
-  .project__metrics {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--hairline);
-    background: var(--line);
-    border: var(--hairline) solid var(--line);
+  .project__metrics-wrap {
     margin-block-start: var(--space-6);
   }
 
-  @media (min-width: 640px) {
-    .project__metrics {
-      grid-template-columns: repeat(3, 1fr);
-    }
+  .project__metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+    gap: var(--hairline);
+    background: var(--line);
+    border: var(--hairline) solid var(--line);
   }
 
   .metric {
@@ -348,8 +523,188 @@ const breadcrumb = breadcrumbSchema(lang, Astro.site!, [
   }
 
   .project__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
     padding-block-start: var(--space-7);
     padding-block-end: var(--space-8);
+  }
+
+  .project__content,
+  .project__toc {
+    min-width: 0;
+  }
+
+  @media (min-width: 1080px) {
+    .project__grid {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 3fr);
+      gap: var(--space-8);
+    }
+
+    .project__content {
+      order: 1;
+    }
+
+    .project__toc {
+      order: 2;
+      position: sticky;
+      top: calc(var(--space-5) + 56px);
+    }
+  }
+
+  .project__toc {
+    align-self: start;
+    border-inline-start: var(--hairline) solid var(--line);
+    padding-inline-start: var(--space-4);
+  }
+
+  .project__toc-label {
+    margin: 0 0 var(--space-3);
+  }
+
+  .project__toc-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .project__toc-list a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-min);
+    font-size: var(--step--1);
+    color: var(--text-lo);
+    text-decoration: none;
+    border-block-end: var(--hairline) solid transparent;
+  }
+
+  .project__toc-list a:hover {
+    color: var(--sulfur-300);
+    border-block-end-color: var(--sulfur-400);
+  }
+
+  .project__kind {
+    color: var(--sulfur-400);
+  }
+
+  .project__sec-label {
+    display: block;
+    margin: 0 0 var(--space-4);
+    color: var(--blue-400);
+  }
+
+  .project__gallery {
+    padding-block-start: var(--space-6);
+  }
+
+  .pgallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+    gap: var(--space-4);
+  }
+
+  .pfig {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .pfig__btn {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: var(--hairline) solid var(--ink-600);
+    background: var(--ink-900);
+    cursor: zoom-in;
+    overflow: hidden;
+  }
+
+  .pfig__btn:hover {
+    border-color: var(--sulfur-400);
+  }
+
+  .pfig__img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+  }
+
+  .pfig__cap {
+    font-size: var(--text-xs);
+    color: var(--text-lo);
+    line-height: var(--lh-lead);
+  }
+
+  .pgraph {
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  }
+
+  .pgraph__head {
+    margin: 0 0 var(--space-2);
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-label);
+  }
+
+  html[lang='ar'] .pgraph__head,
+  html[lang='ar'] .project__kind,
+  html[lang='ar'] .pbox__close {
+    font-family: var(--f-body-ar);
+  }
+
+  .pbox {
+    max-width: min(92vw, var(--wrap));
+    max-height: 90vh;
+    padding: var(--space-4);
+    background: var(--ink-900);
+    color: var(--text-hi);
+    border: var(--hairline) solid var(--ink-600);
+  }
+
+  .pbox::backdrop {
+    background: rgba(8, 10, 15, 0.88);
+  }
+
+  .pbox__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-block-end: var(--space-3);
+  }
+
+  .pbox__cap {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--text);
+  }
+
+  .pbox__close {
+    min-height: var(--touch-min);
+    padding: var(--space-2) var(--space-4);
+    background: var(--ink-800);
+    border: var(--hairline) solid var(--ink-600);
+    color: var(--text-hi);
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    cursor: pointer;
+  }
+
+  .pbox__img {
+    display: block;
+    max-width: 100%;
+    max-height: 75vh;
+    margin-inline: auto;
+    object-fit: contain;
   }
 
   .project__notes,

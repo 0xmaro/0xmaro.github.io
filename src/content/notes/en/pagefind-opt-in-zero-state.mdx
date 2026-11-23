@@ -1,0 +1,24 @@
+---
+title: "TIL: Pagefind's opt-in zero-state indexes every page"
+summary: 'If zero HTML pages carry data-pagefind-body, Pagefind falls back to indexing every page in dist/ — including 404 and noindex pages. Why static search gates must assert exact counts.'
+lang: 'en'
+publishedAt: 2026-09-27
+kind: 'til'
+tags: ['pagefind', 'cwe-200', 'static-sites', 'ci-gates']
+relatedProjects: ['0xmaro-site']
+relatedWriteups: ['search-index-leaked-hidden-pages']
+visibility:
+  draft: false
+---
+
+`data-pagefind-body` feels like an opt-in allowlist: mark the pages you want indexed, and everything else stays out. That mental model has a sharp edge case.
+
+## The zero-state fallback
+
+If **at least one** HTML file in `dist/` carries `data-pagefind-body`, Pagefind indexes only opted-in files. If **zero** files carry it (for example, on an early launch build while posts are still drafts), Pagefind silently switches to indexing the entire `<body>` of **every** HTML file — including `404.html`, `/search/`, and pages carrying `<meta name="robots" content="noindex">`.
+
+## Guard both edges in CI
+
+Checking only that the index is "non-empty" misses over-indexing completely. Instead, assert that the number of indexed pages equals the exact count of HTML files carrying a real `data-pagefind-body` opening tag (ignoring mentions inside code blocks), and fail the build if any opted-in file also declares `noindex`.
+
+See the full root-cause analysis and three verified fix commits in [Case #01: My search index was publishing the pages I told it to hide](/writeups/search-index-leaked-hidden-pages).

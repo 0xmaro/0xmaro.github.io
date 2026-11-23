@@ -1,0 +1,249 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import type { Language } from '../../i18n/ui';
+import { workbenchResearch } from '../../data/identity';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const copy = {
+  en: {
+    benchTitle: 'On the Research Workbench',
+    benchSub:
+      'Active investigations and draft case files currently being written — kept transparent so visitors see what is in progress without shipping unfinished prose.',
+    badge: 'In Progress',
+    contractTitle: 'Case-File Methodology & Responsible Disclosure',
+    contractSteps: [
+      '01 Target & scope',
+      '02 Recon & assumptions',
+      '03 Root-cause bug',
+      '04 Safe reproduction',
+      '05 Dead ends kept in',
+      '06 Verified code fix',
+      '07 Engineering lesson',
+    ],
+    disclosure:
+      'All published research covers self-built systems, authorized training labs, or concluded CTF events. No sensitive client data or unpatched third-party vulnerabilities are disclosed. Security reports for this site itself follow RFC 9116.',
+    postureLink: 'Inspect live site security posture',
+    notesLink: 'Browse engineering notes',
+  },
+  ar: {
+    benchTitle: 'على طاولة البحث حالياً',
+    benchSub: 'تحقيقات ومسودات قضايا قيد الكتابة — معروضة بشفافية دون نشر نصوص غير مكتملة.',
+    badge: 'قيد الكتابة',
+    contractTitle: 'منهجية ملفات القضايا والإفصاح المسؤول',
+    contractSteps: [
+      '01 الهدف والنطاق',
+      '02 الاستطلاع والافتراضات',
+      '03 جذر الثغرة',
+      '04 إعادة الإنتاج الآمنة',
+      '05 الطرق المسدودة',
+      '06 الإصلاح البرمجي الموثّق',
+      '07 الدرس الهندسي',
+    ],
+    disclosure:
+      'كل الأبحاث المنشورة تغطي أنظمة بنيتها بنفسي أو مختبرات مرخّصة أو مسابقات CTF منتهية، بدون كشف أي بيانات حساسة أو ثغرات غير مرقّعة لطرف ثالث. الإبلاغ عن ثغرات الموقع نفسه يتبع RFC 9116.',
+    postureLink: 'استعرض الوضع الأمني المباشر',
+    notesLink: 'تصفّح الملاحظات الهندسية',
+  },
+}[lang];
+---
+
+<section class="pipeline" aria-labelledby="workbench-pipeline-title">
+  <div class="pipeline__head">
+    <h2 id="workbench-pipeline-title" class="pipeline__title">{copy.benchTitle}</h2>
+    <p class="pipeline__sub">{copy.benchSub}</p>
+  </div>
+
+  <ul class="pipeline__grid">
+    {
+      workbenchResearch.map((item) => (
+        <li class="pipeline__card">
+          <div class="pipeline__top">
+            <span class="pipeline__code ltr">{item.code}</span>
+            <span class="pipeline__badge">{copy.badge}</span>
+          </div>
+          <h3 class="pipeline__name">{item.title[lang]}</h3>
+          <p class="pipeline__desc">{item.summary[lang]}</p>
+          <div class="pipeline__meta ltr">
+            <span>{item.target}</span>
+            {item.cwe.map((c) => (
+              <span class="pipeline__cwe">{c}</span>
+            ))}
+            {item.owasp.map((o) => (
+              <span class="pipeline__owasp">{o}</span>
+            ))}
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="contract">
+    <h3 class="contract__title">{copy.contractTitle}</h3>
+    <ol class="contract__steps">
+      {copy.contractSteps.map((step) => <li>{step}</li>)}
+    </ol>
+    <p class="contract__disclosure">{copy.disclosure}</p>
+    <div class="contract__links">
+      <a class="btn" href={getRelativeLocaleUrl(lang, '/security')}>
+        {copy.postureLink}
+      </a>
+      <a class="btn" href={getRelativeLocaleUrl(lang, '/notes')}>
+        {copy.notesLink}
+      </a>
+      <a class="btn ltr" href="/.well-known/security.txt">/.well-known/security.txt</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .pipeline {
+    margin-block-start: var(--space-8);
+    padding-block-start: var(--space-7);
+    border-block-start: var(--hairline) solid var(--line);
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .pipeline__title {
+    margin: 0;
+    font-size: var(--step-2);
+    color: var(--text-hi);
+  }
+
+  .pipeline__sub {
+    margin: var(--space-2) 0 0;
+    max-width: var(--measure-read);
+    font-size: var(--step--1);
+    color: var(--text-lo);
+  }
+
+  .pipeline__grid {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  }
+
+  .pipeline__card {
+    background: var(--plate-bg);
+    border: var(--hairline) dashed var(--plate-border);
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .pipeline__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .pipeline__code {
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    color: var(--blue-400);
+  }
+
+  .pipeline__badge {
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    color: var(--sulfur-400);
+    border: var(--hairline) solid color-mix(in srgb, var(--sulfur-400) 45%, transparent);
+    padding: 2px 8px;
+  }
+
+  .pipeline__name {
+    margin: 0;
+    font-size: var(--step-0);
+    color: var(--text-hi);
+    line-height: 1.35;
+  }
+
+  .pipeline__desc {
+    margin: 0;
+    font-size: var(--text-xs);
+    color: var(--text-lo);
+    line-height: 1.55;
+  }
+
+  .pipeline__meta {
+    margin-block-start: auto;
+    padding-block-start: var(--space-2);
+    border-block-start: var(--hairline) solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    color: var(--text-dim);
+  }
+
+  .pipeline__cwe {
+    color: var(--sulfur-300);
+  }
+
+  .pipeline__owasp {
+    color: var(--blue-400);
+  }
+
+  .contract {
+    background: var(--plate-bg);
+    border: var(--hairline) solid var(--plate-border);
+    border-inline-start: 3px solid var(--blue-400);
+    padding: clamp(1.25rem, 3vw, 2rem);
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .contract__title {
+    margin: 0;
+    font-size: var(--step-1);
+    color: var(--text-hi);
+  }
+
+  .contract__steps {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .contract__steps li {
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    color: var(--text);
+    background: var(--ink-800);
+    border: var(--hairline) solid var(--line);
+    padding: 4px 10px;
+  }
+
+  .contract__disclosure {
+    margin: 0;
+    max-width: var(--measure-read);
+    font-size: var(--step--1);
+    color: var(--text-lo);
+    line-height: var(--lh-body);
+  }
+
+  .contract__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  html[lang='ar'] .pipeline__badge,
+  html[lang='ar'] .contract__steps li {
+    font-family: var(--f-body-ar);
+  }
+</style>

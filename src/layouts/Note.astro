@@ -17,6 +17,8 @@ import {
   noteKindIndex,
   noteKindLabelKey,
   noteKindPath,
+  relatedProjectEntries,
+  relatedWriteupEntries,
   slugOf,
   type Note,
 } from '../lib/content';
@@ -76,6 +78,25 @@ const kindHref = kindLinkable.has(data.kind)
 // placeholder never becomes an anchor (isRealProof, src/lib/proof.ts).
 const source = data.source;
 const sourceHref = source && isRealProof(source.url) ? source.url : undefined;
+
+const allProjects = await getCollection('projects');
+const allWriteups = await getCollection('writeups');
+const linkedProjects = relatedProjectEntries(allProjects, data.relatedProjects, lang);
+const linkedWriteups = relatedWriteupEntries(allWriteups, data.relatedWriteups, lang);
+const hasConnected = linkedProjects.length > 0 || linkedWriteups.length > 0;
+
+const noteGraphCopy = {
+  en: {
+    connected: 'Connected knowledge graph',
+    projects: 'Related systems & projects',
+    writeups: 'Related security case files',
+  },
+  ar: {
+    connected: 'المعرفة المرتبطة في الأرشيف',
+    projects: 'الأنظمة والمشاريع المرتبطة',
+    writeups: 'ملفات القضايا الأمنية المرتبطة',
+  },
+}[lang];
 
 const mdxComponents = { Callout, Payload, FixDiff, DeadEnd, Terminal };
 
@@ -203,6 +224,46 @@ const breadcrumb = breadcrumbSchema(lang, Astro.site!, [
         <Content components={mdxComponents} />
       </div>
     </div>
+
+    {
+      hasConnected && (
+        <aside class="wrap note-page__connected" aria-labelledby="note-graph-title">
+          <h2 id="note-graph-title" class="u-label">
+            {noteGraphCopy.connected}
+          </h2>
+          <div class="ngraph">
+            {linkedProjects.length > 0 && (
+              <div class="ngraph__col">
+                <h3 class="ngraph__head">{noteGraphCopy.projects}</h3>
+                <ul class="ngraph__list">
+                  {linkedProjects.map((p) => (
+                    <li>
+                      <a href={getRelativeLocaleUrl(p.data.lang, `/projects/${slugOf(p)}`)}>
+                        {p.data.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {linkedWriteups.length > 0 && (
+              <div class="ngraph__col">
+                <h3 class="ngraph__head">{noteGraphCopy.writeups}</h3>
+                <ul class="ngraph__list">
+                  {linkedWriteups.map((w) => (
+                    <li>
+                      <a href={getRelativeLocaleUrl(w.data.lang, `/writeups/${slugOf(w)}`)}>
+                        {w.data.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </aside>
+      )
+    }
 
     <footer class="wrap note-page__foot">
       {
@@ -397,6 +458,58 @@ const breadcrumb = breadcrumbSchema(lang, Astro.site!, [
 
   .note-page__toc-list a:hover {
     color: var(--sulfur-300);
+    border-block-end-color: var(--sulfur-400);
+  }
+
+  .note-page__connected {
+    padding-block: var(--space-6);
+    border-block-start: var(--hairline) solid var(--line);
+  }
+
+  .note-page__connected .u-label {
+    display: block;
+    margin: 0 0 var(--space-4);
+    color: var(--blue-400);
+  }
+
+  .ngraph {
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  }
+
+  .ngraph__head {
+    margin: 0 0 var(--space-2);
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: var(--ls-label);
+  }
+
+  html[lang='ar'] .ngraph__head {
+    font-family: var(--f-body-ar);
+  }
+
+  .ngraph__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .ngraph__list a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-min);
+    color: var(--sulfur-300);
+    text-decoration: none;
+    border-block-end: var(--hairline) solid transparent;
+  }
+
+  .ngraph__list a:hover {
     border-block-end-color: var(--sulfur-400);
   }
 

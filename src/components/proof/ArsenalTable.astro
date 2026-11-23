@@ -1,7 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
 import { getRelativeLocaleUrl } from 'astro:i18n';
-import { livePaths } from '../../lib/content';
+import { forSurface, livePaths, slugOf } from '../../lib/content';
+import { journeyTimeline } from '../../lib/proof';
 import { useTranslations } from '../../i18n/utils';
 import type { Language } from '../../i18n/ui';
 
@@ -16,8 +17,49 @@ interface Props {
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 const arsenal = await getCollection('arsenal');
-// A usedOn target that is a draft (or untranslated) renders as the dash, not a dead link.
-const live = livePaths(await getCollection('writeups'), await getCollection('projects'), lang);
+const writeups = await getCollection('writeups');
+const projects = await getCollection('projects');
+const notes = await getCollection('notes');
+const journey = await journeyTimeline();
+
+// Build a live target map across Writeups, Projects, Notes, Journey, and /security
+// so every verified `usedOn` target becomes a real, working, labeled link.
+const live = livePaths(writeups, projects, lang);
+const enWriteups = new Map(
+  forSurface(writeups, 'direct', 'en').map((e) => [`/writeups/${slugOf(e)}`, e])
+);
+const localWriteups = new Map(
+  forSurface(writeups, 'direct', lang).map((e) => [`/writeups/${slugOf(e)}`, e])
+);
+const localProjects = new Map(
+  forSurface(projects, 'direct', lang).map((e) => [`/projects/${slugOf(e)}`, e])
+);
+const localNotes = new Map(
+  forSurface(notes, 'direct', lang).map((e) => [`/notes/${slugOf(e)}`, e])
+);
+const journeyMap = new Map(journey.map((s) => [`/journey/${s.id}`, s]));
+
+function resolveUsedOn(usedOn: string): { href: string; label: string } | null {
+  if (!usedOn) return null;
+  if (usedOn === '/security') {
+    return {
+      href: getRelativeLocaleUrl(lang, '/security'),
+      label: lang === 'ar' ? 'وضع الأمان المباشر (/security)' : 'Live Security Posture (/security)',
+    };
+  }
+  const wLocal = localWriteups.get(usedOn);
+  if (wLocal) return { href: getRelativeLocaleUrl(lang, usedOn), label: wLocal.data.title };
+  const wEn = enWriteups.get(usedOn);
+  if (wEn) return { href: usedOn, label: wEn.data.title };
+  const p = localProjects.get(usedOn);
+  if (p) return { href: getRelativeLocaleUrl(lang, usedOn), label: p.data.title };
+  const n = localNotes.get(usedOn);
+  if (n) return { href: getRelativeLocaleUrl(lang, usedOn), label: n.data.title };
+  const j = journeyMap.get(usedOn);
+  if (j) return { href: getRelativeLocaleUrl(lang, usedOn), label: j.data.event[lang] };
+  if (live.has(usedOn)) return { href: getRelativeLocaleUrl(lang, usedOn), label: usedOn };
+  return null;
+}
 ---
 
 {
@@ -41,17 +83,20 @@ const live = livePaths(await getCollection('writeups'), await getCollection('pro
             </td>
             <td>
               <ul class="arsenal__used">
-                {d.data.rows.map((r) => (
-                  <li>
-                    {r.usedOn && live.has(r.usedOn) ? (
-                      <a href={getRelativeLocaleUrl(lang, r.usedOn)}>{r.usedOn}</a>
-                    ) : (
-                      <span class="arsenal__none" aria-hidden="true">
-                        —
-                      </span>
-                    )}
-                  </li>
-                ))}
+                {d.data.rows.map((r) => {
+                  const target = resolveUsedOn(r.usedOn);
+                  return (
+                    <li>
+                      {target ? (
+                        <a href={target.href}>{target.label}</a>
+                      ) : (
+                        <span class="arsenal__none" aria-hidden="true">
+                          —
+                        </span>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </td>
           </tr>

@@ -1,0 +1,79 @@
+---
+title: 'Autonomous Logic Tank — Zero-Code Digital Logic'
+summary: 'An obstacle-avoiding and line-following autonomous tank built purely from discrete digital logic ICs — zero microcontrollers, zero firmware, and deterministic hardware truth tables.'
+lang: 'en'
+publishedAt: 2024-12-15
+role: 'Digital Logic Designer — Benha University'
+kind: 'digital-logic'
+status: 'live'
+stack:
+  [
+    'IC 7400/7404',
+    'Dual 555 Timers',
+    'CD74HC4051',
+    'L298 Motor Driver',
+    'TCRT5000 IR',
+    'HC-SR04 Ultrasonic',
+    'Proteus',
+  ]
+demo: 'https://lnkd.in/exH_3ZHJ'
+media:
+  - type: image
+    src: '/journey/logic-tank-2024/circuit-schematic.webp'
+    alt:
+      en: 'Complete Proteus circuit schematic showing IR TCRT5000, HC-SR04 ultrasonic sensor, 555 timers, NAND/NOT gates, CD74HC4051, and L298 motor driver'
+      ar: 'المخطط الكامل للدائرة المنطقية على Proteus شامل الحساسات ومؤقتات 555 وبوابات NAND/NOT ودرايفر L298'
+    caption:
+      en: 'Complete Proteus schematic — sensor stages, 555 timing, NAND/NOT combinational logic, and L298 motor drive'
+      ar: 'المخطط الكامل على Proteus — الحساسات ومؤقتات 555 وبوابات NAND/NOT ودرايفر L298'
+  - type: image
+    src: '/journey/logic-tank-2024/team-demo.webp'
+    alt:
+      en: 'With the Benha University project team presenting the pure digital logic tank'
+      ar: 'مع فريق العمل في جامعة بنها أثناء عرض مشروع الدبابة المنطقية'
+    caption:
+      en: 'Hardware demonstration with the Benha University team'
+      ar: 'العرض العملي للدبابة مع فريق العمل في جامعة بنها'
+metrics:
+  - value: '0 lines'
+    label: 'Software / Microcontroller Code'
+    proof: 'https://lnkd.in/exH_3ZHJ'
+securityNotes: 'Stripping away every software abstraction sharpens how you reason about deterministic state transitions, priority enforcement, and physical trust boundaries.'
+relatedJourney: ['09-digital-logic-tank-2024']
+visibility:
+  draft: false
+  featured: true
+---
+
+## 01 — The Constraint: Zero Code, Zero Microcontrollers
+
+Most autonomous robot projects drop an Arduino or ESP32 onto a chassis and solve steering inside an `if/else` loop. For this Benha University digital logic project, the constraint was strict: **no microcontroller and not a single line of code**.
+
+Every decision — tracking a black line, detecting an obstacle ahead, halting, and overriding steering priority — had to be synthesized directly from discrete digital logic integrated circuits.
+
+## 02 — Hardware Signal Chain
+
+The complete control pipeline was designed and simulated in **Proteus** before physical wiring:
+
+1. **Sensing Stage**: **IR TCRT5000** optical sensor arrays for line tracking paired with an **HC-SR04** ultrasonic module for obstacle detection.
+2. **Timing & Pulse Conditioning**: **Dual 555 timers** generating the required trigger/conditioning timing without software delays or interrupts.
+3. **Combinational Decision Core**: **IC 7400 (NAND)** and **IC 7404 (NOT)** gates combined with a **CD74HC4051** multiplexer/demultiplexer to encode steering truth tables directly in hardware.
+4. **Actuation Stage**: **L298 dual H-bridge motor driver** translating logic outputs into physical track motion.
+
+## 03 — Engineering Decisions
+
+- **Truth-Table Priority over Software Interrupts**: Obstacle stop priority had to dominate line-following signals cleanly at the gate level so conflicting sensor inputs never drove invalid H-bridge states.
+- **Full Schematic Simulation First**: Validating every gate output in Proteus before wiring physical breadboards/PCBs prevented blind hardware debugging.
+
+## 04 — Challenges
+
+Without a serial monitor or debugger, every fault is electrical: floating pins, inverted active-low logic, noisy sensor thresholds, or timing drift on the 555 stages. Isolating a bug meant tracing voltages stage-by-stage from sensor output through each IC pin to the L298 inputs.
+
+## 05 — Why Pure Digital Logic Matters for Security Thinking
+
+Building a physical state machine out of NAND and NOT gates removes every layer of software abstraction. When you design hardware truth tables by hand, you stop treating "control flow" as magic — you think naturally in **exhaustive state coverage, illegal-state prevention, and strict priority boundaries**, which carries straight into auditing authorization logic and protocol state machines.
+
+## 06 — Lessons Learned & Future Improvements
+
+- **Lesson**: If a truth table has an unhandled input combination, the physical machine behaves unpredictably immediately — the exact same root cause behind many software access-control bugs.
+- **Future direction**: Migrating the discrete breadboard wiring onto a custom etched PCB with hardware hysteresis (Schmitt triggers) on the IR comparators to make threshold transitions cleaner under varying ambient light.

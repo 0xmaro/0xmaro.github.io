@@ -1,0 +1,8 @@
+domain:
+  en: 'Full-Stack Web Engineering'
+  ar: 'هندسة تطبيقات الويب الكاملة'
+rows:
+  - tools: ['Astro 7', 'TypeScript', 'Vitest', 'Bilingual RTL', 'Pagefind']
+    usedOn: '/projects/0xmaro-site'
+  - tools: ['PHP', 'Laravel', 'MySQL', 'Svelte', 'HTML/CSS/JS']
+    usedOn: '/journey/10-gdg-campus-trainer-2025'

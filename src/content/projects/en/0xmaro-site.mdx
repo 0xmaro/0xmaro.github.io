@@ -1,0 +1,73 @@
+---
+title: '0xmaro.github.io — Self-Audited Security Platform'
+summary: 'Bilingual (EN/AR) security engineering publication built on Astro 7 with strict self-only CSP, zero third-party runtime origins, SHA-pinned CI supply chain, and visibility-gated Pagefind search.'
+lang: 'en'
+publishedAt: 2026-09-26
+role: 'Author, Architect & Security Auditor'
+kind: 'security-web'
+status: 'live'
+stack:
+  ['Astro 7', 'TypeScript', 'Pagefind', 'Strict CSP', 'Vitest', 'Bilingual RTL', 'GitHub Actions']
+repo: 'https://github.com/0xmaro/0xmaro.github.io'
+demo: 'https://0xmaro.github.io'
+metrics:
+  - value: '0 origins'
+    label: 'Third-party runtime scripts, fonts, or trackers'
+    proof: 'https://0xmaro.github.io/security/'
+  - value: '3 commits'
+    label: 'Verified CWE-200 Pagefind visibility-gate fixes'
+    proof: 'https://github.com/0xmaro/0xmaro.github.io/commit/6cbe0ead72b8a7c940028173822b6f6faa0dc6b6'
+securityNotes: "Enforces `script-src 'self'` and `style-src 'self'` via a single-source meta CSP (`src/config/security.ts`), pins every GitHub Action to a full commit SHA, and gates every deploy on Vitest, link checks, copy checks, and exact-count Pagefind verification."
+relatedWriteups: ['search-index-leaked-hidden-pages']
+relatedNotes: ['strict-csp-on-github-pages', 'pagefind-opt-in-zero-state']
+visibility:
+  draft: false
+  featured: true
+---
+
+## 01 — Problem & Threat Model
+
+Most developer portfolios are treated as disposable marketing pages: third-party font CDNs, inline scripts, unpinned CI actions, and hand-copied claims that drift out of date. Because this platform publishes Application Security and DFIR research, **the site itself is the first system under audit**.
+
+The goal was to build a bilingual (English + Arabic RTL) engineering publication on static GitHub Pages where security posture, visibility rules, and verifiable evidence are enforced by the build pipeline rather than prose.
+
+## 02 — Architecture & Single-Source Controls
+
+Every critical invariant is derived from one source of truth:
+
+- **Single Visibility Gate (`src/lib/content.ts`)**: Every listing surface (home, archive, RSS, sitemap, related posts) reads through `forSurface()`, so flipping `draft`, `unlisted`, or `hideFrom` in frontmatter updates every surface consistently.
+- **Single Security Policy (`src/config/security.ts`)**: `Base.astro` emits the `<meta http-equiv="Content-Security-Policy">` directly from `cspDirectives`, and `/security` renders the exact same policy plus live repository posture (SHA-pinned CI actions, deploy gates, `/.well-known/security.txt` expiry, and unit test count).
+- **Proof-Gated Claims (`src/lib/proof.ts`)**: Rankings, metrics, and lab results only render when backed by a real verifiable `http(s)` proof URL.
+
+## 03 — Strict Self-Only CSP on GitHub Pages
+
+GitHub Pages serves static files without custom HTTP response headers, so CSP must live in a `<meta>` tag — which cannot carry nonces or hashes. To enforce `script-src 'self'` and `style-src 'self'` without `'unsafe-inline'`:
+
+1. Disabled Astro stylesheet inlining globally (`build.inlineStylesheets: 'never'`).
+2. Set `vite.build.assetsInlineLimit: 0` and `cssCodeSplit: false` so CSS bundles into a single external `/_astro/` file rather than inline `<style>` tags or fragmented render-blocking chunks.
+3. Moved theme pre-paint initialization into an external `/js/root.js` file so Darkroom ↔ Archival Paper persistence runs without FOUC and without inline script execution.
+4. Self-hosted subsetted IBM Plex Sans, Mono, Condensed, and Arabic WOFF2 fonts under `public/fonts/`.
+
+## 04 — Self-Audit Findings (CWE-200)
+
+Auditing the site's own post-build Pagefind search pipeline uncovered two real visibility-leak paths (documented in full in **Case #01**):
+
+- A layout emitted `data-pagefind-body` unconditionally, allowing unlisted projects to leak into search results.
+- Pagefind's zero-state fallback indexed all 22 pages (including `noindex` and `404` pages) whenever zero pages opted in.
+
+Both were patched across three verified commits and locked down with `scripts/check-pagefind.sh`, which fails the build if the indexed page count does not exactly match the number of opted-in HTML files.
+
+## 05 — Supply-Chain & Quality Gates
+
+Every push to `main` runs through `.github/workflows/deploy.yml` with every third-party GitHub Action pinned to a full 40-character commit SHA:
+
+1. `npm test` — Vitest unit tests covering visibility gates, i18n, proof filtering, and strict CSP assertions.
+2. `astro build` — static generation for EN and AR locales plus Satori/Resvg OG images.
+3. `scripts/check-copy.mjs` — blocks any indexable page containing unfinished placeholder copy markers.
+4. `scripts/check-links.mjs` — blocks any dead internal link across the entire `dist/` output.
+5. `pagefind --site dist && bash scripts/check-pagefind.sh` — enforces exact-count search indexing.
+
+## 06 — Lessons Learned & Future Improvements
+
+- **Lesson**: Policies enforced in data (`forSurface()`) still drift if post-build HTML consumers (like Pagefind) read templates differently. Templates must be audited as policy.
+- **Future direction**: Migrating behind a reverse proxy or custom edge layer if HTTP-only headers (`Strict-Transport-Security`, `frame-ancestors`, `Permissions-Policy`) ever need to be enforced beyond what GitHub Pages supports.

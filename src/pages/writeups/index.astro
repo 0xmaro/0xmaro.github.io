@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import Seo from '../../components/Seo.astro';
 import ArchiveFilters from '../../components/archive/ArchiveFilters.astro';
 import ArchiveList from '../../components/archive/ArchiveList.astro';
+import ResearchPipeline from '../../components/archive/ResearchPipeline.astro';
 import { getCollection } from 'astro:content';
 import { forSurface, forSurfaceWithFallback } from '../../lib/content';
 import { useTranslations } from '../../i18n/utils';
@@ -36,6 +37,7 @@ const listed = forSurfaceWithFallback(entries, 'archive', lang);
 
     <ArchiveFilters lang={lang} entries={surfaced} />
     <ArchiveList lang={lang} entries={listed} all={entries} />
+    <ResearchPipeline lang={lang} />
   </div>
 </Base>
 

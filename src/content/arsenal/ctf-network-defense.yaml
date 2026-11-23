@@ -1,0 +1,8 @@
+domain:
+  en: 'CTF Operations & Network Defense'
+  ar: 'مسابقات CTF وأمن الشبكات'
+rows:
+  - tools: ['Web / Forensics / Crypto Triage', 'Team liel0x1']
+    usedOn: '/journey/14-ascwg-2025'
+  - tools: ['Linux', 'Nmap', 'Wireshark', 'Scapy', 'Fortigate / Palo Alto']
+    usedOn: '/journey/06-iti-cybersecurity-120h-2024'

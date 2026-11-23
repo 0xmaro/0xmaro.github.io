@@ -1,0 +1,91 @@
+---
+title: 'Qader A1 — ESP32 Wi-Fi Radar Robot'
+summary: 'Led the full software stack from an Arduino Uno + IR prototype (V1) to a self-hosted ESP32 Wi-Fi web server (V2) with live browser radar telemetry, motor control, laser targeting, and return-to-start navigation.'
+lang: 'en'
+publishedAt: 2024-07-07
+role: 'Software Lead — Benha University'
+kind: 'hardware'
+status: 'live'
+stack: ['ESP32', 'Arduino', 'C++', 'Embedded C', 'HTML/CSS/JS', 'Ultrasonic Radar', 'Wi-Fi AP']
+repo: 'https://github.com/0xmaro/Qader-A1'
+media:
+  - type: image
+    src: '/journey/qader-a1-2024/robot-radar-setup.webp'
+    alt:
+      en: 'Qader A1 ESP32 robot running alongside the real-time web radar interface and multimeter'
+      ar: 'روبوت Qader A1 بـ ESP32 بجانب واجهة الرادار الحية وجهاز القياس'
+    caption:
+      en: 'V2 bench setup — ESP32 robot streaming live ultrasonic radar sweeps to a browser UI'
+      ar: 'إعداد النسخة الثانية — روبوت ESP32 يبث قراءات الرادار اللحظية لمتصفح الويب'
+  - type: image
+    src: '/journey/qader-a1-2024/coding-session.webp'
+    alt:
+      en: 'Writing and debugging C++ firmware and web control code for Qader A1'
+      ar: 'أثناء كتابة وتصحيح كود C++ وواجهة الويب لمشروع Qader A1'
+    caption:
+      en: 'Firmware and browser interface integration session'
+      ar: 'جلسة دمج الـ firmware بواجهة التحكم عبر الويب'
+  - type: image
+    src: '/journey/qader-a1-2024/demo-with-professor.webp'
+    alt:
+      en: 'Demonstrating Qader A1 with university faculty at Benha University'
+      ar: 'عرض مشروع Qader A1 مع الدكتور في جامعة بنها'
+    caption:
+      en: 'Live hardware demonstration at Benha University'
+      ar: 'العرض العملي المباشر في جامعة بنها'
+  - type: image
+    src: '/journey/qader-a1-2024/robot-closeup.webp'
+    alt:
+      en: 'Close-up of the Qader A1 hardware chassis and sensor assembly'
+      ar: 'لقطة قريبة لهيكل وتوصيلات روبوت Qader A1'
+    caption:
+      en: 'Chassis wiring, ultrasonic radar mount, and actuator assembly'
+      ar: 'تفاصيل الهيكل وتثبيت حساس الرادار والمحركات'
+metrics:
+  - value: 'V1 → V2'
+    label: 'Arduino IR to ESP32 Wi-Fi Web Server'
+    proof: 'https://github.com/0xmaro/Qader-A1'
+securityNotes: 'Exposing physical motors and a laser module over a local ESP32 Wi-Fi access point made embedded network attack surfaces concrete — shaping how I later approached IoT and web authorization boundaries.'
+relatedJourney: ['04-qader-a1-2024']
+visibility:
+  draft: false
+  featured: true
+---
+
+## 01 — Context & Motivation
+
+Qader A1 was my first full end-to-end engineering project at Benha University, where I owned the entire software stack. The team started with an **Arduino Uno + IR receiver prototype (V1)** built partly from recycled hardware components.
+
+Infrared remote control proved the chassis and motors worked, but it immediately hit physical limits: line-of-sight dropouts, no live sensor feedback, and no way to visualize what the ultrasonic sensor was seeing while driving. Moving to **V2 on an ESP32** turned the robot into a self-hosted Wi-Fi control and telemetry node.
+
+## 02 — System Architecture
+
+Instead of relying on an external backend or mobile app store build, the ESP32 itself hosts the control surface over its local Wi-Fi access point:
+
+- **Browser Radar UI (HTML/CSS/JS)**: Renders real-time ultrasonic distance sweeps, directional drive controls, speed tuning, laser toggle, and return-to-start trigger.
+- **ESP32 Embedded HTTP Server**: Handles concurrent control commands and telemetry reads directly on the microcontroller.
+- **C++ / Embedded C Firmware Loop**: Coordinates servo/ultrasonic sweeping, PWM motor drive, laser actuation, and motion history tracking for return-to-start navigation.
+
+## 03 — Key Engineering Decisions
+
+1. **Embedded Wi-Fi Web Server over Line-of-Sight IR**: Replacing the IR receiver with an ESP32 HTTP control surface allowed sensor sweeps and motor state to stay synchronized in real time from any browser without installing a native client.
+2. **Self-Contained Interface Assets**: Serving the HTML/CSS/JS control interface directly from the device removed external network dependencies during live demonstrations at university.
+3. **Return-to-Start Navigation**: Tracking movement sequences in firmware enabled an automated return routine rather than purely manual teleoperation.
+
+## 04 — Challenges & Hardware Reality
+
+Hardware removes hand-waving. Power stability across motors and sensors, timing contention between ultrasonic sweeps and HTTP requests, and physical wiring reliability all surfaced during bench testing. Debugging required a multimeter beside the laptop — verifying whether a fault lived in C++ state logic, Wi-Fi request handling, or voltage drop on the chassis.
+
+## 05 — Embedded Security Considerations
+
+Putting physical actuators — drive motors and a laser module — behind a local Wi-Fi HTTP interface was a turning point in how I think about security:
+
+- An unauthenticated local access point means **network reachability equals physical control**.
+- Command endpoints on constrained microcontrollers rarely have the memory budget for heavy middleware, which makes explicit state validation and network-layer isolation essential.
+
+That hands-on experience directly informed my later focus on Application Security and IoT/Embedded attack surfaces.
+
+## 06 — Lessons Learned & Future Improvements
+
+- **Lesson**: Owning both firmware and browser UI taught me to trace a request from a button click down to pin voltages — the same end-to-end tracing discipline I use when auditing web APIs.
+- **Future direction**: Adding WebSocket telemetry for lower-latency radar frames, explicit command authentication/token checks on the ESP32 AP, and hardware watchdog failsafes to halt motors on connection loss.

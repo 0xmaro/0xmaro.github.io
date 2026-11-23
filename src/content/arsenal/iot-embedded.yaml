@@ -1,6 +1,8 @@
 domain:
-  en: 'IoT / Embedded'
-  ar: 'إنترنت الأشياء والمدمجة'
+  en: 'IoT, Embedded & Digital Logic'
+  ar: 'إنترنت الأشياء والأنظمة المدمجة والمنطق الرقمي'
 rows:
-  - tools: ['ESP32']
-    usedOn: '/projects/dprims'
+  - tools: ['ESP32', 'Arduino', 'C++', 'Embedded C', 'Ultrasonic Radar']
+    usedOn: '/projects/qader-a1'
+  - tools: ['IC 7400/7404', 'Dual 555 Timers', 'CD74HC4051', 'L298', 'Proteus']
+    usedOn: '/projects/autonomous-logic-tank'

@@ -193,7 +193,11 @@ const labDossiers = items.filter((p) => p.kind === 'fullstack' || p.kind === 'em
                 {project.secondaryLink && (
                   <a
                     class="plate__cta plate__cta--sub"
-                    href={getRelativeLocaleUrl(lang, project.secondaryLink.href)}
+                    href={
+                      project.secondaryLink.href.startsWith('/writeups/')
+                        ? project.secondaryLink.href
+                        : getRelativeLocaleUrl(lang, project.secondaryLink.href)
+                    }
                   >
                     {project.secondaryLink.label[lang]} ↗
                   </a>

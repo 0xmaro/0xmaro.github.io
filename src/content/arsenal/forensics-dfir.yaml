@@ -1,6 +1,10 @@
 domain:
   en: 'Digital Forensics & DFIR'
-  ar: 'التحقيق الجنائي الرقمي'
+  ar: 'التحقيق الجنائي الرقمي والاستجابة للحوادث'
 rows:
-  - tools: ['Splunk']
-    usedOn: ''
+  - tools: ['FTK Imager', 'Disk & Windows Artifacts', 'Timeline Reconstruction']
+    usedOn: '/journey/12-ecdfp-ine-2025'
+  - tools: ['Splunk SIEM', 'Wireshark', 'MITRE ATT&CK']
+    usedOn: '/journey/08-iti-dfir-bootcamp-2024'
+  - tools: ['Threat Intelligence (CTI)', 'IOC Analysis']
+    usedOn: '/journey/05-arcx-ftia-2024'

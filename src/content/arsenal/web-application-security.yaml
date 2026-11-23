@@ -2,5 +2,9 @@ domain:
   en: 'Web Application Security'
   ar: 'أمن تطبيقات الويب'
 rows:
-  - tools: ['Burp Suite', 'Postman']
-    usedOn: '/writeups/idor-in-invoice-api'
+  - tools: ['CSP & Headers', 'Pagefind', 'grep', 'OWASP Top 10']
+    usedOn: '/writeups/search-index-leaked-hidden-pages'
+  - tools: ['Burp Suite', 'Postman', 'SQLMap', 'Auth & Access Control']
+    usedOn: '/journey/11-cap-with-merit-2025'
+  - tools: ['Static Security Posture', 'SHA-Pinned CI', 'RFC 9116']
+    usedOn: '/security'

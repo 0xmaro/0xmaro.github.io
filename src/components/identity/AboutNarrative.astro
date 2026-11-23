@@ -36,6 +36,31 @@ const copy = {
         body: 'Every rank, certificate, and fix on this site links to a verifiable artifact or commit. If it cannot be verified, it stays off the page.',
       },
     ],
+    fitTitle: 'Where I Can Contribute',
+    fitLead:
+      'As a Computer Science & AI student, Full-Stack Developer, and CAP (With Merit) / eCDFP practitioner, here is where my hands-on work adds the most value:',
+    fitItems: [
+      {
+        tag: 'BUILD',
+        title: 'Full-Stack Web Systems',
+        body: 'Shipping maintainable web applications (Laravel, MySQL, Svelte, Astro, TypeScript) with explicit auth, role boundaries, and automated CI checks.',
+      },
+      {
+        tag: 'AUDIT & FIX',
+        title: 'Application Security & Remediation',
+        body: 'Reviewing authentication, access control (IDOR), injection flaws, CSP/headers, and closing findings with code-level patches in the same stack.',
+      },
+      {
+        tag: 'EMBEDDED',
+        title: 'ESP32 / IoT Prototyping',
+        body: 'Bridging C/C++ firmware, sensors, and web control interfaces while accounting for real local-network attack surfaces.',
+      },
+      {
+        tag: 'COMMUNITY',
+        title: 'Workshops & CTF Authoring',
+        body: 'Designing practical security labs, vulnerable web challenges, and structured student tracks grounded in real engineering.',
+      },
+    ],
   },
   ar: {
     eyebrow: 'ملف الهوية · 0xMARO',
@@ -61,6 +86,31 @@ const copy = {
         num: 'P3',
         title: 'لا إثبات، لا عرض',
         body: 'كل مركز وشهادة وإصلاح على هذا الموقع مربوط بدليل أو commit قابل للتحقق.',
+      },
+    ],
+    fitTitle: 'أين يمكنني تقديم قيمة عملية',
+    fitLead:
+      'كطالب علوم حاسب وذكاء اصطناعي ومطوّر Full-Stack وحاصل على CAP بامتياز وINE eCDFP، هذه هي المجالات التي أعمل فيها بفعالية:',
+    fitItems: [
+      {
+        tag: 'بناء',
+        title: 'تطبيقات الويب الكاملة (Full-Stack)',
+        body: 'بناء تطبيقات ويب قابلة للصيانة (Laravel، MySQL، Svelte، Astro، TypeScript) بحدود مصادقة وصلاحيات واضحة وبوابات جودة آلية.',
+      },
+      {
+        tag: 'تدقيق وإصلاح',
+        title: 'أمن التطبيقات والمعالجة البرمجية',
+        body: 'مراجعة المصادقة والصلاحيات (IDOR) وثغرات الحقن وسياسات CSP، وإغلاق الملاحظات بإصلاحات برمجية فعلية في نفس الكود.',
+      },
+      {
+        tag: 'أنظمة مدمجة',
+        title: 'نماذج ESP32 وإنترنت الأشياء',
+        body: 'ربط برمجيات C/C++ والحساسات بواجهات تحكم عبر الويب مع مراعاة أسطح الهجوم الشبكية للأجهزة.',
+      },
+      {
+        tag: 'مجتمع وتدريب',
+        title: 'ورش العمل وتأليف تحديات CTF',
+        body: 'تصميم مختبرات أمنية عملية وتحديات ويب تدريبية ومسارات طلابية مبنية على هندسة حقيقية.',
       },
     ],
   },
@@ -149,6 +199,24 @@ const copy = {
             <span class="principle__num ltr">{p.num}</span>
             <h3 class="principle__title">{p.title}</h3>
             <p class="principle__body">{p.body}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="fit" aria-labelledby="fit-heading">
+    <div class="fit__head">
+      <h2 id="fit-heading" class="principles__heading">{copy.fitTitle}</h2>
+      <p class="fit__lead">{copy.fitLead}</p>
+    </div>
+    <div class="fit__grid">
+      {
+        copy.fitItems.map((item) => (
+          <div class="fit__card">
+            <span class="fit__tag">{item.tag}</span>
+            <h3 class="principle__title">{item.title}</h3>
+            <p class="principle__body">{item.body}</p>
           </div>
         ))
       }
@@ -438,5 +506,44 @@ const copy = {
     margin: 0;
     font-size: var(--step--1);
     color: var(--text-lo);
+  }
+
+  .fit {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .fit__lead {
+    margin: var(--space-2) 0 0;
+    max-width: var(--measure-read);
+    font-size: var(--step--1);
+    color: var(--text-lo);
+  }
+
+  .fit__grid {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  }
+
+  .fit__card {
+    background: var(--plate-bg);
+    border: var(--hairline) solid var(--plate-border);
+    border-inline-start: 2px solid var(--sulfur-400);
+    padding: var(--space-5);
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+  }
+
+  .fit__tag {
+    font-family: var(--f-code);
+    font-size: var(--text-2xs);
+    color: var(--sulfur-400);
+    letter-spacing: var(--ls-label);
+  }
+
+  html[lang='ar'] .fit__tag {
+    font-family: var(--f-body-ar);
   }
 </style>
