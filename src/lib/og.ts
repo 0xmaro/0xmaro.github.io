@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import satori from 'satori';
 import { Resvg } from '@resvg/resvg-js';
 import sharp from 'sharp';
+import opentype from '@shuding/opentype.js';
 import type { Language } from '../i18n/ui';
 import { ui } from '../i18n/ui';
 import { site } from '../config/site';
@@ -32,6 +33,19 @@ const sansAr = {
   regular: font('IBMPlexSansArabic-Regular.ttf'),
   medium: font('IBMPlexSansArabic-Medium.ttf'),
 };
+/**
+ * Shaped-width measurement for Arabic word boxes (see textFlow). satori sizes a
+ * text box from each letter's isolated form, but draws the joined forms, which
+ * are far narrower (تطبيقات: 152px measured, 96px drawn at 30px), so every word
+ * box carried dead space and the gaps between words came out wide and uneven.
+ * The same engine satori draws with, measuring the whole word, gives the drawn
+ * width; the boxes are sized from that instead.
+ */
+const arMetrics = {
+  400: opentype.parse(sansAr.regular),
+  500: opentype.parse(sansAr.medium),
+};
+
 const cond = {
   medium: font('IBMPlexSansCondensed-Medium.ttf'),
 };
@@ -324,7 +338,8 @@ const SUB_WRAP = W - PAD * 2 - HERO_MARK - 56;
  * An under-measured line is silently re-wrapped by satori AFTER the reordering,
  * which scatters the words again.
  *
- * So no reordering and no measuring. Each word becomes a box and flex is asked
+ * So no reordering and no line-width model. Each word becomes a box (sized
+ * from its shaped width, see arMetrics) and flex is asked
  * to flow them: `row-reverse` + `wrap` fills from the right and breaks onto the
  * next line, which IS Arabic text flow. Words are emitted in logical order and
  * the gap is ours, so there is nothing to calibrate and nothing to drift.
@@ -370,7 +385,22 @@ const textFlow = (text: string, lang: Language, size: number, style: Record<stri
       columnGap: WORD_GAP * size,
       ...style,
     },
-    textBoxes(text, lang).map((w) => el('div', { display: 'flex', flexShrink: 0 }, w))
+    textBoxes(text, lang).map((w) =>
+      el(
+        'div',
+        lang === 'ar'
+          ? {
+              display: 'flex',
+              flexShrink: 0,
+              whiteSpace: 'nowrap',
+              width: Math.ceil(
+                arMetrics[style.fontWeight === 400 ? 400 : 500].getAdvanceWidth(w, size)
+              ),
+            }
+          : { display: 'flex', flexShrink: 0 },
+        w
+      )
+    )
   );
 
 const entryFrame = (entry: EntryOg, mark: string): El => {

@@ -3,6 +3,7 @@ import { getRelativeLocaleUrl } from 'astro:i18n';
 import type { Language } from '../../i18n/ui';
 import { site, sectionPaths } from '../../config/site';
 import { isRealProof } from '../../lib/proof';
+import { socialIcons, type SocialIcon } from '../../data/social-icons';
 
 interface Props {
   lang: Language;
@@ -10,15 +11,18 @@ interface Props {
 
 const { lang } = Astro.props;
 
-const channels = [
-  { name: 'GitHub', handle: '@0xmaro', url: site.social.github },
-  { name: 'LinkedIn', handle: 'amar-mohamed-0xmaro', url: site.social.linkedin },
-  { name: 'TryHackMe', handle: '0xmaro', url: site.social.tryhackme },
-  { name: 'X', handle: '@0_xmaro', url: site.social.x },
-  { name: 'YouTube', handle: '@0xmaro', url: site.social.youtube },
-  { name: 'Instagram', handle: '@its_0xmaro', url: site.social.instagram },
-  { name: 'Facebook', handle: '/0xmaro', url: site.social.facebook },
-].filter((c) => isRealProof(c.url));
+type Channel = { name: string; handle: string; url: string; icon: SocialIcon };
+
+const allChannels: Channel[] = [
+  { name: 'GitHub', handle: '@0xmaro', url: site.social.github, icon: 'github' },
+  { name: 'LinkedIn', handle: 'amar-mohamed-0xmaro', url: site.social.linkedin, icon: 'linkedin' },
+  { name: 'TryHackMe', handle: '0xmaro', url: site.social.tryhackme, icon: 'tryhackme' },
+  { name: 'X', handle: '@0_xmaro', url: site.social.x, icon: 'x' },
+  { name: 'YouTube', handle: '@0xmaro', url: site.social.youtube, icon: 'youtube' },
+  { name: 'Instagram', handle: '@its_0xmaro', url: site.social.instagram, icon: 'instagram' },
+  { name: 'Facebook', handle: '/0xmaro', url: site.social.facebook, icon: 'facebook' },
+];
+const channels = allChannels.filter((c) => isRealProof(c.url));
 
 const copy = {
   en: {
@@ -63,17 +67,32 @@ const copy = {
     {
       channels.map((ch) => (
         <a class="channel" href={ch.url} rel="me noopener noreferrer" target="_blank">
-          <span class="channel__name">{ch.name}</span>
-          <span class="channel__handle ltr">{ch.handle} ↗</span>
+          <span class="channel__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d={socialIcons[ch.icon]} />
+            </svg>
+          </span>
+          <span class="channel__text">
+            <span class="channel__name">{ch.name}</span>
+            <span class="channel__handle ltr">{ch.handle}</span>
+          </span>
+          <span class="channel__go ltr" aria-hidden="true">
+            ↗
+          </span>
         </a>
       ))
     }
 
     <div class="channel channel--copy">
-      <div>
+      <span class="channel__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" focusable="false">
+          <path d={socialIcons.discord}></path>
+        </svg>
+      </span>
+      <span class="channel__text">
         <span class="channel__name">{copy.discordLabel}</span>
         <span class="channel__handle ltr">{site.handles.discord}</span>
-      </div>
+      </span>
       <button
         type="button"
         class="channel__copy-btn"
@@ -182,21 +201,70 @@ const copy = {
   }
 
   .channel {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
-    justify-content: space-between;
-    gap: var(--space-2) var(--space-3);
-    min-height: 54px;
-    padding: var(--space-3) var(--space-4);
+    gap: var(--space-3);
+    min-height: var(--channel-min);
+    padding: var(--space-3);
     background: var(--ink-800);
     border: var(--hairline) solid var(--line);
     text-decoration: none;
     transition: border-color var(--t-fast) ease;
   }
 
-  .channel:hover {
+  .channel:hover,
+  .channel:focus-visible {
     border-color: var(--sulfur-400);
+  }
+
+  .channel__icon {
+    display: grid;
+    place-items: center;
+    inline-size: var(--social-badge);
+    block-size: var(--social-badge);
+    color: var(--blue-400);
+    background: var(--ink-900);
+    border: var(--hairline) solid var(--ink-600);
+    border-radius: var(--radius);
+    transition:
+      color var(--t-fast) ease,
+      border-color var(--t-fast) ease;
+  }
+
+  .channel__icon svg {
+    inline-size: var(--social-glyph);
+    block-size: var(--social-glyph);
+    fill: currentColor;
+  }
+
+  .channel:hover .channel__icon,
+  .channel:focus-visible .channel__icon {
+    color: var(--sulfur-400);
+    border-color: var(--sulfur-400);
+  }
+
+  .channel__text {
+    display: grid;
+    gap: var(--space-1);
+    min-inline-size: 0;
+  }
+
+  .channel__go {
+    font-family: var(--f-code);
+    font-size: var(--text-xs);
+    color: var(--text-dim);
+  }
+
+  .channel:hover .channel__go {
+    color: var(--sulfur-400);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .channel,
+    .channel__icon {
+      transition: none;
+    }
   }
 
   .channel__name {
@@ -212,6 +280,11 @@ const copy = {
     font-family: var(--f-code);
     font-size: var(--text-xs);
     color: var(--sulfur-300);
+    justify-self: start;
+    max-inline-size: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .channel--copy {
