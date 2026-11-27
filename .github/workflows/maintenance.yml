@@ -1,7 +1,7 @@
-# Quarterly maintenance — plan/05-roadmap.md Phase 6.
+# Quarterly maintenance.
 #
-# The roadmap asks for a quarterly review, plan/08 §8.1 asks for the pinned
-# action SHAs to be reviewed on the same cadence, and §8.2 asks for a calendar
+# Old posts get a quarterly review, the pinned
+# action SHAs are reviewed on the same cadence, and the policy asks for a calendar
 # reminder a month before security.txt expires. All three were "remember to do
 # this". This runs the check and opens an issue with the answers, so the review
 # arrives instead of being remembered.

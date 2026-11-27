@@ -1,18 +1,18 @@
-# CI on every pull request (plan/05-roadmap.md Phase 6).
+# CI on every pull request.
 #
 # Two separate jobs because they answer two different questions:
 #
 #  - `code`    — "is the site correct and fast?" Must be GREEN today.
 #  - `content` — "is the copy real yet?" Expected RED today, and that is the
 #                signal, not a bug: it enforces the anti-procrastination rule
-#                in plan/05-roadmap.md (Phase 2 does not end without three
+#                (the launch phase does not end without three
 #                published articles). It stays red until the owner writes the
 #                article bodies; the fix is writing the articles, NOT adding
 #                ALLOW_TODO_COPY to this job.
 #
 # All actions are pinned to full commit SHAs with the version in a trailing
-# comment — no floating tags. Same supply-chain policy as deploy.yml
-# (plan/08-quality-bar.md §8.1); the SHAs are reviewed on the quarterly pass.
+# comment — no floating tags. Same supply-chain policy as deploy.yml;
+# the SHAs are reviewed on the quarterly pass.
 name: CI
 
 on:
@@ -50,7 +50,7 @@ jobs:
       - name: Broken links (lychee)
         uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
         with:
-          # Fail the job on any broken link (plan/08-quality-bar.md §8.6).
+          # Fail the job on any broken link.
           fail: true
           args: >-
             --no-progress
@@ -59,7 +59,7 @@ jobs:
       - name: Lighthouse CI
         run: npx lhci autorun
         # Audits three page types (home, archive, writeup) from lighthouserc.json
-        # against the built dist/. The plan's bar (plan/08-quality-bar.md §8.3)
+        # against the built dist/. The target
         # is 100 in performance, accessibility, best-practices and SEO — asserted
         # as `warn`, NOT `error`, in this first landing: nobody has measured these
         # numbers in CI yet, so the workflow reports the real scores instead of
@@ -85,5 +85,5 @@ jobs:
         # scripts/check-copy.mjs fails the build when an indexable page still
         # ships TODO(copy). This job is expected to be RED until the owner
         # writes the article bodies — the enforcement of the
-        # anti-procrastination rule in plan/05-roadmap.md. When it turns green
+        # anti-procrastination rule. When it turns green
         # on its own, the copy is real.

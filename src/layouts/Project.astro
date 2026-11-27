@@ -81,7 +81,7 @@ const graphCopy = {
 
 const statusVariant = { live: 'ok', archived: 'med', private: 'blue' } as const;
 
-// F-11: only metrics carrying a real http(s) proof URL are rendered.
+// Only metrics carrying a real http(s) proof URL are rendered.
 const { shown: metrics, suppressed } = surfaceProjectMetrics(data.metrics);
 for (const s of suppressed) {
   console.warn(`[proof] project "${slug}" metric "${s.claim}" held back — no real proof URL.`);
@@ -96,7 +96,7 @@ const description = summary ?? t('projects.desc');
 const noindex = data.visibility.noindex || data.visibility.unlisted;
 const alternates = translation ? { [other]: path } : {};
 
-// Same visibility contract as Writeup.astro (plan/04 F-01, plan/08 §8.6):
+// Same visibility contract as Writeup.astro:
 // an unlisted project or one hidden from search must not enter the Pagefind
 // index. Removing `data-pagefind-body` is the mechanism — `data-pagefind-ignore`
 // is element-scoped and cannot exclude a whole page.

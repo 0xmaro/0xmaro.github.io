@@ -4,9 +4,9 @@ import Seo from '../../components/Seo.astro';
 import { useTranslations } from '../../i18n/utils';
 import type { UIKey } from '../../i18n/ui';
 
-// Structure only (plan/04 F-08): the section headings are real category names
+// Structure only: the section headings are real category names
 // that claim nothing; every body string is the TODO(copy) placeholder until
-// the owner writes it (CLAUDE.md: never invent a device, a tool, or a link).
+// the owner writes it (never invent a device, a tool, or a link).
 // The noindex on <Seo> below (and the matching /uses entry in
 // src/lib/sitemap-exclude.ts) comes off when the owner writes the copy — that
 // is what keeps scripts/check-copy.mjs green in the meantime.

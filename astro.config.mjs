@@ -24,7 +24,7 @@ export default defineConfig({
       wrap: false,
     },
   },
-  // CSP (plan/08-quality-bar.md §8.1): the meta-tag CSP cannot carry nonces or
+  // CSP: the meta-tag CSP cannot carry nonces or
   // hashes, so `script-src 'self'` / `style-src 'self'` only hold if Astro never
   // inlines a script or a stylesheet into the HTML — and Astro inlines assets
   // under 4KB by default. Force everything into external /_astro/ files.
@@ -45,10 +45,10 @@ export default defineConfig({
   integrations: [
     mdx(),
     sitemap({
-      // plan/07-seo-and-growth.md §7.1: one sitemap for both languages, with
+      // one sitemap for both languages, with
       // xhtml:link alternates between the versions. The integration derives the
       // pairs from the `/ar/` prefix, which is exactly how the routes are laid
-      // out (plan/02 §2.2 — same slug in both locales).
+      // out (same slug in both locales).
       i18n: {
         defaultLocale: 'en',
         locales: { en: 'en', ar: 'ar' },

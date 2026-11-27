@@ -4,9 +4,9 @@ import Seo from '../../../components/Seo.astro';
 import { useTranslations } from '../../../i18n/utils';
 import type { UIKey } from '../../../i18n/ui';
 
-// بنية فقط (plan/04 F-08): عناوين الأقسام أسماء فئات حقيقية مش بتدّعي حاجة،
+// بنية فقط: عناوين الأقسام أسماء فئات حقيقية مش بتدّعي حاجة،
 // وكل نص جوه القسم هو placeholder من نوع TODO(copy) لحد ما المالك يكتبه
-// (قاعدة CLAUDE.md: ممنوع اختراع جهاز أو أداة أو لينك).
+// (ممنوع اختراع جهاز أو أداة أو لينك).
 // الـ noindex على <Seo> تحت (ومعاه مدخل /uses في src/lib/sitemap-exclude.ts)
 // بيتشال لما المالك يكتب المحتوى — وده اللي بيخلي scripts/check-copy.mjs
 // يفضل أخضر لحد كده.

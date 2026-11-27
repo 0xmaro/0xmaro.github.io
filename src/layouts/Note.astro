@@ -157,7 +157,7 @@ const breadcrumb = breadcrumbSchema(lang, Astro.site!, [
               </a>
             ) : (
               // Below FACET_MIN_ENTRIES: plain badge, never a link and never a
-              // dead href (plan/04 F-03 rules applied to the notes stream).
+              // dead href.
               <Stamp variant="blue" label={t(noteKindLabelKey[data.kind])} />
             )
           }
@@ -165,7 +165,7 @@ const breadcrumb = breadcrumbSchema(lang, Astro.site!, [
 
         <dl class="note-page__facts">
           {
-            /* Copyright (plan/04-features.md F-06): a summary is the author's own
+            /* Copyright: a summary is the author's own
                understanding in their own words — never copied paragraphs from the
                work. The layout only renders the reference as a pointer to the
                work; the wording above it stays the author's responsibility. */

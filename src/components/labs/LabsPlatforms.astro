@@ -32,7 +32,7 @@ const t = useTranslations(lang);
           {p.platform}
         </a>
       ) : (
-        // Below FACET_MIN_ENTRIES: plain text, never a link (plan/04 F-03).
+        // Below FACET_MIN_ENTRIES: plain text, never a link.
         <span class:list={['labs__chip labs__chip--text', 'ltr']}>{p.platform}</span>
       )
     )

@@ -34,7 +34,7 @@ const bodyFont =
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- Security meta — plan/08-quality-bar.md §8.1. Must precede every
+    <!-- Security meta. Must precede every
          link/script/title: a meta CSP only governs what follows it. -->
     <meta http-equiv="Content-Security-Policy" content={csp} />
     <meta name="referrer" content={referrerPolicy} />
@@ -46,7 +46,7 @@ const bodyFont =
     <link rel="preload" href={bodyFont} as="font" type="font/woff2" crossorigin="anonymous" />
     <script src="/js/root.js" is:inline></script>
     <slot name="head" />
-    <!-- TODO(infra): Cloudflare Web Analytics beacon (plan/05 Phase 5) — enable
+    <!-- TODO(infra): Cloudflare Web Analytics beacon — enable
          ONLY when the owner supplies the token; nothing is integrated yet and
          the live CSP above is untouched. This is the ONLY approved CSP widening
          ("one domain only"): static.cloudflareinsights.com joins script-src and

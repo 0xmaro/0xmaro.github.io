@@ -2,7 +2,7 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 import { FACET_MIN_ENTRIES, facetSlug } from './content';
 
 /**
- * Proof layer — plan/04-features.md F-11.
+ * Proof layer.
  *
  * Every claim on the site (a rank, a metric, a certificate) must link a real
  * URL before it is rendered. A data entry may exist without one; the surface
@@ -58,7 +58,7 @@ export type Journey = CollectionEntry<'journey'>;
 export type Arsenal = CollectionEntry<'arsenal'>;
 
 /**
- * Labs/CTF rows: F-05 — a row without a real `proof` URL is never placed,
+ * Labs/CTF rows: a row without a real `proof` URL is never placed,
  * with or without a `result`. Participation itself is the claim.
  */
 export const surfaceLabs = (entries: Lab[]): ProofFilterResult<Lab> =>
@@ -83,7 +83,7 @@ export interface LabPlatform {
  * Platform chips for the labs pages, derived ONLY from labs `surfaceLabs()`
  * actually surfaces (a suppressed lab must not advertise a platform), with the
  * same generation threshold as writeup facets — below it the platform renders
- * as plain text, never as a link (plan/04 F-03 + F-05).
+ * as plain text, never as a link.
  */
 export const labPlatforms = (shown: Lab[]): LabPlatform[] => {
   const bySlug = new Map<string, LabPlatform>();

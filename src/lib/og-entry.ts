@@ -12,7 +12,7 @@ import {
 } from './content';
 
 /**
- * Per-entry OG images — plan/05 Phase 3. Lives in the page-build process
+ * Per-entry OG images. Lives in the page-build process
  * (unlike the config-process default images): static endpoints under
  * `src/pages/og/` and `src/pages/ar/og/` call these helpers from
  * `getStaticPaths()`/`GET`, so `getCollection` works and the PNGs emit

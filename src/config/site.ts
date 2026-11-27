@@ -6,7 +6,7 @@ export const site = {
   /** Public source repo — /security links every claim to the file behind it. */
   repo: 'https://github.com/0xmaro/0xmaro.github.io',
   social: {
-    // Owner-supplied and verified (plan/05 Phase 5): the sameAs allowlist for
+    // Owner-supplied and verified: the sameAs allowlist for
     // JSON-LD and the proof-gated footer/About links.
     github: 'https://github.com/0xmaro',
     linkedin: 'https://www.linkedin.com/in/amar-mohamed-0xmaro',
@@ -27,12 +27,12 @@ interface SectionConfig {
 }
 
 /**
- * Master switch for whole sections (plan/04-features.md F-01).
+ * Master switch for whole sections.
  * `enabled: false` removes the section's routes and links everywhere.
  */
 export const sections = {
   writeups: { enabled: true, inNav: true },
-  // F-06 routes are in place, so the section can be enabled — but it stays out
+  // The notes routes are in place, so the section can be enabled — but it stays out
   // of the nav until the stream has content worth a nav slot.
   notes: { enabled: true, inNav: false },
   // Routes stay built; the nav slot waits until the section has published
@@ -46,13 +46,13 @@ export const sections = {
   hire: { enabled: false, inNav: false },
   about: { enabled: true, inNav: true },
   search: { enabled: true, inNav: false },
-  // plan/09 F-13 — linked from the footer, not the nav.
+  // linked from the footer, not the nav.
   security: { enabled: true, inNav: false },
 } as const satisfies Record<string, SectionConfig>;
 
 export type SectionKey = keyof typeof sections;
 
-/** Locale-independent paths (same slug in both languages, plan/02-architecture.md §2.2). */
+/** Locale-independent paths (same slug in both languages). */
 export const sectionPaths: Record<SectionKey, string> = {
   writeups: '/writeups',
   notes: '/notes',
