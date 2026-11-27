@@ -27,3 +27,9 @@ pnpm-debug.log*
 
 # lighthouse CI reports (upload.target: filesystem)
 .lighthouseci/
+
+# internal planning, prototypes, and local agent instructions (kept locally, excluded from public repo)
+plan/
+prototype/
+AGENT-KICKOFF.md
+CLAUDE.md
