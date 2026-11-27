@@ -3,7 +3,7 @@ import { getRelativeLocaleUrl } from 'astro:i18n';
 import type { Language } from '../../i18n/ui';
 import { site, sectionPaths } from '../../config/site';
 import { isRealProof } from '../../lib/proof';
-import { socialIcons, type SocialIcon } from '../../data/social-icons';
+import { socialIcons, socialChannels } from '../../data/social-icons';
 
 interface Props {
   lang: Language;
@@ -11,18 +11,7 @@ interface Props {
 
 const { lang } = Astro.props;
 
-type Channel = { name: string; handle: string; url: string; icon: SocialIcon };
-
-const allChannels: Channel[] = [
-  { name: 'GitHub', handle: '@0xmaro', url: site.social.github, icon: 'github' },
-  { name: 'LinkedIn', handle: 'amar-mohamed-0xmaro', url: site.social.linkedin, icon: 'linkedin' },
-  { name: 'TryHackMe', handle: '0xmaro', url: site.social.tryhackme, icon: 'tryhackme' },
-  { name: 'X', handle: '@0_xmaro', url: site.social.x, icon: 'x' },
-  { name: 'YouTube', handle: '@0xmaro', url: site.social.youtube, icon: 'youtube' },
-  { name: 'Instagram', handle: '@its_0xmaro', url: site.social.instagram, icon: 'instagram' },
-  { name: 'Facebook', handle: '/0xmaro', url: site.social.facebook, icon: 'facebook' },
-];
-const channels = allChannels.filter((c) => isRealProof(c.url));
+const channels = socialChannels.filter((c) => isRealProof(c.url));
 
 const copy = {
   en: {

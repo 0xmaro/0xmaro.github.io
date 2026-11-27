@@ -3,6 +3,8 @@ import { useTranslations } from '../i18n/utils';
 import { getRelativeLocaleUrl } from 'astro:i18n';
 import { site, sectionPaths } from '../config/site';
 import type { Language } from '../i18n/ui';
+import { isRealProof } from '../lib/proof';
+import { socialChannels, socialIcons } from '../data/social-icons';
 
 interface Props {
   lang: Language;
@@ -11,6 +13,7 @@ interface Props {
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 const feedHref = lang === 'ar' ? '/rss-ar.xml' : '/rss.xml';
+const profiles = socialChannels.filter((c) => isRealProof(c.url));
 ---
 
 <footer>
@@ -19,20 +22,26 @@ const feedHref = lang === 'ar' ? '/rss-ar.xml' : '/rss.xml';
     <a href={getRelativeLocaleUrl(lang, sectionPaths.security)}>{t('footer.posture')}</a>
     <a class="ltr" href="/.well-known/security.txt">{t('footer.security')}</a>
     <a class="ltr" href={feedHref}>{t('footer.rss')}</a>
-    {
-      site.social.github && (
-        <a class="ltr" href={site.social.github} rel="me">
-          {t('footer.github')}
-        </a>
-      )
-    }
-    {
-      site.social.linkedin && (
-        <a class="ltr" href={site.social.linkedin} rel="me">
-          {t('footer.linkedin')}
-        </a>
-      )
-    }
+    <ul class="foot__social" aria-label={t('footer.social')}>
+      {
+        profiles.map((p) => (
+          <li>
+            <a
+              class="foot__icon"
+              href={p.url}
+              rel="me noopener noreferrer"
+              target="_blank"
+              aria-label={p.name}
+              title={p.name}
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d={socialIcons[p.icon]} />
+              </svg>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
     <span class="foot__end">{t('footer.note')}</span>
   </div>
 </footer>
@@ -65,6 +74,43 @@ const feedHref = lang === 'ar' ? '/rss-ar.xml' : '/rss.xml';
   .foot a:hover {
     color: var(--sulfur-400);
     border-block-end-color: var(--sulfur-400);
+  }
+
+  .foot__social {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .foot a.foot__icon {
+    justify-content: center;
+    min-inline-size: var(--touch-min);
+    color: var(--text-lo);
+    border: var(--hairline) solid transparent;
+    border-radius: var(--radius);
+    transition:
+      color var(--t-fast) ease,
+      border-color var(--t-fast) ease;
+  }
+
+  .foot a.foot__icon:hover,
+  .foot a.foot__icon:focus-visible {
+    color: var(--sulfur-400);
+    border-color: var(--sulfur-400);
+  }
+
+  .foot__icon svg {
+    inline-size: var(--social-glyph-sm);
+    block-size: var(--social-glyph-sm);
+    fill: currentColor;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .foot a.foot__icon {
+      transition: none;
+    }
   }
 
   .foot__end {
