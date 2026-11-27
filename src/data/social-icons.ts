@@ -1,3 +1,5 @@
+import { site } from '../config/site';
+
 /**
  * Brand glyphs for the social channels, 24×24 single-path SVGs from
  * simple-icons 9.21.0 (CC0-1.0). Rendered monochrome with currentColor so they
@@ -22,3 +24,22 @@ export const socialIcons = {
 } as const;
 
 export type SocialIcon = keyof typeof socialIcons;
+
+/** One public profile: shown with its glyph on About and in the footer. */
+export interface SocialChannel {
+  name: string;
+  handle: string;
+  url: string;
+  icon: SocialIcon;
+}
+
+/** Every linkable profile, in display order. Discord has no URL (handle only). */
+export const socialChannels: SocialChannel[] = [
+  { name: 'GitHub', handle: '@0xmaro', url: site.social.github, icon: 'github' },
+  { name: 'LinkedIn', handle: 'amar-mohamed-0xmaro', url: site.social.linkedin, icon: 'linkedin' },
+  { name: 'TryHackMe', handle: '0xmaro', url: site.social.tryhackme, icon: 'tryhackme' },
+  { name: 'X', handle: '@0_xmaro', url: site.social.x, icon: 'x' },
+  { name: 'YouTube', handle: '@0xmaro', url: site.social.youtube, icon: 'youtube' },
+  { name: 'Instagram', handle: '@its_0xmaro', url: site.social.instagram, icon: 'instagram' },
+  { name: 'Facebook', handle: '/0xmaro', url: site.social.facebook, icon: 'facebook' },
+];
