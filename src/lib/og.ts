@@ -2,6 +2,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import satori from 'satori';
 import { Resvg } from '@resvg/resvg-js';
+import sharp from 'sharp';
 import type { Language } from '../i18n/ui';
 import { ui } from '../i18n/ui';
 import { site } from '../config/site';
@@ -44,6 +45,45 @@ const C = {
   blue500: '#4e7cf6',
   sulfur400: '#e3c567',
 };
+
+/**
+ * The brand mark: the hood, lock and name cropped from the full logo artwork.
+ * Rasterized once per process at the largest size any frame draws it, then
+ * handed to satori as a data URI (satori cannot read files itself).
+ */
+const LOGO_SRC = join(process.cwd(), 'src', 'assets', 'brand', 'maro-logo.png');
+const LOGO_CROP = { left: 237, top: 32, width: 780, height: 780 };
+const HERO_MARK = 400;
+const BRAND_MARK = 64;
+let markUri: Promise<string> | undefined;
+const brandMarkUri = (): Promise<string> =>
+  (markUri ??= sharp(LOGO_SRC)
+    .extract(LOGO_CROP)
+    .resize(HERO_MARK, HERO_MARK)
+    .png()
+    .toBuffer()
+    .then((buf) => `data:image/png;base64,${buf.toString('base64')}`));
+
+/** The mark in a hairline blueprint frame, at `size` px. */
+const markBox = (uri: string, size: number, style: Record<string, unknown> = {}): El => ({
+  type: 'div',
+  props: {
+    style: {
+      display: 'flex',
+      width: size + 2,
+      height: size + 2,
+      border: `1px solid ${C.blue400}`,
+      borderRadius: 2,
+      ...style,
+    },
+    children: [
+      {
+        type: 'img',
+        props: { src: uri, width: size, height: size, style: { width: size, height: size } },
+      },
+    ],
+  },
+});
 
 const W = 1200;
 const H = 630;
@@ -113,40 +153,44 @@ const gridLines = (): El[] => {
   return lines;
 };
 
-const frame = (lang: Language): El => {
+const frame = (lang: Language, mark: string): El => {
   const t = ui[lang];
   const isAr = lang === 'ar';
 
-  const text = el('div', { display: 'flex', flexDirection: 'column', gap: 24, maxWidth: 720 }, [
-    el(
-      'div',
-      { display: 'flex', fontFamily: 'Mono', fontSize: 20, color: C.blue400, letterSpacing: 2 },
-      t['hero.file']
-    ),
-    el(
-      'div',
-      {
-        display: 'flex',
-        direction: 'ltr',
-        alignItems: 'baseline',
-        gap: 8,
-        fontFamily: 'Mono',
-        fontSize: 112,
-        fontWeight: 700,
-        color: C.textHi,
-        letterSpacing: -2,
-      },
-      [el('span', {}, '0x'), el('span', { color: C.sulfur400 }, 'MARO')]
-    ),
-    textFlow(t['hero.sub'], lang, SUB_FONT, {
-      fontFamily: 'Body',
-      fontWeight: isAr ? 500 : 600,
-      fontSize: SUB_FONT,
-      lineHeight: isAr ? 1.85 : 1.5,
-      color: C.textLo,
-      maxWidth: SUB_WRAP,
-    }),
-  ]);
+  const text = el(
+    'div',
+    { display: 'flex', flexDirection: 'column', gap: 24, maxWidth: SUB_WRAP },
+    [
+      el(
+        'div',
+        { display: 'flex', fontFamily: 'Mono', fontSize: 20, color: C.blue400, letterSpacing: 2 },
+        t['hero.file']
+      ),
+      el(
+        'div',
+        {
+          display: 'flex',
+          direction: 'ltr',
+          alignItems: 'baseline',
+          gap: 8,
+          fontFamily: 'Mono',
+          fontSize: 112,
+          fontWeight: 700,
+          color: C.textHi,
+          letterSpacing: -2,
+        },
+        [el('span', {}, '0x'), el('span', { color: C.sulfur400 }, 'MARO')]
+      ),
+      textFlow(t['hero.sub'], lang, SUB_FONT, {
+        fontFamily: 'Body',
+        fontWeight: isAr ? 500 : 600,
+        fontSize: SUB_FONT,
+        lineHeight: isAr ? 1.85 : 1.5,
+        color: C.textLo,
+        maxWidth: SUB_WRAP,
+      }),
+    ]
+  );
 
   const corner = el('div', {
     position: 'absolute',
@@ -185,7 +229,18 @@ const frame = (lang: Language): El => {
       alignItems: 'flex-end',
       justifyContent: isAr ? 'flex-end' : 'flex-start',
     },
-    [...gridLines(), corner, text, brand]
+    [
+      ...gridLines(),
+      corner,
+      // The mark faces the text from the other side, vertically centred.
+      markBox(mark, HERO_MARK, {
+        position: 'absolute',
+        top: (H - HERO_MARK) / 2,
+        [isAr ? 'left' : 'right']: PAD,
+      }),
+      text,
+      brand,
+    ]
   );
 };
 
@@ -209,10 +264,14 @@ const fonts = (lang: Language) => {
       ];
 };
 
-/** satori → SVG → resvg → PNG, the one rasterizer every OG image goes through. */
+/** satori → SVG → resvg → PNG (palette-quantized by sharp), the one rasterizer every OG image goes through. */
 const toPng = (root: El, lang: Language): Promise<Buffer> =>
   satori(root, { width: W, height: H, fonts: fonts(lang), embedFont: true }).then((svg) =>
-    new Resvg(svg, { fitTo: { mode: 'width', value: W }, background: C.ink900 }).render().asPng()
+    sharp(
+      new Resvg(svg, { fitTo: { mode: 'width', value: W }, background: C.ink900 }).render().asPng()
+    )
+      .png({ palette: true, quality: 90, compressionLevel: 9 })
+      .toBuffer()
   );
 
 /**
@@ -243,7 +302,7 @@ const TITLE_WRAP = W - PAD * 2 - BRAND_RESERVE;
 
 /** Default-frame lead paragraph metrics (same char-width heuristic). */
 const SUB_FONT = 30;
-const SUB_WRAP = 660;
+const SUB_WRAP = W - PAD * 2 - HERO_MARK - 56;
 
 /**
  * Deterministic word wrap: a title can never exceed TITLE_MAX_LINES, and a
@@ -314,7 +373,7 @@ const textFlow = (text: string, lang: Language, size: number, style: Record<stri
     textBoxes(text, lang).map((w) => el('div', { display: 'flex', flexShrink: 0 }, w))
   );
 
-const entryFrame = (entry: EntryOg): El => {
+const entryFrame = (entry: EntryOg, mark: string): El => {
   const isAr = entry.lang === 'ar';
 
   const column: El[] = [
@@ -386,9 +445,15 @@ const entryFrame = (entry: EntryOg): El => {
       fontFamily: 'Mono',
       fontSize: 18,
       color: C.textDim,
+      flexDirection: 'column',
+      alignItems: isAr ? 'flex-start' : 'flex-end',
+      gap: 12,
       letterSpacing: 1,
     },
-    `${site.domain.replace('https://', '')} · §`
+    [
+      markBox(mark, BRAND_MARK),
+      el('div', { display: 'flex' }, `${site.domain.replace('https://', '')} · §`),
+    ]
   );
 
   return el(
@@ -419,7 +484,7 @@ export async function generateDefaultOgImages(): Promise<string[]> {
   const written: string[] = [];
 
   for (const lang of ['en', 'ar'] as Language[]) {
-    const png = await toPng(frame(lang), lang);
+    const png = await toPng(frame(lang, await brandMarkUri()), lang);
     const out = join(outDir, `og-default-${lang}.png`);
     writeFileSync(out, png);
     written.push(out);
@@ -429,5 +494,5 @@ export async function generateDefaultOgImages(): Promise<string[]> {
 
 /** Render ONE entry (title, eyebrow with case number, meta/CWE, language). */
 export async function renderEntryOgImage(entry: EntryOg): Promise<Buffer> {
-  return toPng(entryFrame(entry), entry.lang);
+  return toPng(entryFrame(entry, await brandMarkUri()), entry.lang);
 }
