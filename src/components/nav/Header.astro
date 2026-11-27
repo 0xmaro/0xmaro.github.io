@@ -1,5 +1,7 @@
 ---
 import { getRelativeLocaleUrl } from 'astro:i18n';
+import { Image } from 'astro:assets';
+import brandMark from '../../assets/brand/maro-mark.png';
 import { useTranslations } from '../../i18n/utils';
 import { sections, sectionPaths } from '../../config/site';
 import type { Language, UIKey } from '../../i18n/ui';
@@ -44,7 +46,18 @@ const themeLabel = lang === 'ar' ? 'تبديل المظهر' : 'Toggle theme';
 <header class="site-header">
   <div class="wrap nav">
     <a class="brand ltr" href={getRelativeLocaleUrl(lang, '/')}>
-      <span class="brand__mark" aria-hidden="true"></span>
+      <Image
+        class="brand__mark"
+        src={brandMark}
+        alt=""
+        width={36}
+        height={36}
+        densities={[1, 2]}
+        format="webp"
+        quality={82}
+        loading="eager"
+        decoding="async"
+      />
       <span class="brand__word">0x<span class="brand__accent">MARO</span></span>
     </a>
 
@@ -227,7 +240,7 @@ const themeLabel = lang === 'ar' ? 'تبديل المظهر' : 'Toggle theme';
   .brand {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-2);
+    gap: var(--space-3);
     font-family: var(--f-display);
     font-weight: 700;
     letter-spacing: var(--ls-display);
@@ -238,12 +251,26 @@ const themeLabel = lang === 'ar' ? 'تبديل المظهر' : 'Toggle theme';
   }
 
   .brand__mark {
-    width: 9px;
-    height: 9px;
-    border: 1.5px solid var(--blue-400);
-    background: var(--sulfur-400);
-    transform: rotate(45deg);
+    display: block;
+    inline-size: var(--brand-mark);
+    block-size: var(--brand-mark);
+    object-fit: cover;
+    border: var(--hairline) solid var(--blue-400);
+    border-radius: var(--radius);
+    background: var(--ink-900);
     flex: none;
+    transition: border-color var(--t-fast) ease;
+  }
+
+  .brand:hover .brand__mark,
+  .brand:focus-visible .brand__mark {
+    border-color: var(--sulfur-400);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .brand__mark {
+      transition: none;
+    }
   }
 
   .brand__accent {
@@ -376,6 +403,12 @@ const themeLabel = lang === 'ar' ? 'تبديل المظهر' : 'Toggle theme';
 
     .brand {
       font-size: var(--step--1);
+      gap: var(--space-2);
+    }
+
+    .brand__mark {
+      inline-size: var(--brand-mark-sm);
+      block-size: var(--brand-mark-sm);
     }
 
     .nav__search-label {
@@ -386,6 +419,24 @@ const themeLabel = lang === 'ar' ? 'تبديل المظهر' : 'Toggle theme';
       padding-inline: 0;
       min-width: var(--touch-min);
       justify-content: center;
+    }
+  }
+
+  /* Narrow phones: the full lockup does not fit beside the controls. The mark
+     already reads "MARO", so the word steps back to screen readers only and
+     still names the link. */
+  @media (max-width: 379px) {
+    .brand__word {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    .brand {
+      min-inline-size: var(--touch-min);
     }
   }
 
