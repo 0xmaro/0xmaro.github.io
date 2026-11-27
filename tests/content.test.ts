@@ -11,7 +11,7 @@ import { writeup } from './fixtures';
 
 const ids = (list: { id: string }[]) => list.map((e) => e.id);
 
-describe('forSurface — the one visibility gate (CLAUDE.md rule 7)', () => {
+describe('forSurface — the one visibility gate', () => {
   const entries = [
     writeup({ id: 'en/public.mdx', publishedAt: '2026-01-01' }),
     writeup({ id: 'en/newer.mdx', publishedAt: '2026-03-01' }),
@@ -53,7 +53,7 @@ describe('forSurface — the one visibility gate (CLAUDE.md rule 7)', () => {
   });
 });
 
-describe('forSurfaceWithFallback — plan/01 §1.4', () => {
+describe('forSurfaceWithFallback', () => {
   it('lists an English-only post on the Arabic side', () => {
     const entries = [writeup({ id: 'en/only-en.mdx' })];
     expect(ids(forSurfaceWithFallback(entries, 'archive', 'ar'))).toEqual(['en/only-en.mdx']);

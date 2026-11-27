@@ -1,5 +1,5 @@
 /*
- * Typography — the four IBM Plex roles from plan/03-design-system.md §3.2,
+ * Typography — the four IBM Plex roles,
  * the fluid scale, and the five Arabic rules applied under [lang="ar"].
  */
 
@@ -54,7 +54,7 @@ samp,
   max-width: var(--measure-read);
 }
 
-/* ── The five Arabic rules (plan/03-design-system.md §3.2) ── */
+/* ── The five Arabic rules ── */
 html[lang='ar'] body,
 body[lang='ar'],
 [lang='ar'] {

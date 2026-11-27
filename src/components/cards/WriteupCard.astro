@@ -35,7 +35,7 @@ interface Props {
   headingLevel?: 2 | 3;
   /**
    * Locale of the page the card sits on. When it differs from the entry's
-   * language (the §1.4 fallback), the card carries a language badge and a
+   * language (the language fallback), the card carries a language badge and a
    * `lang` attribute so screen readers switch voice for the title.
    */
   viewerLang?: Writeup['data']['lang'];
@@ -59,7 +59,7 @@ const caseId = `${t('case.id')} ${String(caseNo).padStart(3, '0')} · ${data.cat
 const reading = t('case.min').replace('{0}', String(minutes));
 const href = getRelativeLocaleUrl(lang, `/writeups/${slug}`);
 
-// Metadata link vs text (plan/04 F-03): a value with its own route links to
+// Metadata link vs text: a value with its own route links to
 // it; a below-threshold value is plain text, never a dead href.
 const facetHref = (kind: FacetKind, value: string): string | undefined =>
   facets?.[kind].has(value)

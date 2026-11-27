@@ -23,7 +23,7 @@ body {
     color var(--t-med) var(--ease-out);
 }
 
-/* ── Blueprint grid, pure CSS (plan/03-design-system.md §3.0) ── */
+/* ── Blueprint grid, pure CSS ── */
 body::before {
   content: '';
   position: fixed;
@@ -70,7 +70,7 @@ a {
   color: inherit;
 }
 
-/* ── Focus ring (plan/03-design-system.md §3.7) ── */
+/* ── Focus ring ── */
 :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
   outline: var(--focus-width) solid var(--focus-color);
   outline-offset: var(--focus-offset);
@@ -103,7 +103,7 @@ samp {
   unicode-bidi: isolate;
 }
 
-/* ── Buttons (44px touch floor, plan/03-design-system.md §3.7) ── */
+/* ── Buttons (44px touch floor) ── */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -142,7 +142,7 @@ samp {
   color: var(--ink-900);
 }
 
-/* ── Scroll reveal (plan/03-design-system.md §3.6) ── */
+/* ── Scroll reveal ── */
 html.js .reveal {
   opacity: 0;
   transform: translateY(8px);
@@ -156,7 +156,7 @@ html.js .reveal.is-in {
     transform var(--t-med) ease;
 }
 
-/* ── Reduced motion (plan/03-design-system.md §3.6) ── */
+/* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

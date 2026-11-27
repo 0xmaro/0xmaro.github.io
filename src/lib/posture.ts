@@ -2,7 +2,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 /**
- * Security posture, read from the repository at build time (plan/09 F-13).
+ * Security posture, read from the repository at build time.
  * Nothing here is typed by hand: /security renders what these functions find
  * in the workflows, security.txt, package.json and the test suite, so the
  * page is re-derived on every build and cannot drift from the code.

@@ -1,7 +1,7 @@
 import type { Language } from '../i18n/ui';
 
 /**
- * Reading time from raw markdown body text (plan/02 §2.4 — computed, not
+ * Reading time from raw markdown body text (computed, not
  * stored). Arabic is denser, so it reads at a slower words-per-minute rate.
  */
 export function readingTimeOf(body: string, lang: Language): number {

@@ -49,7 +49,7 @@ const published = data.publishedAt.toISOString().slice(0, 10);
         </a>
       ) : (
         // Below FACET_MIN_ENTRIES: plain badge, never a link and never a dead
-        // href (plan/04 F-03 rules applied to the notes stream).
+        // href.
         <Stamp variant="blue" label={t(noteKindLabelKey[data.kind])} />
       )
     }

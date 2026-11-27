@@ -2,7 +2,7 @@ import type { CollectionEntry } from 'astro:content';
 import type { UIKey } from '../i18n/ui';
 
 /**
- * The single content-filtering layer — plan/02-architecture.md §2.5.
+ * The single content-filtering layer.
  *
  * Every listing surface (archive, home, RSS, sitemap, search, related) reads
  * through `forSurface()`. No page may filter collection entries itself; that
@@ -15,7 +15,7 @@ export type Writeup = CollectionEntry<'writeups'>;
 export type Project = CollectionEntry<'projects'>;
 export type Note = CollectionEntry<'notes'>;
 
-/** Locale code shared by every localized collection (plan/02 §2.7). */
+/** Locale code shared by every localized collection. */
 export type Lang = Writeup['data']['lang'];
 
 /**
@@ -28,7 +28,7 @@ type VisibilityCarrier = { data: { visibility: { draft: boolean } } };
 
 export const isPublic = (entry: VisibilityCarrier): boolean => !entry.data.visibility.draft;
 
-/** Drafts are not built into the production output at all (plan/02 §2.4). */
+/** Drafts are not built into the production output at all. */
 export const buildsInProd = (entry: VisibilityCarrier): boolean =>
   !(import.meta.env.PROD && entry.data.visibility.draft);
 
@@ -71,14 +71,14 @@ export const livePaths = (writeups: Writeup[], projects: Project[], lang: Lang):
 /**
  * Locale-independent slug derived from the on-disk id (`en/foo.mdx` → `foo`).
  * Structural on purpose: every collection that follows the one-folder-per-
- * language convention (plan/02 §2.3) produces ids this helper understands.
+ * language convention produces ids this helper understands.
  */
 export const slugOf = (entry: { id: string }): string =>
   entry.id.replace(/\.mdx?$/, '').replace(/^[a-z]{2}\//, '');
 
 /**
  * The counterpart post in the other language. Generic over every collection
- * that follows the same-slug convention (plan/02 §2.2), falling back to the
+ * that follows the same-slug convention, falling back to the
  * explicit `translationOf` field.
  */
 export const getTranslation = <
@@ -122,12 +122,12 @@ export const caseNumbers = (entries: Writeup[]): Map<string, number> => {
 };
 
 /**
- * The homepage "Selected case files" section — plan/02 §2.4 `featured` flag.
+ * The homepage "Selected case files" section, driven by the `featured` flag.
  * Wrapped in forSurface('home') so drafts, unlisted and hideFrom:['home'] never
  * leak in. If nothing is featured the caller renders no section at all.
  */
 /**
- * plan/01 §1.4 — a writeup with no version in `lang` still appears on that
+ * A writeup with no version in `lang` still appears on that
  * locale's lists, carrying its own language badge: not hidden, not a 404.
  * Both halves go through `forSurface()`, so every visibility rule still holds.
  */
@@ -151,7 +151,7 @@ export const featuredOnHome = (entries: Writeup[], lang: Writeup['data']['lang']
     .slice(0, 3);
 
 /**
- * Projects follow the same visibility rules as writeups (plan/02 §2.4).
+ * Projects follow the same visibility rules as writeups.
  * `surface === 'direct'` bypasses `unlisted`; anything else is a listing
  * surface. Projects never enter RSS, so `rss`/`home`/`search` are handled by
  * the same hideFrom enum.
@@ -224,7 +224,7 @@ export const relatedNoteEntries = (entries: Note[], slugs: string[], lang: Lang)
     .filter((e): e is Note => Boolean(e && buildsInProd(e)));
 
 /* ────────────────────────────────────────────────────────────────────────────
- * Pre-rendered archive facets — plan/04-features.md F-03 (2026-09 correction).
+ * Pre-rendered archive facets.
  *
  * Filtering is single-dimension with one built path per value
  * (`/writeups/<kind>/<slug>`, `/ar/writeups/<kind>/<slug>`). Query params
@@ -362,7 +362,7 @@ export const facetIndex = (archive: Writeup[]): FacetIndex => {
 /**
  * Reading order inside one series: `seriesOrder` ascending when present,
  * `publishedAt` ascending otherwise; entries without an explicit order sort
- * after the ordered ones (plan/04 F-02 series strip).
+ * after the ordered ones (series strip).
  */
 export const seriesOrdered = (members: Writeup[]): Writeup[] =>
   [...members].sort((a, b) => {
@@ -395,7 +395,7 @@ export const seriesParts = (archive: Writeup[]): Map<string, SeriesPart> => {
 
 /**
  * Related writeups ranked by shared CWE ids first, then shared OWASP ids,
- * then same category — never by tags (plan/04 F-02). Ties break by newest
+ * then same category — never by tags. Ties break by newest
  * `publishedAt`. A candidate sharing nothing is dropped, so an entry with no
  * overlap yields an empty list and the caller renders no section at all.
  */
@@ -427,15 +427,15 @@ export const relatedByCwe = (
 };
 
 /* ────────────────────────────────────────────────────────────────────────────
- * Notes stream kind facets — plan/04-features.md F-06.
+ * Notes stream kind facets.
  *
  * The stream has exactly one facet dimension (`kind`), served by the same
- * pre-rendered-route + threshold rules as the writeup archive (F-03): one
+ * pre-rendered-route + threshold rules as the writeup archive: one
  * built path per kind with at least FACET_MIN_ENTRIES stream entries, plain
  * text below it, noindex and outside the sitemap everywhere.
  * ──────────────────────────────────────────────────────────────────────────── */
 
-/** The four §2.4 note kinds — the binding schema, not F-06's loose prose. */
+/** The four note kinds — the binding schema. */
 export type NoteKind = 'note' | 'book-summary' | 'paper-summary' | 'til';
 
 /** Canonical fallback display order (schema enum order); count sorts first. */
@@ -496,13 +496,13 @@ export const noteKindIndex = (stream: Note[]): Set<string> =>
 export const noteKindPath = (kind: NoteKind): string => `/notes/kind/${facetSlug(kind)}`;
 
 /**
- * Topics the site can actually show it works on — plan/07 §7.2 `knowsAbout`.
+ * Topics the site can actually show it works on (`knowsAbout`).
  *
  * Derived, never asserted: the CWE ids of writeups that build in production
  * plus the arsenal's capability domains in the requested locale. It grows with
  * the content, so it can never overstate what is on the site — which is the
- * same rule the proof layer applies to every other claim (plan/04 F-11).
- * `alumniOf`, also listed in §7.2, is owner biography and is not derivable, so
+ * same rule the proof layer applies to every other claim.
+ * `alumniOf`, is owner biography and is not derivable, so
  * it is deliberately not emitted.
  */
 export const documentedTopics = (

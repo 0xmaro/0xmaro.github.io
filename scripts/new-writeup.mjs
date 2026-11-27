@@ -1,17 +1,16 @@
 #!/usr/bin/env node
-// Scaffold a new writeup so writing starts from a structure, not a blank file
-// (plan/05-roadmap.md Phase 6, first item).
+// Scaffold a new writeup so writing starts from a structure, not a blank file.
 //
 // Generates src/content/writeups/<lang>/<slug>.mdx with:
 //  - frontmatter that satisfies the Zod schema in src/content.config.ts, and
-//  - the seven-section body skeleton from plan/04-features.md F-02.
+//  - the seven-section body skeleton every writeup follows.
 //
 // The enum values, the summary length bounds and the title max are READ from
 // the schema source (not copied here), so a schema change either keeps working
 // or fails this script loudly — the generator can never drift silently.
 //
 // Dev tooling only: CLI text is English on purpose. It is not site UI, so
-// CLAUDE.md rule 3 (UI strings come from src/i18n/ui.ts) does not apply here.
+// the rule that UI strings come from src/i18n/ui.ts does not apply here.
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
@@ -308,7 +307,7 @@ const summaryPlaceholder = (lang) => {
   return text;
 };
 
-// ── Seven-section skeleton (plan/04-features.md F-02) ───────────────────────
+// ── Seven-section skeleton ───────────────────────
 //
 // Every comment below is a SINGLE-LINE {/* ... */} on purpose. MDX rejects
 // HTML comments outright, and Prettier's markdown formatter (not MDX-aware)
@@ -318,7 +317,7 @@ const summaryPlaceholder = (lang) => {
 
 const SKELETONS = {
   en: {
-    intro: `{/* Layout components need no imports here — Writeup.astro injects Callout, Payload, FixDiff, DeadEnd and Terminal. Sections 05 (dead ends) and 06 (the fix) are mandatory before publishing: plan/04-features.md F-02. */}`,
+    intro: `{/* Layout components need no imports here — Writeup.astro injects Callout, Payload, FixDiff, DeadEnd and Terminal. Sections 05 (dead ends) and 06 (the fix) are mandatory  before publishing. */}`,
     sections: [
       [
         '01 — The target',
@@ -353,7 +352,7 @@ const SKELETONS = {
     fixDiffExample: `{/* Example — replace with the real fix: <FixDiff before={\`// the vulnerable code\`} after={\`// the fixed code\`} /> */}`,
   },
   ar: {
-    intro: `{/* المكونات هنا من غير أي import — Writeup.astro بيوفّر Callout وPayload وFixDiff وDeadEnd وTerminal جوه الصفحة. القسمان ٠٥ (الطرق المسدودة) و٠٦ (الإصلاح) إلزاميان قبل النشر: plan/04-features.md F-02. */}`,
+    intro: `{/* المكونات هنا من غير أي import — Writeup.astro بيوفّر Callout وPayload وFixDiff وDeadEnd وTerminal جوه الصفحة. القسمان ٠٥ (الطرق المسدودة) و٠٦ (الإصلاح) إلزاميان قبل النشر. */}`,
     sections: [
       [
         '٠١ — الهدف',
@@ -552,6 +551,4 @@ console.log(
     `(schema: ${schema.summaryMin}–${schema.summaryMax}) — it validates today, replace it before publishing`
 );
 console.log('Next      fill the seven sections, then flip visibility.draft to false.');
-console.log(
-  '          Sections 05 (dead ends) and 06 (the fix) are mandatory — plan/04-features.md F-02.'
-);
+console.log('          Sections 05 (dead ends) and 06 (the fix) are mandatory.');

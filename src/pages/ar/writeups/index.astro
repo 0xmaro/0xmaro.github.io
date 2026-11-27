@@ -12,7 +12,7 @@ const lang = 'ar';
 const t = useTranslations(lang);
 const entries = await getCollection('writeups');
 // Facet routes exist per locale, so filters read own-language entries only;
-// the list itself adds the other language's posts with a badge (plan/01 §1.4).
+// the list itself adds the other language's posts with a badge.
 const surfaced = forSurface(entries, 'archive', lang);
 const listed = forSurfaceWithFallback(entries, 'archive', lang);
 ---

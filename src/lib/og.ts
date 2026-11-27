@@ -7,8 +7,8 @@ import { ui } from '../i18n/ui';
 import { site } from '../config/site';
 
 /**
- * Build-time default Open Graph image per locale (plan/03 design tokens,
- * plan/05 Phase 3). satori renders the layout to SVG with the TTF masters in
+ * Build-time default Open Graph image per locale, built from the
+ * design tokens. satori renders the layout to SVG with the TTF masters in
  * `src/fonts/og/` (Arabic shaping included), resvg-js rasterizes it to PNG.
  * Runs in the `astro:build:start` hook so the PNG lands in `public/og/`
  * before the static copy.
@@ -81,7 +81,7 @@ const el = (
  *
  * A full-canvas grid is symmetric, so `left` is correct in both directions.
  * Anything direction-dependent (corner, brand) mirrors by hand on `isAr`.
- * Do NOT "fix" this back to logical properties: CLAUDE.md rule 1 governs CSS a
+ * Do NOT "fix" this back to logical properties: the no-physical-directions rule governs CSS a
  * browser parses, and satori is not a browser.
  */
 const gridLines = (): El[] => {
@@ -270,7 +270,7 @@ const SUB_WRAP = 660;
  * next line, which IS Arabic text flow. Words are emitted in logical order and
  * the gap is ours, so there is nothing to calibrate and nothing to drift.
  *
- * Mixed content (plan/03 §3.2 rule 5 — "ثغرة SQL Injection في CVE-2021-44228")
+ * Mixed content ("ثغرة SQL Injection في CVE-2021-44228")
  * works because a run of consecutive Latin tokens is emitted as ONE box with its
  * spaces intact: it stays internally left-to-right and the reversed flow places
  * it as a single unit.

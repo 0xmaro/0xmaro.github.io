@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-// Scaffold a new note so the F-06 stream starts from a structure, not a blank
+// Scaffold a new note so the notes stream starts from a structure, not a blank
 // file — the sibling of scripts/new-writeup.mjs.
 //
 // Generates src/content/notes/<lang>/<slug>.mdx with:
 //  - frontmatter that satisfies the Zod schema in src/content.config.ts, and
 //  - for the two summary kinds, the five-section skeleton from
-//    plan/04-features.md F-06 (the reference · who it is for · three ideas ·
+//    the notes format (the reference · who it is for · three ideas ·
 //    what I disagree with · how I applied it).
 //
 // The enum values, the summary length bounds and the title max are READ from
@@ -13,7 +13,7 @@
 // or fails this script loudly — the generator can never drift silently.
 //
 // Dev tooling only: CLI text is English on purpose. It is not site UI, so
-// CLAUDE.md rule 3 (UI strings come from src/i18n/ui.ts) does not apply here.
+// the rule that UI strings come from src/i18n/ui.ts does not apply here.
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
@@ -313,7 +313,7 @@ const summaryPlaceholder = (lang) => {
   return text;
 };
 
-// ── Body skeletons (plan/04-features.md F-06) ───────────────────────────────
+// ── Body skeletons ───────────────────────────────
 //
 // Every comment below is a SINGLE-LINE {/* ... */} on purpose. MDX rejects
 // HTML comments outright, and Prettier's markdown formatter (not MDX-aware)
@@ -321,7 +321,7 @@ const summaryPlaceholder = (lang) => {
 // breaks the comment. The single-line form is the only one that is both valid
 // MDX and byte-stable under `prettier --check`.
 //
-// The copyright warning is a product requirement (F-06), not a nicety: a
+// The copyright warning is a product requirement, not a nicety: a
 // summary is the author's own understanding in their own words. It lives in
 // the generated file so it is in front of the author at the moment of writing.
 
@@ -331,11 +331,11 @@ const INTRO_COMMENTS = {
 };
 
 const COPYRIGHT_COMMENTS = {
-  en: `{/* Copyright — plan/04-features.md F-06: a summary is your own understanding in your own words. Never copy paragraphs from the work; only a very short quote, with a reference, when strictly necessary. */}`,
-  ar: `{/* حقوق النشر — plan/04-features.md F-06: الملخص فهمك أنت بكلامك أنت. ما تنقلش فقرات من العمل؛ اقتباس قصير جداً مع مرجع لما يكون ضروري بس. */}`,
+  en: `{/* Copyright: a summary is your own understanding in your own words. Never copy paragraphs from the work; only a very short quote, with a reference, when strictly necessary. */}`,
+  ar: `{/* حقوق النشر: الملخص فهمك أنت بكلامك أنت. ما تنقلش فقرات من العمل؛ اقتباس قصير جداً مع مرجع لما يكون ضروري بس. */}`,
 };
 
-// The five fixed sections F-06 gives every summary — shipped as structure,
+// The five fixed sections every summary gets — shipped as structure,
 // never as prose: each body is the literal TODO(copy) marker.
 const SUMMARY_SECTIONS = {
   en: [
@@ -524,9 +524,7 @@ console.log(
     `(schema: ${schema.summaryMin}–${schema.summaryMax}) — it validates today, replace it before publishing`
 );
 if (values.source) {
-  console.log('Sections  the five F-06 sections are scaffolded — bodies are TODO(copy).');
-  console.log(
-    '          Copyright: a summary is your own words, never copied paragraphs — plan/04-features.md F-06.'
-  );
+  console.log('Sections  the five summary sections are scaffolded — bodies are TODO(copy).');
+  console.log('          Copyright: a summary is your own words, never copied paragraphs.');
 }
 console.log('Next      write the body, then flip visibility.draft to false.');

@@ -108,7 +108,7 @@ const researchCopy = {
   },
 }[lang];
 
-// Metadata link vs text (plan/04 F-03): a value with its own route links to
+// Metadata link vs text: a value with its own route links to
 // it; a below-threshold value is plain text, never a dead href.
 const facetHref = (kind: FacetKind, value: string): string | undefined =>
   facets[kind].has(value)
@@ -137,14 +137,14 @@ const statusVariant = {
 
 const mdxComponents = { Callout, Payload, FixDiff, DeadEnd, Terminal };
 
-// plan/09 F-12 — "verify this fix": each fix links to the commit it landed in.
-// Only real URLs render (proof layer, F-11); the label is the short SHA.
+// "verify this fix": each fix links to the commit it landed in.
+// Only real URLs render (proof layer); the label is the short SHA.
 const fixCommits = data.fixCommits.filter(isRealProof).map((url) => ({
   url,
   label: url.match(/\/commit\/([0-9a-f]{7})/)?.[1] ?? 'commit',
 }));
 if (data.hasFix && fixCommits.length === 0) {
-  console.warn(`[proof] writeup "${slug}" has a fix but no fixCommits URL (plan/09 F-12).`);
+  console.warn(`[proof] writeup "${slug}" has a fix but no fixCommits URL.`);
 }
 
 const jsonLd = {
@@ -547,7 +547,7 @@ const breadcrumb = breadcrumbSchema(lang, Astro.site!, [
     min-height: var(--touch-min);
   }
 
-  /* ── Series strip (plan/04 F-02): compact, above the article body ── */
+  /* ── Series strip: compact, above the article body ── */
   .writeup__series {
     padding-block-start: var(--space-6);
   }
@@ -699,7 +699,7 @@ const breadcrumb = breadcrumbSchema(lang, Astro.site!, [
     font-family: var(--f-body-ar);
   }
 
-  /* ── Related case files (plan/04 F-02): matched by CWE, never padded ── */
+  /* ── Related case files: matched by CWE, never padded ── */
   .writeup__related {
     padding-block: var(--space-6);
     border-block-start: var(--hairline) solid var(--line);
@@ -729,7 +729,7 @@ const breadcrumb = breadcrumbSchema(lang, Astro.site!, [
     gap: var(--space-2);
   }
 
-  /* ── Grid: content + sticky TOC in the rail margin (plan/03 §3.3) ── */
+  /* ── Grid: content + sticky TOC in the rail margin ── */
   .writeup__grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr);

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Fail the build on a dead internal link (plan/09 §9.4).
+// Fail the build on a dead internal link.
 //
 // lychee runs in CI, but only on pull requests. This runs inside
 // `npm run build`, so a dead link cannot reach a deploy either. It caught its

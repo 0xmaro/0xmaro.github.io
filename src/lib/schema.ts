@@ -4,7 +4,7 @@ import { isRealProof } from './proof';
 import type { Language } from '../i18n/ui';
 
 /**
- * JSON-LD builders (plan/05 Phase 5), serialised by src/components/seo/JsonLd.astro.
+ * JSON-LD builders, serialised by src/components/seo/JsonLd.astro.
  * Emitted per page, no duplicates: WebSite on the home of each locale only,
  * Person on home + About, BreadcrumbList on writeup / project / nested archive
  * pages. TechArticle/CreativeWork stay hand-built in their layouts where the
@@ -16,7 +16,7 @@ export type JsonLdNode = Record<string, unknown>;
 import type { Journey } from './proof';
 
 /**
- * Person — sameAs carries ONLY verified profile URLs (plan/08 §8.2: no proof,
+ * Person — sameAs carries ONLY verified profile URLs (no proof,
  * no render). Credentials and awards mirror the verified Journey collection so
  * search engines and AI systems (SEO + GEO) can resolve Ammar Mohamed / 0xMARO
  * with concrete, source-backed entities.
@@ -129,7 +129,7 @@ export const journeyMilestoneSchema = (
 /**
  * WebSite — home page of each locale only.
  *
- * `potentialAction` (plan/07 §7.2) points at this locale's search page, which
+ * `potentialAction` points at this locale's search page, which
  * reads `?q=` on load and keeps it in the URL, so the target is a real, working
  * entry point rather than a declaration.
  */
@@ -152,7 +152,7 @@ export const websiteSchema = (lang: Language, siteUrl: URL): JsonLdNode => ({
 export interface Crumb {
   /** Localized label — always a t() value, never a string literal (rule 3). */
   name: string;
-  /** Locale-independent path (plan/02 §2.2); omitted only by a trailing crumb. */
+  /** Locale-independent path; omitted only by a trailing crumb. */
   path?: string;
 }
 

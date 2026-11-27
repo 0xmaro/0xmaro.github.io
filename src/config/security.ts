@@ -1,5 +1,5 @@
 /**
- * The site's security meta — ONE source of truth (plan/08 §8.1).
+ * The site's security meta — ONE source of truth.
  *
  * Base.astro serialises these into the <meta> tags every page ships, and
  * /security renders the very same values. Change a directive here and both
@@ -28,7 +28,7 @@ export const referrerPolicy = 'strict-origin-when-cross-origin';
 
 /**
  * What GitHub Pages cannot send: it serves static files with fixed response
- * headers, and a <meta> tag cannot carry these (plan/08 §8.1). Listed on
+ * headers, and a <meta> tag cannot carry these. Listed on
  * /security as a limit, not hidden.
  */
 export const unavailableHeaders = [

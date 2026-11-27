@@ -5,7 +5,7 @@ import { useTranslations } from '../../i18n/utils';
 import type { Language, UIKey } from '../../i18n/ui';
 
 /**
- * The journey timeline (plan/04 F-07), shared by /journey and the home page
+ * The journey timeline, shared by /journey and the home page
  * §03. Every milestone links to its own dedicated dossier page
  * (`/journey/[slug]`, `/ar/journey/[slug]`) with full media gallery, proof
  * links, and chronological navigation.
@@ -29,7 +29,7 @@ const Heading = `h${level}` as const;
 const dateFmt = new Intl.DateTimeFormat(lang === 'ar' ? 'ar' : 'en-US', {
   year: 'numeric',
   month: 'short',
-  numberingSystem: 'latn', // Western digits in technical context (CLAUDE.md rule 5)
+  numberingSystem: 'latn', // Western digits in technical context
 });
 
 type Phase = Journey['data']['phase'];
