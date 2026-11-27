@@ -11,7 +11,9 @@ interface Props {
 
 const { lang } = Astro.props;
 
-const channels: { name: string; handle: string; url: string; icon: SocialIcon }[] = [
+type Channel = { name: string; handle: string; url: string; icon: SocialIcon };
+
+const allChannels: Channel[] = [
   { name: 'GitHub', handle: '@0xmaro', url: site.social.github, icon: 'github' },
   { name: 'LinkedIn', handle: 'amar-mohamed-0xmaro', url: site.social.linkedin, icon: 'linkedin' },
   { name: 'TryHackMe', handle: '0xmaro', url: site.social.tryhackme, icon: 'tryhackme' },
@@ -19,7 +21,8 @@ const channels: { name: string; handle: string; url: string; icon: SocialIcon }[
   { name: 'YouTube', handle: '@0xmaro', url: site.social.youtube, icon: 'youtube' },
   { name: 'Instagram', handle: '@its_0xmaro', url: site.social.instagram, icon: 'instagram' },
   { name: 'Facebook', handle: '/0xmaro', url: site.social.facebook, icon: 'facebook' },
-].filter((c) => isRealProof(c.url));
+];
+const channels = allChannels.filter((c) => isRealProof(c.url));
 
 const copy = {
   en: {
