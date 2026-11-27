@@ -1,5 +1,5 @@
-/* humans.txt — https://humanstxt.org convention (plan/02-architecture.md §2.2).
-   Every line below is a verifiable fact (plan/08-quality-bar.md §8.2); anything
+/* humans.txt — https://humanstxt.org convention.
+   Every line below is a verifiable fact; anything
    not yet known stays TODO(copy) rather than guessed. */
 
 /* TEAM */

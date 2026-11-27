@@ -10,7 +10,7 @@ export function getLangFromUrl(url: URL): Language {
 /**
  * Href of the current page in each locale. Shared by LangSwitch and the
  * command palette so switching language never sends the visitor home.
- * Locale-independent paths (plan/02 §2.2) make the same pathname valid in both
+ * Locale-independent paths make the same pathname valid in both
  * — except for content that exists in one language only; see `fallback`.
  */
 export function localeHrefs(pathname: string, fallback?: string): Record<Language, string> {

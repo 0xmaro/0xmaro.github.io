@@ -5,7 +5,7 @@ import { buildsInProd, forSurface, projectSlugOf, projectSurface, slugOf } from 
 
 /**
  * URLs of built writeup/project pages that must stay out of the sitemap
- * (plan/02 §2.4: unlisted → no sitemap). @astrojs/sitemap's `filter` is
+ * (unlisted → no sitemap). @astrojs/sitemap's `filter` is
  * synchronous and runs in the config process, while getStaticPaths runs in the
  * page-build process — module state is NOT shared between the two. So the
  * exclusion set is handed over through a cache file in `.astro/`, written
@@ -75,7 +75,7 @@ export async function registerSitemapExclusions(): Promise<void> {
   writeFileSync(cachePath(), JSON.stringify([...excluded]), 'utf8');
 }
 
-/** Static noindex routes that must never be listed (plan/08 §8.6). */
+/** Static noindex routes that must never be listed. */
 const staticExcluded = new Set([
   '/404',
   '/ar/404',
@@ -88,7 +88,7 @@ const staticExcluded = new Set([
 ]);
 
 /**
- * Dynamic noindex utility routes (plan/04 F-03): the pre-rendered archive
+ * Dynamic noindex utility routes: the pre-rendered archive
  * facet pages, notes kind pages and labs platform pages. They are navigation
  * tools, not content — every one of them is `noindex` and must stay out of
  * the sitemap.

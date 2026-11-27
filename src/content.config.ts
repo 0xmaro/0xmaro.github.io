@@ -3,7 +3,7 @@ import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
 /**
- * Visibility controls — plan/02-architecture.md §2.4 verbatim.
+ * Visibility controls.
  * One line in frontmatter changes a post's presence everywhere, because every
  * surface reads through `forSurface()` in src/lib/content.ts.
  *
@@ -20,8 +20,8 @@ export const visibility = z.object({
 });
 
 /**
- * Localized string pair. Bilingual content is mandatory for projects
- * (plan/01 §1.4); journey stations are structured for both locales from day
+ * Localized string pair. Bilingual content is mandatory for projects;
+ * journey stations are structured for both locales from day
  * one even while the copy is still `TODO(copy)`.
  */
 export const l10nText = z.object({
@@ -54,7 +54,7 @@ const writeups = defineCollection({
       severity: z.enum(['info', 'low', 'medium', 'high', 'critical']).optional(),
       status: z.enum(['patched', 'disclosed', 'lab-only', 'wip']),
       hasFix: z.boolean().default(false), // does it contain a real code-level fix?
-      // plan/09 F-12: commit URLs where the fix actually landed. Rendered only
+      // commit URLs where the fix actually landed. Rendered only
       // when real http(s) (isRealProof); hasFix without one warns at build.
       fixCommits: z.array(z.string()).default([]),
       toolsUsed: z.array(z.string()).default([]),
@@ -74,9 +74,9 @@ const writeups = defineCollection({
 });
 
 /**
- * Projects — bilingual-mandatory case studies (plan/01 §1.4, plan/02 §2.4).
+ * Projects — bilingual-mandatory case studies.
  * Every verifiable figure lives in `metrics` and needs its own `proof` URL;
- * the Project layout only renders metrics that carry one (plan/04 F-11).
+ * the Project layout only renders metrics that carry one.
  * `role` is required by the schema; until the owner writes it the value stays
  * `TODO(copy)` and the layout does not display it.
  */
@@ -132,8 +132,8 @@ const projects = defineCollection({
 });
 
 /**
- * Notes — the short-form stream (plan/04-features.md F-06): TILs, plain notes
- * and book/paper summaries. `kind` follows the §2.4 binding schema, not F-06's
+ * Notes — the short-form stream: TILs, plain notes
+ * and book/paper summaries. `kind` follows the binding schema, not the
  * loose prose. A summary MUST carry its `source` reference — the refinement
  * turns a summary without a reference into a build error, because a summary
  * that does not name the work it summarises is unverifiable. `source.url` is a
@@ -181,13 +181,13 @@ const notes = defineCollection({
           data.source !== undefined,
         {
           message:
-            '`source` (name, author, url) is required for book-summary and paper-summary notes — plan/04-features.md F-06',
+            '`source` (name, author, url) is required for book-summary and paper-summary notes',
         }
       ),
 });
 
 /**
- * Labs & CTF — one YAML file per result (plan/02 §2.3, plan/04 F-05).
+ * Labs & CTF — one YAML file per result.
  * A row with a claim (`result`) but no real `proof` URL is held back by the
  * surface filter — never rendered.
  */
@@ -205,7 +205,7 @@ const labs = defineCollection({
 });
 
 /**
- * Journey — vertical timeline (plan/04 F-07). A station that carries a
+ * Journey — vertical timeline. A station that carries a
  * verifiable claim (`claim`) must link a real `proof` URL or it is held back.
  * Narrative-only stations render without one. `date` is optional so structure
  * can exist before real dates are supplied — dated stations sort first.
@@ -245,7 +245,7 @@ const journey = defineCollection({
 });
 
 /**
- * Arsenal — capability table, never an icon grid (plan/04 F-05, §3 "arsenal").
+ * Arsenal — capability table, never an icon grid.
  * One YAML file per domain; each row maps the tools to where they were
  * actually used (`usedOn`, an internal link to a project or writeup).
  */

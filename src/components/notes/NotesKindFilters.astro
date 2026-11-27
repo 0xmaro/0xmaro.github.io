@@ -37,7 +37,7 @@ const groups = noteKindGroups(entries);
                   </a>
                 ) : (
                   // Below FACET_MIN_ENTRIES: plain text, never a link and never
-                  // a dead href (plan/04 F-03 rules applied to the notes stream).
+                  // a dead href.
                   <span class="fbar__chip fbar__chip--text">{t(noteKindLabelKey[g.kind])}</span>
                 )}
               </li>

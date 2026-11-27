@@ -11,7 +11,7 @@ interface Props {
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 
-// F-11: a figure without a real proof URL is never rendered. The pending list
+// A figure without a real proof URL is never rendered. The pending list
 // is surfaced to the owner at build time, not to visitors.
 const items = proofItems.filter((item) => isRealProof(item.href));
 const pending = proofItems.filter((item) => !isRealProof(item.href));

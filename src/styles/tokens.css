@@ -1,5 +1,5 @@
 :root {
-  /* ── Surfaces — أزرق-أسود، مش أسود صافي (plan §3.1) ── */
+  /* ── Surfaces — أزرق-أسود، مش أسود صافي ── */
   --ink-900: #080a0f;
   --ink-800: #0d1017;
   --ink-700: #141924;
@@ -7,31 +7,31 @@
   --line: #1a202c;
   --grid: #10141d;
 
-  /* ── Text (plan §3.1) ── */
+  /* ── Text ── */
   --text-hi: #e8ebf0;
   --text: #b6bdca;
   --text-lo: #8f9aac;
   --text-dim: #737c8d;
 
-  /* ── Blueprint (البناء) (plan §3.1) ── */
+  /* ── Blueprint (البناء) ── */
   --blue-400: #7fa6ff;
   --blue-500: #4e7cf6;
   --blue-900: #101a33;
 
-  /* ── Breach (الكسر) — التوقيع (plan §3.1) ── */
+  /* ── Breach (الكسر) — التوقيع ── */
   --sulfur-300: #f2e3a0;
   --sulfur-400: #e3c567;
   --sulfur-500: #c9a73e;
   --sulfur-900: #211c08;
 
-  /* ── Stamp — severity فقط (plan §3.1) ── */
+  /* ── Stamp — severity فقط ── */
   --stamp-crit: #db4832;
   --stamp-high: #c2683a;
   --stamp-med: #a08a3c;
   --stamp-low: #4e7cf6;
   --ok: #3f9d6b;
 
-  /* ── Fluid type scale (plan §3.2 verbatim) ── */
+  /* ── Fluid type scale ── */
   --step--1: clamp(0.83rem, 0.8rem + 0.15vw, 0.9rem);
   --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.08rem);
   --step-1: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
@@ -39,7 +39,7 @@
   --step-3: clamp(2.1rem, 1.7rem + 2vw, 3.2rem);
   --step-4: clamp(2.8rem, 2rem + 4vw, 5rem);
 
-  /* ── Type roles (plan §3.2) ── */
+  /* ── Type roles ── */
   --f-display: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --f-body: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
   --f-body-ar: 'IBM Plex Sans Arabic', 'IBM Plex Sans', system-ui, sans-serif;
@@ -63,7 +63,7 @@
   --space-7: 3rem;
   --space-8: 4rem;
 
-  /* ── Layout (plan §3.3) ── */
+  /* ── Layout ── */
   --wrap: 1180px;
   --rail: 56px;
   --radius: 2px;
@@ -79,7 +79,7 @@
   --pad-section-block: clamp(3rem, 7vw, 5rem);
   --pad-diff-inline: clamp(0.9rem, 2.5vw, 1.6rem);
 
-  /* ── Line measures (plan §3.2: 68ch EN / 72ch AR) ── */
+  /* ── Line measures (68ch EN / 72ch AR) ── */
   --measure-read: 68ch;
   --measure-read-ar: 72ch;
   --measure-lead: 56ch;
@@ -92,7 +92,7 @@
   --rail-ind-gap: 32px;
   --rail-mark-inset: 10px;
 
-  /* ── Line heights (plan §3.2) ── */
+  /* ── Line heights ── */
   --lh-body: 1.65;
   --lh-ar: 1.85;
   --lh-display: 1.16;
@@ -105,13 +105,13 @@
   --ls-meta: 0.04em;
   --ls-stamp: 0.1em;
 
-  /* ── Motion (plan §3.6) ── */
+  /* ── Motion ── */
   --t-fast: 160ms;
   --t-med: 320ms;
   --t-slow: 420ms;
   --ease-out: cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* ── Focus ring (plan §3.7) ── */
+  /* ── Focus ring ── */
   --focus-width: 2px;
   --focus-color: var(--sulfur-400);
   --focus-offset: 3px;
@@ -164,9 +164,8 @@ html[data-theme='paper'] {
   --glow-sulfur: rgba(158, 114, 10, 0.1);
 }
 
-/* ── Print (plan/09 F-17) — the same components on paper. Remapping the tokens
-   instead of restyling components keeps every colour in this file (CLAUDE.md
-   rule 2): surfaces go white, text goes near-black, accents darken enough to
+/* ── Print — the same components on paper. Remapping the tokens
+   instead of restyling components keeps every colour in this file: surfaces go white, text goes near-black, accents darken enough to
    hold contrast on paper. Sulfur stays the one thing to notice. ── */
 @media print {
   :root {

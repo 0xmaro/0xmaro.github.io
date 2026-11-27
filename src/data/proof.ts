@@ -1,9 +1,9 @@
 import type { Language } from '../i18n/ui';
 
 export interface ProofItem {
-  /** The headline figure, e.g. "#3 EG". Western digits only (plan/03-design-system.md §3.2 rule 4). */
+  /** The headline figure, e.g. "#3 EG". Western digits only. */
   value: string;
-  /** Verification URL. Empty means the item is NOT rendered (plan/04-features.md F-11). */
+  /** Verification URL. Empty means the item is NOT rendered. */
   href: string;
   label: Record<Language, string>;
   /** Which i18n key to use for the "verify" affordance. */

@@ -4,7 +4,6 @@ set -euo pipefail
 # Fail the build if Pagefind produced an empty index.
 # Once `data-pagefind-body` lands (Phase 2), a site with markup in place but no
 # content yet would otherwise ship an empty search index silently.
-# See plan/08-quality-bar.md §8.6.
 INDEX="dist/pagefind/pagefind-entry.json"
 
 if [ ! -f "$INDEX" ]; then

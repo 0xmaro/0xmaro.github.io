@@ -52,7 +52,7 @@ const valueLabel = (kind: FacetKind, value: string): string =>
                       </a>
                     ) : (
                       // Below FACET_MIN_ENTRIES: plain text, never a link and
-                      // never a dead href (plan/04 F-03).
+                      // never a dead href.
                       <span
                         class:list={['fbar__chip fbar__chip--text', isTechnical(kind) && 'ltr']}
                       >

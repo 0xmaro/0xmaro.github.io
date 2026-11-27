@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 /**
- * Quarterly maintenance report — plan/05-roadmap.md Phase 6.
+ * Quarterly maintenance report.
  *
  * The same review is asked for in three places and, until now, in three places
  * it was "remember to do this":
- *   - plan/05 Phase 6  — revisit old posts, update them or retire them
- *   - plan/08 §8.1     — review the pinned action SHAs every quarter
- *   - plan/08 §8.2     — put a reminder in the calendar a month before the
+ *   - quarterly         — revisit old posts, update them or retire them
+ *   - CI policy         — review the pinned action SHAs every quarter
+ *   - security.txt      — put a reminder in the calendar a month before the
  *                        security.txt Expires date
  * A reminder in a human's calendar is a reminder a human forgets. This computes
  * the answers instead, and .github/workflows/maintenance.yml opens an issue
@@ -25,8 +25,8 @@ import { join } from 'node:path';
 const ROOT = process.cwd();
 const NOW = new Date();
 const STALE_MONTHS = 6; // a post untouched this long is worth a second look
-const EXPIRY_WARN_DAYS = 30; // plan/08 §8.2: warn a month out
-const SHA_REVIEW_DAYS = 90; // plan/08 §8.1: quarterly
+const EXPIRY_WARN_DAYS = 30; // warn a month out
+const SHA_REVIEW_DAYS = 90; // quarterly
 
 const days = (ms) => Math.round(ms / 86_400_000);
 const walk = (dir, out = []) => {
@@ -74,7 +74,7 @@ for (const file of [
 }
 stale.sort((a, b) => b.days - a.days);
 
-// ── 2. security.txt expiry (plan/08 §8.2) ──────────────────────────────────
+// ── 2. security.txt expiry ──────────────────────────────────
 let expiry = null;
 const secTxt = join(ROOT, 'public/.well-known/security.txt');
 if (existsSync(secTxt)) {
@@ -96,7 +96,7 @@ if (existsSync(secTxt)) {
   }
 }
 
-// ── 3. Pinned action SHAs (plan/08 §8.1) ───────────────────────────────────
+// ── 3. Pinned action SHAs ───────────────────────────────────
 const pins = [];
 const wfDir = join(ROOT, '.github/workflows');
 if (existsSync(wfDir)) {
@@ -135,7 +135,7 @@ else
     L.push(`- \`${s.file}\` — last touched ${s.lastTouched} (${s.days} days ago)`);
 L.push(
   '',
-  'Update it and set `updatedAt`, or retire it. Live content ranks better and shows care (plan/08 §8.7).',
+  'Update it and set `updatedAt`, or retire it. Live content ranks better and shows care.',
   ''
 );
 
@@ -145,7 +145,7 @@ else {
   if (expiry.expired)
     L.push(`- **EXPIRED** on ${expiry.date}. Reporters may treat the file as abandoned.`);
   else if (expiry.due)
-    L.push(`- Expires ${expiry.date} — ${expiry.daysLeft} days left. Renew it now (plan/08 §8.2).`);
+    L.push(`- Expires ${expiry.date} — ${expiry.daysLeft} days left. Renew it now.`);
   else L.push(`- Expires ${expiry.date} (${expiry.daysLeft} days left). Nothing to do yet.`);
   if (expiry.contactMissing)
     L.push(
@@ -154,7 +154,7 @@ else {
 }
 L.push('');
 
-L.push('## Pinned action SHAs (plan/08 §8.1)');
+L.push('## Pinned action SHAs');
 if (unpinned.length > 0) {
   L.push(`- **${unpinned.length} action(s) not pinned to a full SHA** — supply-chain risk:`);
   for (const p of unpinned) L.push(`  - \`${p.workflow}\`: \`${p.action}@${p.version}\``);

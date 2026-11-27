@@ -1,7 +1,7 @@
 /*
- * Prose — the reading surface of a writeup (plan/03 §3.3, §3.7).
+ * Prose — the reading surface of a writeup.
  * Token-only colors. Shiki runs with `theme: 'css-variables'` (astro.config)
- * and inherits this token mapping — sulfur for strings/highlights per plan §3.2.
+ * and inherits this token mapping — sulfur for strings/highlights.
  */
 
 .prose {
